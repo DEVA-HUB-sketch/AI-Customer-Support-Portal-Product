@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DeskFlow AI — Functionality Flowchart</title>
+<style>
+@page{size:A3 landscape;margin:6mm}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#081C1E;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:20px 16px 28px;min-height:100vh}
+.fc-h{color:#D4AF37;font-size:22px;font-weight:700;letter-spacing:3px;text-align:center;margin-bottom:3px;text-transform:uppercase}
+.fc-s{color:#4a7a7e;font-size:10.5px;letter-spacing:1.8px;text-align:center;margin-bottom:16px;text-transform:uppercase}
+svg{width:100%;max-width:1380px;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:14px}
+.li{display:flex;align-items:center;gap:7px;color:#7a9a9c;font-size:10.5px}
+.ls{width:18px;height:12px;border-radius:3px;display:inline-block}
+.ph{color:#3a5a5e;font-size:9.5px;margin-top:10px;text-align:center;letter-spacing:1px}
+@media print{
+  body{background:#fff;padding:4mm}
+  svg{width:280mm}
+  .fc-h{color:#081C1E}
+  .fc-s{color:#555}
+  .li{color:#333}
+  .ph{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="fc-h">DeskFlow AI — Functionality Flow</div>
+<div class="fc-s">Complete user journey &amp; system interaction map &nbsp;·&nbsp; v2.0 &nbsp;·&nbsp; 2026</div>
+
+<svg viewBox="0 0 1400 1210" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <!-- Main gold arrowhead -->
+  <marker id="arr" markerWidth="9" markerHeight="8" refX="8" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L9,3 z" fill="#D4AF37"/>
+  </marker>
+  <!-- Teal arrowhead -->
+  <marker id="arr2" markerWidth="9" markerHeight="8" refX="8" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L9,3 z" fill="#2DC7AF"/>
+  </marker>
+  <!-- Mini gold arrowhead (userSpaceOnUse — fixed pixel size) -->
+  <marker id="marr" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L0,6 L7,3 z" fill="#D4AF37"/>
+  </marker>
+  <!-- Mini purple arrowhead -->
+  <marker id="marr-p" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L0,6 L7,3 z" fill="#9a5ab5"/>
+  </marker>
+  <!-- Mini green arrowhead -->
+  <marker id="marr-g" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L0,6 L7,3 z" fill="#2a9a48"/>
+  </marker>
+  <!-- Mini teal arrowhead -->
+  <marker id="marr-t" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L0,6 L7,3 z" fill="#2DC7AF"/>
+  </marker>
+  <!-- Drop shadow -->
+  <filter id="sh" x="-15%" y="-15%" width="130%" height="130%">
+    <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity=".5"/>
+  </filter>
+  <!-- Subtle grid -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40,0 L0,0 0,40" fill="none" stroke="#0d2b30" stroke-width="0.5"/>
+  </pattern>
+</defs>
+
+<!-- Background -->
+<rect width="1400" height="1210" fill="#081C1E"/>
+<rect width="1400" height="1210" fill="url(#grid)" opacity="0.6"/>
+
+<!-- ── Section bands ── -->
+<rect x="28" y="72" width="1344" height="592" rx="12" fill="none" stroke="#0F5A5E" stroke-width="0.9" stroke-dasharray="7,4" opacity="0.38"/>
+<text x="46" y="67" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#1a6a6e" letter-spacing="2" font-weight="600">AUTHENTICATION &amp; ROUTING</text>
+
+<rect x="28" y="672" width="1344" height="502" rx="12" fill="none" stroke="#D4AF37" stroke-width="0.9" stroke-dasharray="7,4" opacity="0.22"/>
+<text x="46" y="667" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#8a6a20" letter-spacing="2" font-weight="600">ROLE-BASED DASHBOARDS &amp; WORKFLOW</text>
+
+<!-- ── Territory zone bands — start BELOW dashboard boxes (y=762) to avoid overlap ── -->
+
+<!-- ADMIN zone -->
+<rect x="100" y="762" width="268" height="413" rx="10" fill="#100520" opacity="0.55"/>
+<rect x="100" y="762" width="268" height="413" rx="10" fill="none" stroke="#6a3a8a" stroke-width="1.2"/>
+<text x="234" y="757" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#9a5ab5" letter-spacing="2" font-weight="700">── ADMIN ZONE ──</text>
+
+<!-- AGENT zone — includes Agent Workflow AND AI Module -->
+<rect x="578" y="762" width="498" height="413" rx="10" fill="#020e10" opacity="0.55"/>
+<rect x="578" y="762" width="498" height="413" rx="10" fill="none" stroke="#0F5A5E" stroke-width="1.2"/>
+<text x="827" y="757" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#1a8a8f" letter-spacing="2" font-weight="700">── AGENT ZONE  (incl. AI Module) ──</text>
+
+<!-- CUSTOMER zone -->
+<rect x="1090" y="762" width="256" height="413" rx="10" fill="#041008" opacity="0.55"/>
+<rect x="1090" y="762" width="256" height="413" rx="10" fill="none" stroke="#1a5228" stroke-width="1.2"/>
+<text x="1218" y="757" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#2a9a48" letter-spacing="2" font-weight="700">── CUSTOMER ZONE ──</text>
+
+<!-- ══════════════════════════════════════
+     MAIN CONNECTORS
+══════════════════════════════════════ -->
+
+<!-- START → Landing Page -->
+<line x1="700" y1="68" x2="700" y2="100" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Landing Page → Has Account? -->
+<line x1="700" y1="148" x2="700" y2="178" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Has Account? NO → Sign Up -->
+<path d="M620,215 H500 V297" stroke="#D4AF37" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+<!-- Has Account? YES → Sign In -->
+<path d="M780,215 H900 V297" stroke="#D4AF37" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+<!-- Sign Up / Sign In Y-join → Firebase Auth -->
+<line x1="500" y1="341" x2="500" y2="384" stroke="#D4AF37" stroke-width="1.8"/>
+<line x1="900" y1="341" x2="900" y2="384" stroke="#D4AF37" stroke-width="1.8"/>
+<line x1="500" y1="384" x2="900" y2="384" stroke="#D4AF37" stroke-width="1.8"/>
+<line x1="700" y1="384" x2="700" y2="391" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Firebase Auth → Auth Valid? -->
+<line x1="700" y1="437" x2="700" y2="460" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Auth Valid? NO → Forgot Password -->
+<path d="M625,493 H430 V554" stroke="#D4AF37" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+<!-- Auth Valid? YES → User Role? -->
+<line x1="700" y1="526" x2="700" y2="573" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Forgot Password → Email Sent -->
+<line x1="430" y1="596" x2="430" y2="632" stroke="#D4AF37" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+<!-- User Role? ADMIN → Admin Dashboard -->
+<path d="M612,608 H230 V689" stroke="#D4AF37" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+<!-- User Role? AGENT → Agent Dashboard -->
+<line x1="700" y1="643" x2="700" y2="689" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- User Role? CUSTOMER → Customer Dashboard -->
+<path d="M788,608 H1210 V689" stroke="#D4AF37" stroke-width="1.8" fill="none" marker-end="url(#arr)"/>
+<!-- Admin Dashboard → Admin Workflow -->
+<line x1="230" y1="736" x2="230" y2="803" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Agent Dashboard → Agent Workflow -->
+<line x1="700" y1="736" x2="700" y2="803" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Customer Dashboard → Customer Workflow -->
+<line x1="1210" y1="736" x2="1210" y2="803" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arr)"/>
+<!-- Agent Dashboard → AI Module (teal dashed branch) -->
+<path d="M800,712 H961 V803" stroke="#2DC7AF" stroke-width="1.8" fill="none" stroke-dasharray="6,3" marker-end="url(#arr2)"/>
+<text x="885" y="748" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#2DC7AF" text-anchor="middle">AI Module ↓</text>
+
+<!-- ══════════════════════════════════════
+     MAIN NODES
+══════════════════════════════════════ -->
+
+<!-- N1: START -->
+<ellipse cx="700" cy="46" rx="90" ry="22" fill="#0a1e22" stroke="#D4AF37" stroke-width="2" filter="url(#sh)"/>
+<text x="700" y="51" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#D4AF37" font-weight="700" letter-spacing="2.5">START</text>
+
+<!-- N2: Landing Page -->
+<rect x="600" y="100" width="200" height="48" rx="10" fill="#0F5A5E" filter="url(#sh)"/>
+<rect x="600" y="100" width="200" height="48" rx="10" fill="none" stroke="#1a8a8f" stroke-width="1"/>
+<text x="700" y="122" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Landing Page</text>
+<text x="700" y="138" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80c0c4">index.html · Hero + Features + CTA</text>
+
+<!-- N3: Has Account? diamond — center(700,215) hw=80 hh=37 -->
+<polygon points="700,178 780,215 700,252 620,215" fill="#D4AF37" filter="url(#sh)"/>
+<polygon points="700,178 780,215 700,252 620,215" fill="none" stroke="#F5C842" stroke-width="0.8"/>
+<text x="700" y="211" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11.5" fill="#081C1E" font-weight="700">Has Account?</text>
+<text x="700" y="226" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#3a2800">Returning or New User</text>
+<text x="563" y="209" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="700">NO</text>
+<text x="837" y="209" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="700">YES</text>
+
+<!-- N4a: Sign Up -->
+<rect x="410" y="297" width="180" height="44" rx="9" fill="#0F5A5E" filter="url(#sh)"/>
+<rect x="410" y="297" width="180" height="44" rx="9" fill="none" stroke="#1a8a8f" stroke-width="1"/>
+<text x="500" y="321" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Sign Up</text>
+<text x="500" y="334" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80c0c4">signup.html · New Account</text>
+
+<!-- N4b: Sign In -->
+<rect x="810" y="297" width="180" height="44" rx="9" fill="#0F5A5E" filter="url(#sh)"/>
+<rect x="810" y="297" width="180" height="44" rx="9" fill="none" stroke="#1a8a8f" stroke-width="1"/>
+<text x="900" y="321" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Sign In</text>
+<text x="900" y="334" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80c0c4">signin.html · Credentials</text>
+
+<!-- N5: Firebase Auth -->
+<rect x="598" y="391" width="204" height="46" rx="10" fill="#1a3870" filter="url(#sh)"/>
+<rect x="598" y="391" width="204" height="46" rx="10" fill="none" stroke="#4a7abf" stroke-width="1"/>
+<text x="700" y="416" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#fff" font-weight="700">🔒 Firebase Auth</text>
+<text x="700" y="430" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#8ab0e0">Verify Credentials / Token</text>
+
+<!-- N6: Auth Valid? diamond — center(700,493) hw=75 hh=33 -->
+<polygon points="700,460 775,493 700,526 625,493" fill="#D4AF37" filter="url(#sh)"/>
+<polygon points="700,460 775,493 700,526 625,493" fill="none" stroke="#F5C842" stroke-width="0.8"/>
+<text x="700" y="489" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11.5" fill="#081C1E" font-weight="700">Auth Valid?</text>
+<text x="700" y="504" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#3a2800">Check Credentials</text>
+<text x="575" y="488" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="700">NO</text>
+<text x="714" y="545" text-anchor="start" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="700">YES</text>
+
+<!-- N7a: Forgot Password -->
+<rect x="337" y="554" width="185" height="42" rx="9" fill="#3a1a1a" filter="url(#sh)"/>
+<rect x="337" y="554" width="185" height="42" rx="9" fill="none" stroke="#8a4444" stroke-width="1"/>
+<text x="430" y="578" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#ffaaaa" font-weight="600">Forgot Password</text>
+<text x="430" y="591" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#cc8888">forgot-password.html</text>
+<!-- Email Sent terminal -->
+<ellipse cx="430" cy="650" rx="82" ry="19" fill="#0a1e22" stroke="#8a4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+<text x="430" y="648" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#cc8888">Reset Email Sent</text>
+<text x="430" y="661" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5" fill="#8a5555">→ Return to Sign In</text>
+
+<!-- N7b: User Role? diamond — center(700,608) hw=88 hh=35 -->
+<polygon points="700,573 788,608 700,643 612,608" fill="#D4AF37" filter="url(#sh)"/>
+<polygon points="700,573 788,608 700,643 612,608" fill="none" stroke="#F5C842" stroke-width="0.8"/>
+<text x="700" y="604" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11.5" fill="#081C1E" font-weight="700">User Role?</text>
+<text x="700" y="619" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#3a2800">Route by Permission Level</text>
+<text x="258" y="652" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="600">ADMIN</text>
+<text x="718" y="660" text-anchor="start" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="600">AGENT</text>
+<text x="1050" y="652" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#D4AF37" font-weight="600">CUSTOMER</text>
+
+<!-- N8a: Admin Dashboard -->
+<rect x="130" y="689" width="200" height="47" rx="10" fill="#4a1a6a" filter="url(#sh)"/>
+<rect x="130" y="689" width="200" height="47" rx="10" fill="none" stroke="#8a4ab0" stroke-width="1.2"/>
+<text x="230" y="714" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Admin Dashboard</text>
+<text x="230" y="728" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#c090d8">admin.html</text>
+
+<!-- N8b: Agent Dashboard -->
+<rect x="600" y="689" width="200" height="47" rx="10" fill="#0F5A5E" filter="url(#sh)"/>
+<rect x="600" y="689" width="200" height="47" rx="10" fill="none" stroke="#1a8a8f" stroke-width="1.2"/>
+<text x="700" y="714" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Agent Dashboard</text>
+<text x="700" y="728" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#a0d0d4">agent.html</text>
+
+<!-- N8c: Customer Dashboard -->
+<rect x="1105" y="689" width="210" height="47" rx="10" fill="#1a5228" filter="url(#sh)"/>
+<rect x="1105" y="689" width="210" height="47" rx="10" fill="none" stroke="#2a9a48" stroke-width="1.2"/>
+<text x="1210" y="714" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12.5" fill="#fff" font-weight="700">Customer Dashboard</text>
+<text x="1210" y="728" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80cc90">dashboard.html</text>
+
+<!-- ══════════════════════════════════════
+     ROLE WORKFLOW MINI-FLOWCHARTS
+     Container y=803, h=360, bottom=1163
+     Mini boxes: h=30, step pitch=48
+     Boxes at y: 843,891,939,987,1035,1083
+     Arrows at: 873→891, 921→939, 969→987, 1017→1035, 1063→1083
+══════════════════════════════════════ -->
+
+<!-- ─── ADMIN WORKFLOW CONTAINER ─── -->
+<rect x="115" y="803" width="230" height="360" rx="10" fill="#100520" filter="url(#sh)"/>
+<rect x="115" y="803" width="230" height="360" rx="10" fill="none" stroke="#7a3a9a" stroke-width="1.2"/>
+<text x="230" y="822" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#c090d8" font-weight="700" letter-spacing="1">ADMIN WORKFLOW</text>
+<line x1="130" y1="830" x2="330" y2="830" stroke="#7a3a9a" stroke-width="0.7"/>
+
+<!-- Admin Step 1: View Ticket Queue -->
+<rect x="130" y="838" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="858" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">1. View Ticket Queue</text>
+<!-- arrow → step 2 -->
+<line x1="230" y1="868" x2="230" y2="882" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Step 2: Assign to Agent -->
+<rect x="130" y="886" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="906" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">2. Assign Tickets to Agent</text>
+<!-- arrow → step 3 -->
+<line x1="230" y1="916" x2="230" y2="930" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Decision: Priority Check diamond -->
+<!-- center (230, 955) hw=70 hh=22 -->
+<polygon points="230,933 300,955 230,977 160,955" fill="#D4AF37"/>
+<polygon points="230,933 300,955 230,977 160,955" fill="none" stroke="#F5C842" stroke-width="0.6"/>
+<text x="230" y="951" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#081C1E" font-weight="700">High Priority?</text>
+<text x="230" y="964" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#3a2800">Triage Ticket</text>
+<!-- NO stays center, YES goes left (escalate) then rejoins -->
+<text x="150" y="952" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">YES</text>
+<text x="308" y="952" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">NO</text>
+<!-- YES branch: left out to escalate box, then rejoin at merge -->
+<path d="M160,955 H128 V1000 H160" stroke="#9a5ab5" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr-p)"/>
+<text x="122" y="980" font-family="Segoe UI,Arial,sans-serif" font-size="7.5" fill="#c090d8" writing-mode="vertical-lr">Escalate</text>
+<!-- NO continues down -->
+<line x1="300" y1="955" x2="330" y2="955" stroke="#9a5ab5" stroke-width="1.2" fill="none" stroke-dasharray="4,2"/>
+<path d="M330,955 V1000 H300" stroke="#9a5ab5" stroke-width="1.2" fill="none" stroke-dasharray="4,2"/>
+<!-- merge arrow into step 3 -->
+<line x1="230" y1="977" x2="230" y2="994" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Step 3: Monitor Progress -->
+<rect x="130" y="998" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="1018" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">3. Monitor Progress</text>
+<!-- arrow → step 4 -->
+<line x1="230" y1="1028" x2="230" y2="1042" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Step 4: Review Analytics -->
+<rect x="130" y="1046" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="1066" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">4. Review Analytics</text>
+<!-- arrow → step 5 -->
+<line x1="230" y1="1076" x2="230" y2="1090" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Step 5: Manage KB & Users -->
+<rect x="130" y="1094" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="1114" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">5. Manage KB &amp; Users</text>
+<!-- arrow → step 6 -->
+<line x1="230" y1="1124" x2="230" y2="1138" stroke="#9a5ab5" stroke-width="1.5" marker-end="url(#marr-p)"/>
+
+<!-- Admin Step 6: System Config -->
+<rect x="130" y="1142" width="200" height="30" rx="6" fill="#2a0a3e" stroke="#7a3a9a" stroke-width="0.8"/>
+<text x="230" y="1162" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#d0b0e8" font-weight="600">6. System Configuration</text>
+
+
+<!-- ─── AGENT WORKFLOW CONTAINER ─── -->
+<rect x="590" y="803" width="220" height="360" rx="10" fill="#020e10" filter="url(#sh)"/>
+<rect x="590" y="803" width="220" height="360" rx="10" fill="none" stroke="#0F5A5E" stroke-width="1.2"/>
+<text x="700" y="822" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#a0d0d4" font-weight="700" letter-spacing="1">AGENT WORKFLOW</text>
+<line x1="605" y1="830" x2="795" y2="830" stroke="#0F5A5E" stroke-width="0.7"/>
+
+<!-- Agent Step 1: View Queue -->
+<rect x="604" y="838" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="858" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">1. View Assigned Queue</text>
+<line x1="700" y1="868" x2="700" y2="882" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Step 2: Open Ticket -->
+<rect x="604" y="886" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="906" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">2. Open Customer Ticket</text>
+<line x1="700" y1="916" x2="700" y2="930" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Step 3: Chat with Customer -->
+<rect x="604" y="934" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="954" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">3. Chat with Customer</text>
+<line x1="700" y1="964" x2="700" y2="978" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Decision: Need AI Help? diamond — center(700,1000) hw=72 hh=23 -->
+<polygon points="700,977 772,1000 700,1023 628,1000" fill="#D4AF37"/>
+<polygon points="700,977 772,1000 700,1023 628,1000" fill="none" stroke="#F5C842" stroke-width="0.6"/>
+<text x="700" y="997" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#081C1E" font-weight="700">Need AI Help?</text>
+<text x="700" y="1010" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#3a2800">Gemini Assist</text>
+<!-- YES → left: AI reply box, NO → right: manual, both rejoin -->
+<text x="620" y="997" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">YES</text>
+<text x="780" y="997" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">NO</text>
+<!-- YES left branch -->
+<path d="M628,1000 H596 V1040 H628" stroke="#2DC7AF" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr-t)"/>
+<text x="588" y="1024" font-family="Segoe UI,Arial,sans-serif" font-size="7.5" fill="#2DC7AF" writing-mode="vertical-lr">Gemini</text>
+<!-- NO right branch -->
+<path d="M772,1000 H806 V1040 H772" stroke="#D4AF37" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr)"/>
+<text x="808" y="1022" font-family="Segoe UI,Arial,sans-serif" font-size="7.5" fill="#D4AF37" writing-mode="vertical-lr">Manual</text>
+<!-- Merge arrow down from diamond bottom -->
+<line x1="700" y1="1023" x2="700" y2="1042" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Step 4: Send Reply -->
+<rect x="604" y="1046" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="1066" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">4. Send Reply to Customer</text>
+<line x1="700" y1="1076" x2="700" y2="1090" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Step 5: Resolve / Escalate -->
+<rect x="604" y="1094" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="1114" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">5. Resolve / Escalate</text>
+<line x1="700" y1="1124" x2="700" y2="1138" stroke="#D4AF37" stroke-width="1.5" marker-end="url(#marr)"/>
+
+<!-- Agent Step 6: Close Ticket -->
+<rect x="604" y="1142" width="192" height="30" rx="6" fill="#041418" stroke="#0F5A5E" stroke-width="0.8"/>
+<text x="700" y="1162" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#c0e0e4" font-weight="600">6. Close Ticket</text>
+
+
+<!-- ─── AI MODULE CONTAINER ─── -->
+<rect x="860" y="803" width="202" height="360" rx="10" fill="#020c0a" filter="url(#sh)"/>
+<rect x="860" y="803" width="202" height="360" rx="10" fill="none" stroke="#2DC7AF" stroke-width="1.5"/>
+<text x="961" y="822" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#2DC7AF" font-weight="700" letter-spacing="1">AI MODULE</text>
+<text x="961" y="833" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#2DC7AF" opacity="0.6">ai.html · Gemini-powered</text>
+<line x1="875" y1="838" x2="1047" y2="838" stroke="#2DC7AF" stroke-width="0.7" opacity="0.5"/>
+
+<!-- AI Step 1: Access AI Interface -->
+<rect x="874" y="844" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="864" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">1. Access AI Interface</text>
+<line x1="961" y1="874" x2="961" y2="888" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Decision: Text or Voice? — center(961,910) hw=64 hh=21 -->
+<polygon points="961,889 1025,910 961,931 897,910" fill="#D4AF37"/>
+<polygon points="961,889 1025,910 961,931 897,910" fill="none" stroke="#F5C842" stroke-width="0.6"/>
+<text x="961" y="907" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#081C1E" font-weight="700">Text or Voice?</text>
+<text x="961" y="919" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7.5" fill="#3a2800">Input Method</text>
+<text x="890" y="907" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5" fill="#D4AF37" font-weight="700">TEXT</text>
+<text x="1033" y="907" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5" fill="#D4AF37" font-weight="700">VOICE</text>
+<!-- TEXT branch left, VOICE branch right — both rejoin below -->
+<path d="M897,910 H865 V952 H897" stroke="#2DC7AF" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr-t)"/>
+<path d="M1025,910 H1057 V952 H1025" stroke="#2DC7AF" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr-t)"/>
+<!-- merge -->
+<line x1="961" y1="931" x2="961" y2="950" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Step 2: Process Query -->
+<rect x="874" y="954" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="974" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">2. Gemini Processes Query</text>
+<line x1="961" y1="984" x2="961" y2="998" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Step 3: Response Generated -->
+<rect x="874" y="1002" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="1022" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">3. Smart Response Ready</text>
+<line x1="961" y1="1032" x2="961" y2="1046" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Step 4: KB Search -->
+<rect x="874" y="1050" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="1070" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">4. KB Article Search</text>
+<line x1="961" y1="1080" x2="961" y2="1094" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Step 5: Apply to Ticket -->
+<rect x="874" y="1098" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="1118" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">5. Apply to Ticket Reply</text>
+<line x1="961" y1="1128" x2="961" y2="1142" stroke="#2DC7AF" stroke-width="1.5" marker-end="url(#marr-t)"/>
+
+<!-- AI Step 6: Log Interaction -->
+<rect x="874" y="1146" width="174" height="30" rx="6" fill="#040e0c" stroke="#2DC7AF" stroke-width="0.8"/>
+<text x="961" y="1166" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#80e8d8" font-weight="600">6. Log Interaction</text>
+
+
+<!-- ─── CUSTOMER WORKFLOW CONTAINER ─── -->
+<rect x="1097" y="803" width="232" height="360" rx="10" fill="#040e08" filter="url(#sh)"/>
+<rect x="1097" y="803" width="232" height="360" rx="10" fill="none" stroke="#2a9a48" stroke-width="1.2"/>
+<text x="1213" y="822" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#80cc90" font-weight="700" letter-spacing="1">CUSTOMER WORKFLOW</text>
+<line x1="1112" y1="830" x2="1314" y2="830" stroke="#2a9a48" stroke-width="0.7"/>
+
+<!-- Customer Step 1: Access Dashboard -->
+<rect x="1112" y="838" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="858" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">1. Access Dashboard</text>
+<line x1="1212" y1="868" x2="1212" y2="882" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Step 2: Submit Ticket -->
+<rect x="1112" y="886" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="906" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">2. Submit Support Ticket</text>
+<line x1="1212" y1="916" x2="1212" y2="930" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Step 3: Await Response -->
+<rect x="1112" y="934" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="954" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">3. Await Agent Response</text>
+<line x1="1212" y1="964" x2="1212" y2="978" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Step 4: Chat with Support -->
+<rect x="1112" y="982" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="1002" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">4. Chat with Support</text>
+<line x1="1212" y1="1012" x2="1212" y2="1026" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Decision: Issue Resolved? diamond — center(1212,1048) hw=72 hh=23 -->
+<polygon points="1212,1025 1284,1048 1212,1071 1140,1048" fill="#D4AF37"/>
+<polygon points="1212,1025 1284,1048 1212,1071 1140,1048" fill="none" stroke="#F5C842" stroke-width="0.6"/>
+<text x="1212" y="1045" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" fill="#081C1E" font-weight="700">Issue Resolved?</text>
+<text x="1212" y="1058" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#3a2800">Status Check</text>
+<text x="1134" y="1045" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">NO</text>
+<text x="1291" y="1045" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#D4AF37" font-weight="700">YES</text>
+<!-- NO loops back left (dashed) -->
+<path d="M1140,1048 H1100 V934 H1112" stroke="#2a9a48" stroke-width="1.2" fill="none" stroke-dasharray="4,2" marker-end="url(#marr-g)"/>
+<text x="1093" y="994" font-family="Segoe UI,Arial,sans-serif" font-size="7.5" fill="#80cc90" writing-mode="vertical-lr">Follow Up</text>
+<!-- YES continues down -->
+<line x1="1212" y1="1071" x2="1212" y2="1090" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Step 5: Close and Rate -->
+<rect x="1112" y="1094" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="1114" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">5. Close Ticket &amp; Rate</text>
+<line x1="1212" y1="1124" x2="1212" y2="1138" stroke="#2a9a48" stroke-width="1.5" marker-end="url(#marr-g)"/>
+
+<!-- Customer Step 6: View History -->
+<rect x="1112" y="1142" width="200" height="30" rx="6" fill="#040e08" stroke="#2a9a48" stroke-width="0.8"/>
+<text x="1212" y="1162" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#a0dca8" font-weight="600">6. View Past Interactions</text>
+
+<!-- ── Watermark / footer ── -->
+<text x="700" y="1197" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#1a3a3e" letter-spacing="1">DeskFlow AI · Functionality Flowchart · Generated 2026 · Confidential</text>
+
+</svg>
+
+<div class="legend">
+  <div class="li"><span class="ls" style="background:#0F5A5E;border:1px solid #1a8a8f"></span> Process / Page</div>
+  <div class="li" style="align-items:center">
+    <svg width="14" height="14" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#D4AF37"/></svg>
+    &nbsp;Decision
+  </div>
+  <div class="li"><span class="ls" style="background:#1a3870;border:1px solid #4a7abf"></span> Firebase Service</div>
+  <div class="li"><span class="ls" style="background:#2a0a3e;border:1px solid #7a3a9a"></span> Admin Module</div>
+  <div class="li"><span class="ls" style="background:#041418;border:1px solid #0F5A5E"></span> Agent Module</div>
+  <div class="li"><span class="ls" style="background:#040e0c;border:1.5px solid #2DC7AF"></span> AI Module</div>
+  <div class="li"><span class="ls" style="background:#040e08;border:1px solid #2a9a48"></span> Customer Module</div>
+</div>
+<div class="ph">Open in browser · File → Print · Set: A3 Landscape, No Margins → Save as PDF</div>
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sign In — DeskFlow AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<link rel="stylesheet" href="df-system.css"/>
+<link rel="stylesheet" href="df-responsive.css"/>
+<script src="df-theme.js"></script>
+<style>
+body { display:flex; min-height:100vh; overflow-x:hidden; }
+
+/* ── SPLIT LAYOUT ── */
+.auth-split {
+  display:grid; grid-template-columns:1fr 1fr;
+  min-height:100vh; width:100%; position:relative; z-index:1;
+}
+
+/* LEFT PANEL */
+.auth-left {
+  display:flex; flex-direction:column;
+  padding:2.5rem 3rem; position:relative; overflow:hidden;
+  min-height:100vh;
+}
+.auth-left-bg {
+  position:absolute; inset:0; z-index:0;
+  background:linear-gradient(135deg,rgba(15,90,94,.35) 0%,rgba(8,28,30,.9) 60%,rgba(212,175,55,.06) 100%);
+}
+.auth-left-grid {
+  position:absolute; inset:0; z-index:0;
+  background-image:linear-gradient(rgba(212,175,55,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.05) 1px,transparent 1px);
+  background-size:50px 50px;
+}
+.auth-left-glow {
+  position:absolute; width:500px; height:500px; border-radius:50%;
+  background:radial-gradient(circle,rgba(15,90,94,.4) 0%,transparent 70%);
+  bottom:-150px; left:-100px; z-index:0; pointer-events:none;
+}
+.auth-left > :not(.auth-left-bg):not(.auth-left-grid):not(.auth-left-glow) { position:relative; z-index:1; }
+.auth-left-brand { display:flex; align-items:center; gap:12px; }
+.auth-left-brand a { text-decoration:none; display:flex; align-items:center; gap:12px; }
+.auth-left-content { flex:1; display:flex; flex-direction:column; justify-content:center; padding:1rem 0; min-height:0; overflow-y:auto; }
+.auth-left-tag {
+  display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:100px;
+  background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2);
+  font-size:12px; font-weight:600; color:var(--gold); margin-bottom:2rem;
+}
+.auth-left-title {
+  font-size:clamp(1.6rem,2.8vw,2.5rem); font-weight:900; line-height:1.1;
+  letter-spacing:-1.2px; margin-bottom:1rem;
+}
+.auth-left-sub { font-size:13.5px; color:var(--text-secondary); line-height:1.65; margin-bottom:1.5rem; max-width:380px; }
+.auth-left-stats {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+}
+.auth-stat {
+  background:var(--glass); border:1px solid var(--border-dim);
+  border-radius:14px; padding:16px; text-align:center;
+}
+.auth-stat .as-num {
+  font-size:1.5rem; font-weight:900; letter-spacing:-1px;
+  background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.auth-stat .as-lbl { font-size:11px; color:var(--text-muted); margin-top:3px; }
+.auth-left-trust { display:flex; align-items:center; gap:10px; margin-top:1.25rem; }
+.trust-avatars { display:flex; }
+.trust-avatars span {
+  width:32px; height:32px; border-radius:50%; border:2px solid var(--bg-primary);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;
+  margin-left:-8px; color:var(--bg-primary);
+}
+.trust-avatars span:first-child { margin-left:0; }
+.auth-left-quote {
+  margin-top:1.5rem; padding:1rem 1.25rem;
+  background:var(--glass); border-left:3px solid var(--gold);
+  border-radius:0 12px 12px 0;
+}
+.auth-left-quote p { font-size:13.5px; color:var(--text-secondary); line-height:1.7; font-style:italic; margin-bottom:8px; }
+.auth-left-quote cite { font-size:12px; color:var(--text-muted); font-style:normal; }
+
+/* RIGHT PANEL */
+.auth-right {
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:4rem 2.5rem 3rem; background:var(--bg-primary); position:relative;
+  min-height:100vh;
+}
+.auth-right::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:1px;
+  background:linear-gradient(to bottom,transparent,rgba(212,175,55,.2) 30%,rgba(212,175,55,.2) 70%,transparent);
+}
+.auth-form-wrap { width:100%; max-width:440px; }
+
+/* FORM CARD */
+.auth-card {
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:24px; padding:2.5rem;
+  box-shadow:0 40px 80px rgba(0,0,0,.4), 0 0 0 1px rgba(212,175,55,.06);
+}
+.auth-card-header { text-align:center; margin-bottom:2rem; }
+.auth-card-title { font-size:1.75rem; font-weight:900; letter-spacing:-.75px; margin-bottom:.4rem; }
+.auth-card-sub   { font-size:13.5px; color:var(--text-muted); }
+
+/* FORM ELEMENTS */
+.form-field { margin-bottom:1.1rem; position:relative; }
+.form-label { font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+.form-input-wrap { position:relative; }
+.form-input-wrap .fi-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  font-size:17px; color:var(--text-muted); pointer-events:none; z-index:1; transition:color .2s;
+}
+.form-input {
+  width:100%; padding:12px 14px 12px 44px;
+  background:rgba(22,52,54,.5); border:1px solid var(--border-dim);
+  border-radius:12px; color:var(--text-primary); font-family:var(--font);
+  font-size:14.5px; outline:none; transition:all .25s;
+}
+.form-input:focus { border-color:var(--gold); background:rgba(22,52,54,.8); box-shadow:0 0 0 3px rgba(212,175,55,.1); }
+.form-input:focus ~ .fi-icon,
+.form-input-wrap:focus-within .fi-icon { color:var(--gold); }
+.form-input::placeholder { color:var(--text-muted); }
+.pw-toggle {
+  position:absolute; right:13px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--text-muted); font-size:17px;
+  cursor:pointer; padding:3px; transition:color .2s; z-index:2;
+}
+.pw-toggle:hover { color:var(--gold); }
+.form-link { font-size:12.5px; color:var(--gold); font-weight:600; float:right; margin-top:.4rem; }
+.form-link:hover { color:var(--gold-light); }
+
+.form-divider { display:flex; align-items:center; gap:12px; margin:1.25rem 0; }
+.form-divider::before,.form-divider::after { content:''; flex:1; height:1px; background:var(--border-dim); }
+.form-divider span { font-size:11px; color:var(--text-muted); font-weight:600; letter-spacing:1px; white-space:nowrap; }
+
+/* BUTTONS */
+.btn-signin {
+  width:100%; padding:13.5px; border:none; border-radius:13px;
+  background:var(--grad-gold); color:var(--bg-primary);
+  font-family:var(--font); font-size:15px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  box-shadow:var(--shadow-gold); transition:all .3s var(--ease); cursor:pointer;
+}
+.btn-signin:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 0 40px rgba(212,175,55,.5); }
+.btn-signin:disabled { opacity:.6; cursor:not-allowed; transform:none !important; }
+.btn-google {
+  width:100%; padding:12px; border-radius:13px;
+  background:var(--glass-light); border:1px solid var(--border);
+  color:var(--text-primary); font-family:var(--font); font-size:14.5px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:all .25s var(--ease); cursor:pointer;
+}
+.btn-google:hover:not(:disabled) { border-color:rgba(212,175,55,.35); background:rgba(22,52,54,.8); }
+.btn-google:disabled { opacity:.6; cursor:not-allowed; }
+.google-logo { width:18px; height:18px; flex-shrink:0; }
+
+.auth-footer { text-align:center; margin-top:1.5rem; font-size:13.5px; color:var(--text-muted); }
+.auth-footer a { color:var(--gold); font-weight:600; }
+.auth-footer a:hover { color:var(--gold-light); }
+
+/* Home link */
+.auth-home-link {
+  position:absolute; top:1.5rem; right:1.5rem;
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 14px; border-radius:10px; font-size:13px; font-weight:600;
+  background:var(--glass); border:1px solid var(--border-dim); color:var(--text-muted);
+  transition:all .25s;
+}
+.auth-home-link:hover { color:var(--gold-light); border-color:rgba(212,175,55,.25); }
+
+/* ── Tablet (≤1024px) ── */
+@media(max-width:1024px){
+  .auth-left { padding:2rem 2rem; }
+  .auth-card { padding:2rem 2rem; }
+}
+
+/* ── Small tablet / large phone (≤900px) ── */
+@media(max-width:900px){
+  .auth-split { grid-template-columns:1fr; }
+  .auth-left  { display:none; }
+  .auth-right {
+    padding:4.5rem 1.5rem 2rem;
+    align-items:flex-start;
+    justify-content:flex-start;
+    min-height:100vh;
+  }
+  .auth-form-wrap { max-width:100%; }
+  .auth-card  { padding:1.75rem 1.5rem; border-radius:18px; }
+}
+
+/* ── Phone (≤600px) ── */
+@media(max-width:600px){
+  .auth-right { padding:4rem 1rem 1.5rem; }
+  .auth-card  { padding:1.5rem 1.1rem; border-radius:16px; box-shadow:0 20px 50px rgba(0,0,0,.35); }
+  .form-label { font-size:10.5px; }
+  .form-input { font-size:15px; }
+  .btn-signin { padding:14px; font-size:15px; border-radius:12px; }
+  .btn-google { padding:12px; border-radius:12px; }
+}
+
+/* ── Very small (≤380px) ── */
+@media(max-width:380px){
+  .auth-card { padding:1.25rem .9rem; }
+}
+</style>
+</head>
+<body>
+<button class="df-theme-btn" onclick="DFTheme.toggle()" title="Toggle light/dark mode" style="position:fixed;top:16px;left:16px;z-index:9999"><i class="ti ti-sun df-theme-icon"></i></button>
+<!-- ── GLOBAL BG ── -->
+<div class="df-bg">
+  <div class="df-bg-aurora"></div>
+  <div class="df-bg-grid"></div>
+</div>
+<div id="df-cursor"></div>
+<div id="df-cursor-ring"></div>
+<div id="df-toast-container"></div>
+
+<div class="auth-split">
+
+  <!-- ════ LEFT PANEL ════ -->
+  <div class="auth-left">
+    <div class="auth-left-bg"></div>
+    <div class="auth-left-grid"></div>
+    <div class="auth-left-glow"></div>
+
+    <div class="auth-left-brand">
+      <a href="index.html">
+        <div class="df-logo-icon"><i class="ti ti-headset"></i></div>
+        <span class="df-logo-text">DeskFlow<em>AI</em></span>
+      </a>
+    </div>
+
+    <div class="auth-left-content">
+      <div class="auth-left-tag"><span class="dot" style="width:7px;height:7px;background:var(--success);border-radius:50%;box-shadow:0 0 8px var(--success);display:inline-block;"></span> Trusted by 12,000+ teams</div>
+      <h2 class="auth-left-title">Welcome back<br/>to <span class="df-gold-text">DeskFlow AI</span></h2>
+      <p class="auth-left-sub">Sign in to manage your support queue, monitor AI performance, and deliver exceptional customer experiences — all from one platform.</p>
+
+      <div class="auth-left-stats">
+        <div class="auth-stat"><div class="as-num">80%</div><div class="as-lbl">AI resolution</div></div>
+        <div class="auth-stat"><div class="as-num">2.1s</div><div class="as-lbl">Avg response</div></div>
+        <div class="auth-stat"><div class="as-num">4.9★</div><div class="as-lbl">CSAT score</div></div>
+      </div>
+
+      <div class="auth-left-trust">
+        <div class="trust-avatars">
+          <span style="background:linear-gradient(135deg,#D4AF37,#F0C84E)">AJ</span>
+          <span style="background:linear-gradient(135deg,#0F5A5E,#1A7A7F)">SK</span>
+          <span style="background:linear-gradient(135deg,#2ECC71,#27ae60)">PM</span>
+          <span style="background:linear-gradient(135deg,#F39C12,#e67e22)">LN</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-muted)">4 teammates signed in today</div>
+      </div>
+
+      <div class="auth-left-quote">
+        <p>"DeskFlow AI cut our response time from 6 hours to under 2 minutes. Our CSAT jumped from 3.2 to 4.9 in just 3 weeks."</p>
+        <cite>— Priya M., Head of Support · TechScale Inc.</cite>
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--text-muted);position:relative;z-index:1">
+      © 2026 DeskFlow AI · <a href="index.html" style="color:var(--text-muted)">Back to website</a>
+    </div>
+  </div>
+
+  <!-- ════ RIGHT PANEL ════ -->
+  <div class="auth-right">
+    <a href="index.html" class="auth-home-link"><i class="ti ti-arrow-left"></i> Back</a>
+
+    <div class="auth-form-wrap">
+      <div class="auth-card df-glow-border">
+        <div class="auth-card-header">
+          <div class="df-logo-icon" style="width:52px;height:52px;border-radius:14px;margin:0 auto 1rem;font-size:22px"><i class="ti ti-headset"></i></div>
+          <h2 class="auth-card-title">Sign In</h2>
+          <p class="auth-card-sub">Enter your credentials to continue</p>
+        </div>
+
+        <!-- Email field -->
+        <div class="form-field">
+          <label class="form-label">Email address</label>
+          <div class="form-input-wrap">
+            <i class="ti ti-mail fi-icon"></i>
+            <input class="form-input" type="email" id="email" placeholder="you@company.com" autocomplete="email"/>
+          </div>
+        </div>
+
+        <!-- Password field -->
+        <div class="form-field">
+          <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+            Password
+            <a href="forgot-password.html" class="form-link">Forgot password?</a>
+          </label>
+          <div class="form-input-wrap">
+            <i class="ti ti-lock fi-icon"></i>
+            <input class="form-input" type="password" id="password" placeholder="Enter your password" autocomplete="current-password" style="padding-right:44px"/>
+            <button class="pw-toggle" id="pw-toggle" onclick="togglePw()" type="button" tabindex="-1">
+              <i class="ti ti-eye" id="pw-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-signin df-ripple-btn" id="login-btn" onclick="login()">
+          <i class="ti ti-login"></i> Sign In
+        </button>
+
+        <div class="form-divider"><span>OR CONTINUE WITH</span></div>
+
+        <button class="btn-google df-ripple-btn" id="google-btn" onclick="googleLogin()">
+          <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="signup.html">Create one free</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script src="df-core.js"></script>
+
+<script>
+const API_URL = "";
+
+/* ── Password toggle ── */
+function togglePw() {
+  const input = document.getElementById("password");
+  const icon  = document.getElementById("pw-icon");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.className = "ti ti-eye-off";
+  } else {
+    input.type = "password";
+    icon.className = "ti ti-eye";
+  }
+}
+
+/* ── Role redirect ── */
+function redirectByRole(role) {
+  if (role === "agent") { window.location.href = "agent.html"; return; }
+  if (role === "admin") { window.location.href = "admin.html"; return; }
+  window.location.href = "dashboard.html";
+}
+
+/* ── Email / Password Login ── */
+async function login() {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const btn      = document.getElementById("login-btn");
+
+  if (!email || !password) {
+    window.dfToast("Please fill in all fields.", "error"); return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite;display:inline-block"></i> Signing in…';
+
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    if (response.status === 200) {
+      localStorage.setItem("deskflow_token", data.token);
+      localStorage.setItem("deskflow_user",  JSON.stringify(data.user));
+      window.dfToast("Login successful! Redirecting…", "success");
+      setTimeout(() => redirectByRole(data.role), 1200);
+    } else if (response.status === 403 && data.blocked) {
+      /* ── Account blocked — show prominent banner ── */
+      let banner = document.getElementById("df-blocked-banner");
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "df-blocked-banner";
+        banner.style.cssText = "background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.35);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px";
+        document.getElementById("login-btn").parentNode.insertBefore(banner, document.getElementById("login-btn"));
+      }
+      banner.innerHTML = `
+        <i class="ti ti-shield-x" style="color:var(--danger);font-size:22px;flex-shrink:0;margin-top:2px"></i>
+        <div>
+          <div style="font-weight:700;color:var(--danger);font-size:14px">Account Suspended</div>
+          <div style="font-size:12.5px;color:var(--text-secondary);margin-top:3px">${data.message || "Your account has been suspended."}</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <a href="dashboard.html" style="font-size:12px;color:var(--gold);font-weight:600;text-decoration:none"><i class="ti ti-flag" style="margin-right:3px"></i>Submit Appeal</a>
+          </div>
+        </div>`;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-login"></i> Sign In';
+    } else {
+      window.dfToast(data.message || "Login failed. Please check your credentials.", "error");
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-login"></i> Sign In';
+    }
+  } catch {
+    window.dfToast("Unable to connect to the DeskFlow server.", "error");
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-login"></i> Sign In';
+  }
+}
+document.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+
+/* ── Google Login ── */
+async function googleLogin() {
+  const btn = document.getElementById("google-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite;display:inline-block"></i> Redirecting to Google…';
+  try {
+    sessionStorage.setItem("deskflow_google_pending", "1");
+    await firebaseAuth.signInWithRedirect(googleProvider);
+  } catch (error) {
+    sessionStorage.removeItem("deskflow_google_pending");
+    window.dfToast(error.message || "Google authentication failed.", "error");
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google`;
+  }
+}
+
+/* ── Complete Google sign-in ── */
+async function completeGoogleSignIn(gUser) {
+  if (window._googleSignInInProgress) return;
+  window._googleSignInInProgress = true;
+  sessionStorage.removeItem("deskflow_google_pending");
+  window.dfToast("Google account verified. Creating session…", "info");
+  try {
+    const idToken  = await gUser.getIdToken(true);
+    const response = await fetch(`${API_URL}/api/auth/google`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken, uid: gUser.uid, name: gUser.displayName || gUser.email.split("@")[0], email: gUser.email, photoURL: gUser.photoURL || "" })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem("deskflow_token", data.token);
+      localStorage.setItem("deskflow_user",  JSON.stringify(data.user));
+      window.dfToast(`Welcome, ${data.user.name}! Redirecting…`, "success");
+      setTimeout(() => redirectByRole(data.role), 1200);
+    } else {
+      window.dfToast(data.message || "Google login failed. Please try again.", "error");
+      window._googleSignInInProgress = false;
+    }
+  } catch {
+    window.dfToast("Sign-in failed. Please try again.", "error");
+    window._googleSignInInProgress = false;
+  }
+}
+
+/* ── Handle redirect result ── */
+async function handleGoogleRedirectResult() {
+  const ERROR_MSGS = {
+    "auth/unauthorized-domain": "This domain is not authorised in Firebase Console.",
+    "auth/network-request-failed": "Network error. Please check your connection.",
+    "auth/account-exists-with-different-credential": "An account with this email already exists."
+  };
+  try {
+    const result = await firebaseAuth.getRedirectResult();
+    if (result && result.user) { await completeGoogleSignIn(result.user); return; }
+  } catch (error) {
+    if (error.code && error.code !== "auth/no-current-user") {
+      window.dfToast(ERROR_MSGS[error.code] || error.message || "Google authentication failed.", "error");
+      return;
+    }
+  }
+  if (sessionStorage.getItem("deskflow_google_pending") === "1") {
+    firebaseAuth.onAuthStateChanged(async user => { if (user) await completeGoogleSignIn(user); });
+  }
+}
+handleGoogleRedirectResult();
+</script>
+</body>
+</html>

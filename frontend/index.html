@@ -1,0 +1,1523 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DeskFlow AI — AI-Powered Customer Support Platform</title>
+<meta name="description" content="AI-powered customer support that never sleeps. Automate conversations, resolve tickets instantly, and deliver exceptional customer experiences 24/7."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<link rel="stylesheet" href="df-system.css"/>
+<link rel="stylesheet" href="df-responsive.css"/>
+<script src="df-theme.js"></script>
+<link rel="stylesheet" href="components/TextType.css"/>
+
+<!-- Three.js + GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+/* ── INDEX-SPECIFIC STYLES ── */
+
+/* NAVBAR */
+#navbar {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  padding:0 2rem; height:72px;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:all .4s cubic-bezier(.4,0,.2,1);
+}
+#navbar.scrolled {
+  background:rgba(8,28,30,.92);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(212,175,55,.15);
+  box-shadow:0 4px 30px rgba(0,0,0,.4);
+}
+.nav-links { display:flex; align-items:center; gap:2rem; }
+.nav-links a {
+  font-size:14px; font-weight:500; color:var(--text-secondary);
+  transition:color .25s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0;
+  width:0; height:2px; background:var(--grad-gold);
+  border-radius:2px; transition:width .3s;
+}
+.nav-links a:hover { color:var(--gold-light); }
+.nav-links a:hover::after { width:100%; }
+.nav-actions { display:flex; align-items:center; gap:10px; }
+.nav-mobile-btn {
+  display:none; flex-direction:column; gap:5px;
+  background:none; border:none; padding:6px; cursor:pointer;
+}
+.nav-mobile-btn span { width:22px; height:2px; background:var(--text-primary); border-radius:2px; display:block; transition:all .3s; }
+
+/* HERO */
+#hero {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  text-align:center; position:relative; overflow:hidden; padding:120px 2rem 80px;
+}
+#df-hero-canvas { position:absolute; inset:0; z-index:0; pointer-events:none; }
+.hero-glow-1 {
+  position:absolute; width:700px; height:700px; border-radius:50%;
+  background:radial-gradient(circle, rgba(15,90,94,.25) 0%, transparent 70%);
+  top:-200px; left:-100px; z-index:1; pointer-events:none;
+  animation:auroraShift 10s ease-in-out infinite alternate;
+}
+.hero-glow-2 {
+  position:absolute; width:500px; height:500px; border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,.12) 0%, transparent 70%);
+  bottom:-100px; right:-100px; z-index:1; pointer-events:none;
+  animation:auroraShift 14s ease-in-out infinite alternate-reverse;
+}
+.hero-content { position:relative; z-index:2; max-width:940px; margin:0 auto; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 18px; border-radius:100px;
+  background:rgba(212,175,55,.08);
+  border:1px solid rgba(212,175,55,.25);
+  font-size:13px; font-weight:600; color:var(--gold);
+  margin-bottom:2.2rem;
+  animation:slideUp .8s cubic-bezier(.34,1.56,.64,1) both;
+}
+.hero-badge .dot { width:7px; height:7px; background:var(--success); border-radius:50%; animation:pulseDot 2s infinite; box-shadow:0 0 8px var(--success); }
+.hero-title {
+  font-size:clamp(2.8rem,7vw,5.8rem); font-weight:900; line-height:1.04;
+  letter-spacing:-2px; margin-bottom:1.5rem; position:relative; overflow:visible;
+  animation:slideUp .9s .1s cubic-bezier(.34,1.56,.64,1) both;
+  color:var(--text-primary);
+}
+.hero-title .gold { background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero-title .cream { color:var(--cream); }
+.ht-caret {
+  display:inline-block; margin-left:2px;
+  color:#D4AF37; font-weight:100; font-size:0.85em;
+  vertical-align:baseline; line-height:1;
+  animation:htCaretBlink .88s step-start infinite;
+}
+@keyframes htCaretBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+.hero-sub {
+  font-size:clamp(1rem,2vw,1.25rem); color:var(--text-secondary); line-height:1.75;
+  max-width:640px; margin:0 auto 2.8rem;
+  animation:slideUp .9s .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+.hero-cta {
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  animation:slideUp .9s .3s cubic-bezier(.34,1.56,.64,1) both;
+  margin-bottom:3.5rem;
+}
+.btn-hero-primary {
+  padding:16px 36px; font-size:16px; font-weight:700; border-radius:14px;
+  display:inline-flex; align-items:center; gap:10px;
+  background:var(--grad-gold); color:var(--bg-primary);
+  box-shadow:0 0 40px rgba(212,175,55,.4);
+  transition:all .3s var(--ease); position:relative; overflow:hidden;
+}
+.btn-hero-primary:hover { transform:translateY(-3px); box-shadow:0 0 60px rgba(212,175,55,.55); }
+.btn-hero-secondary {
+  padding:16px 36px; font-size:16px; font-weight:600; border-radius:14px;
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(22,52,54,.7); backdrop-filter:blur(20px);
+  border:1px solid rgba(212,175,55,.25); color:var(--cream);
+  transition:all .3s var(--ease);
+}
+.btn-hero-secondary:hover { border-color:var(--gold); background:rgba(22,52,54,.9); transform:translateY(-2px); color:var(--gold-light); }
+
+.hero-stats {
+  display:flex; gap:3.5rem; justify-content:center; flex-wrap:wrap;
+  animation:slideUp .9s .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+.hero-stat .num {
+  font-size:2.2rem; font-weight:900; letter-spacing:-1px;
+  background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-stat .lbl { font-size:12px; color:var(--text-muted); margin-top:3px; font-weight:500; }
+.hero-stat .sep { width:1px; height:48px; background:var(--border); }
+
+/* FLOATING HERO CARDS */
+.hero-float-cards {
+  position:absolute; inset:0; pointer-events:none; z-index:2; overflow:hidden;
+}
+.float-card {
+  position:absolute; background:rgba(22,52,54,.85);
+  backdrop-filter:blur(16px); border:1px solid rgba(212,175,55,.2);
+  border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:12px;
+  font-size:13px; font-weight:600; color:var(--text-primary);
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
+  animation:floatY 4s ease-in-out infinite;
+}
+.float-card.fc-1 { top:20%; left:5%; animation-delay:0s; }
+.float-card.fc-2 { top:35%; right:4%; animation-delay:.8s; }
+.float-card.fc-3 { bottom:22%; left:6%; animation-delay:1.4s; }
+.float-card.fc-4 { top:65%; right:6%; animation-delay:.4s; }
+.float-card-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.float-card .meta { font-size:11px; color:var(--text-muted); font-weight:400; margin-top:2px; }
+@media(max-width:1024px){ .float-card{display:none} }
+
+/* SCROLL ARROW */
+.hero-scroll {
+  position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  z-index:3; animation:slideUp 1s 1s ease both; cursor:pointer;
+}
+.hero-scroll span { font-size:10px; color:var(--text-muted); letter-spacing:2.5px; text-transform:uppercase; }
+.scroll-line { width:1px; height:52px; background:linear-gradient(to bottom,var(--gold),transparent); animation:scrollLine 2s ease-in-out infinite; }
+@keyframes scrollLine { 0%{opacity:1;transform:scaleY(1) translateY(0)} 100%{opacity:0;transform:scaleY(.4) translateY(100%)} }
+
+/* SECTION COMMONS */
+.section { padding:110px 2rem; }
+.container { max-width:1240px; margin:0 auto; }
+.section-header { margin-bottom:3.5rem; }
+
+/* PROBLEM */
+#problem { background:var(--bg-secondary); }
+.problem-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+.problem-card {
+  padding:2rem; border-radius:var(--radius); border:1px solid var(--border-dim);
+  background:var(--glass); transition:all .3s var(--ease); position:relative; overflow:hidden;
+}
+.problem-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--danger),#ff8c69);
+  transform:scaleX(0); transform-origin:left; transition:transform .3s;
+}
+.problem-card:hover::after { transform:scaleX(1); }
+.problem-card:hover { border-color:rgba(231,76,60,.25); transform:translateY(-4px); }
+.prob-icon {
+  width:50px; height:50px; border-radius:12px; background:rgba(231,76,60,.1);
+  display:flex; align-items:center; justify-content:center; margin-bottom:1rem; font-size:24px; color:var(--danger);
+}
+.prob-title { font-size:16px; font-weight:700; margin-bottom:8px; color:var(--text-primary); }
+.prob-desc  { font-size:13.5px; color:var(--text-secondary); line-height:1.65; }
+
+/* SOLUTION */
+#solution { overflow:hidden; }
+.solution-inner { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+.solution-points { list-style:none; display:flex; flex-direction:column; gap:14px; margin-top:2rem; }
+.solution-points li {
+  display:flex; gap:14px; align-items:flex-start;
+  padding:16px; border-radius:12px; border:1px solid var(--border-dim);
+  background:var(--glass); transition:all .3s var(--ease);
+}
+.solution-points li:hover { border-color:var(--border); background:var(--glass-light); transform:translateX(6px); }
+.sol-icon {
+  width:42px; height:42px; border-radius:10px; background:rgba(212,175,55,.1);
+  display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--gold); flex-shrink:0;
+}
+.sol-text h4 { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+.sol-text p  { font-size:13px; color:var(--text-secondary); line-height:1.5; }
+.dashboard-mock {
+  background:var(--bg-secondary); border:1px solid var(--border);
+  border-radius:20px; overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5), 0 0 0 1px rgba(212,175,55,.1);
+  transform:perspective(900px) rotateY(-8deg) rotateX(3deg);
+  transition:transform .6s var(--ease);
+}
+.dashboard-mock:hover { transform:perspective(900px) rotateY(-3deg) rotateX(1deg); }
+.mock-topbar {
+  background:var(--bg-primary); padding:12px 16px;
+  display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border-dim);
+}
+.mock-dots { display:flex; gap:6px; }
+.mock-dots span { width:11px; height:11px; border-radius:50%; }
+.mock-dots span:nth-child(1){background:#ff5f57} .mock-dots span:nth-child(2){background:#febc2e} .mock-dots span:nth-child(3){background:#28c840}
+.mock-title { font-size:11px; color:var(--text-muted); margin-left:6px; }
+.mock-body  { padding:14px; display:flex; gap:12px; }
+.mock-sidebar { width:130px; flex-shrink:0; }
+.mock-nav-item { padding:7px 10px; border-radius:8px; font-size:10.5px; color:var(--text-muted); margin-bottom:2px; display:flex; align-items:center; gap:7px; transition:all .2s; cursor:pointer; }
+.mock-nav-item.active { background:rgba(212,175,55,.12); color:var(--gold); }
+.mock-nav-item i { font-size:13px; }
+.mock-main { flex:1; min-width:0; }
+.mock-metric-row { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:10px; }
+.mock-metric { background:var(--glass); border-radius:8px; padding:9px; text-align:center; border:1px solid var(--border-dim); }
+.mock-metric .m-num { font-size:15px; font-weight:800; background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.mock-metric .m-lbl { font-size:9px; color:var(--text-muted); margin-top:1px; }
+.mock-ticket { background:var(--glass); border-radius:7px; padding:8px 11px; margin-bottom:5px; display:flex; align-items:center; gap:8px; font-size:10.5px; border:1px solid var(--border-dim); }
+.mock-ticket .tick-badge { padding:2px 7px; border-radius:4px; font-size:9px; font-weight:700; flex-shrink:0; }
+
+/* FEATURES */
+#features { background:var(--bg-secondary); }
+.features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.feat-card {
+  padding:2rem; border-radius:var(--radius); border:1px solid var(--border-dim);
+  background:var(--glass); transition:all .35s var(--ease); position:relative; overflow:hidden; cursor:default;
+}
+.feat-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 0%, rgba(212,175,55,.07), transparent 65%);
+  opacity:0; transition:opacity .35s;
+}
+.feat-card:hover::before { opacity:1; }
+.feat-card:hover { border-color:rgba(212,175,55,.25); transform:translateY(-5px); box-shadow:var(--shadow-card); }
+.feat-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:1.2rem; }
+.fi-gold    { background:rgba(212,175,55,.12); color:var(--gold); }
+.fi-emerald { background:rgba(15,90,94,.2);    color:var(--emerald-bright); }
+.fi-cream   { background:rgba(247,231,206,.1);  color:var(--cream); }
+.fi-green   { background:rgba(46,204,113,.12);  color:var(--success); }
+.fi-orange  { background:rgba(243,156,18,.12);  color:var(--warning); }
+.fi-blue    { background:rgba(52,152,219,.12);  color:var(--info); }
+.feat-title { font-size:17px; font-weight:700; margin-bottom:9px; color:var(--text-primary); }
+.feat-desc  { font-size:13.5px; color:var(--text-secondary); line-height:1.65; }
+.feat-tag {
+  display:inline-block; margin-top:12px; padding:3px 11px; border-radius:100px;
+  font-size:11px; font-weight:600; background:rgba(212,175,55,.1); color:var(--gold);
+  border:1px solid rgba(212,175,55,.2);
+}
+.feat-card.featured { background:linear-gradient(135deg,rgba(212,175,55,.08),rgba(15,90,94,.06)); border-color:rgba(212,175,55,.2); }
+
+/* AI SECTION (animated chat demo) */
+#ai-section { overflow:hidden; }
+.ai-inner { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+.ai-chat-demo {
+  background:var(--bg-secondary); border:1px solid var(--border);
+  border-radius:20px; overflow:hidden; box-shadow:var(--shadow-deep);
+}
+.ai-chat-header {
+  padding:15px 18px;
+  background:linear-gradient(135deg,rgba(212,175,55,.12) 0%,rgba(15,90,94,.15) 100%);
+  border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;
+}
+.ai-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--grad-gold); display:flex; align-items:center; justify-content:center;
+  font-size:17px; color:var(--bg-primary); box-shadow:0 0 16px var(--gold-glow);
+}
+.ai-online { width:9px; height:9px; background:var(--success); border-radius:50%; box-shadow:0 0 8px var(--success); animation:pulseDot 2s infinite; }
+.ai-chat-body { padding:18px; display:flex; flex-direction:column; gap:13px; max-height:320px; overflow-y:auto; }
+.msg { display:flex; gap:10px; align-items:flex-end; }
+.msg.user { flex-direction:row-reverse; }
+.msg-bubble { padding:11px 15px; border-radius:16px; font-size:13.5px; line-height:1.55; max-width:80%; }
+.msg.bot  .msg-bubble { background:var(--glass-light); border:1px solid var(--border-dim); border-bottom-left-radius:4px; }
+.msg.user .msg-bubble { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:var(--bg-primary); font-weight:600; border-bottom-right-radius:4px; }
+.msg-av { width:28px; height:28px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+.bot-av  { background:var(--grad-gold); color:var(--bg-primary); }
+.user-av { background:var(--glass-light); color:var(--text-secondary); border:1px solid var(--border-dim); }
+.typing  { display:flex; gap:5px; padding:12px 16px; background:var(--glass-light); border:1px solid var(--border-dim); border-radius:16px; border-bottom-left-radius:4px; width:fit-content; }
+.typing span { width:7px; height:7px; background:var(--gold); border-radius:50%; animation:typingBounce 1.4s infinite; }
+.typing span:nth-child(2){animation-delay:.2s} .typing span:nth-child(3){animation-delay:.4s}
+.ai-chat-input { padding:14px; border-top:1px solid var(--border-dim); display:flex; gap:10px; }
+.ai-chat-input input {
+  flex:1; background:rgba(22,52,54,.5); border:1px solid var(--border-dim);
+  border-radius:10px; padding:10px 14px; font-size:13px; color:var(--text-primary);
+  font-family:var(--font); outline:none; transition:border-color .2s;
+}
+.ai-chat-input input:focus { border-color:var(--gold); }
+.ai-send {
+  width:38px; height:38px; border-radius:10px;
+  background:var(--grad-gold); border:none; color:var(--bg-primary);
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  transition:all .25s;
+}
+.ai-send:hover { transform:scale(1.08); box-shadow:0 0 16px var(--gold-glow); }
+.ai-features-list { display:flex; flex-direction:column; gap:12px; margin-top:2rem; }
+.ai-feat {
+  display:flex; gap:14px; align-items:center; padding:15px;
+  border-radius:12px; background:var(--glass); border:1px solid var(--border-dim); transition:all .25s;
+}
+.ai-feat:hover { border-color:rgba(212,175,55,.25); background:var(--glass-light); transform:translateX(6px); }
+.ai-feat-icon { width:42px; height:42px; border-radius:10px; background:rgba(212,175,55,.1); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--gold); flex-shrink:0; }
+.ai-feat-text h4 { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+.ai-feat-text p  { font-size:12.5px; color:var(--text-secondary); }
+
+/* AI LIVE DEMO SECTION */
+#demo-section { background:var(--bg-secondary); }
+.demo-container {
+  max-width:800px; margin:0 auto;
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:24px; overflow:hidden; box-shadow:var(--shadow-deep);
+}
+.demo-header {
+  padding:18px 24px;
+  background:linear-gradient(135deg, rgba(212,175,55,.1), rgba(15,90,94,.1));
+  border-bottom:1px solid var(--border-dim);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.demo-title { font-size:15px; font-weight:700; color:var(--text-primary); }
+.demo-sub   { font-size:12px; color:var(--text-muted); }
+.demo-body  { padding:24px; display:flex; flex-direction:column; gap:14px; min-height:280px; }
+.demo-action-btn {
+  display:inline-flex; align-items:center; gap:8px; padding:8px 16px;
+  border-radius:8px; background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2);
+  color:var(--gold); font-size:12px; font-weight:600; cursor:pointer;
+  transition:all .25s;
+}
+.demo-action-btn:hover { background:rgba(212,175,55,.18); }
+
+/* TESTIMONIALS */
+.testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.testi-card {
+  padding:2rem; border-radius:var(--radius); border:1px solid var(--border-dim);
+  background:var(--glass); transition:all .35s var(--ease);
+}
+.testi-card:hover { border-color:rgba(212,175,55,.25); transform:translateY(-5px); box-shadow:var(--shadow-card); }
+.testi-stars { display:flex; gap:4px; margin-bottom:1rem; }
+.testi-stars i { color:var(--gold); font-size:15px; }
+.testi-text  { font-size:13.5px; color:var(--text-secondary); line-height:1.75; margin-bottom:1.25rem; font-style:italic; }
+.testi-author { display:flex; align-items:center; gap:12px; }
+.testi-av { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:var(--bg-primary); flex-shrink:0; }
+.testi-name { font-size:14px; font-weight:700; color:var(--text-primary); }
+.testi-role { font-size:12px; color:var(--text-muted); }
+.testi-card.featured-testi { border-color:rgba(212,175,55,.2); background:linear-gradient(135deg,rgba(212,175,55,.05),rgba(15,90,94,.05)); }
+
+/* PRICING */
+#pricing { background:var(--bg-secondary); }
+.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.price-card {
+  padding:2rem 2.25rem; border-radius:var(--radius); border:1px solid var(--border-dim);
+  background:var(--glass); transition:all .35s var(--ease); position:relative; overflow:hidden;
+}
+.price-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-card); }
+.price-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(212,175,55,.04),transparent); pointer-events:none; }
+.price-popular { border-color:rgba(212,175,55,.3); box-shadow:0 0 0 1px rgba(212,175,55,.15), var(--shadow-gold); }
+.price-badge {
+  position:absolute; top:18px; right:18px; padding:4px 12px;
+  border-radius:100px; background:var(--grad-gold); font-size:11px; font-weight:700; color:var(--bg-primary);
+}
+.price-plan { font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px; }
+.price-amount { font-size:3rem; font-weight:900; letter-spacing:-2px; line-height:1; background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.price-amount span { font-size:1.1rem; font-weight:600; color:var(--text-muted); vertical-align:top; margin-top:8px; display:inline-block; }
+.price-period { font-size:12px; color:var(--text-muted); margin-top:4px; margin-bottom:1.5rem; }
+.price-desc   { font-size:14px; color:var(--text-secondary); margin-bottom:1.75rem; line-height:1.6; }
+.price-features { list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:2rem; }
+.price-features li { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-secondary); }
+.price-features li i { font-size:16px; flex-shrink:0; }
+.price-features li.included i { color:var(--success); }
+.price-features li.excluded   { opacity:.4; }
+.price-features li.excluded i { color:var(--text-muted); }
+.btn-plan {
+  width:100%; padding:13px; border-radius:12px; font-size:15px; font-weight:700;
+  transition:all .3s var(--ease); cursor:pointer; font-family:var(--font); border:none;
+}
+.btn-plan-outline { background:transparent; border:1px solid rgba(212,175,55,.25); color:var(--cream); }
+.btn-plan-outline:hover { background:rgba(212,175,55,.08); border-color:var(--gold); color:var(--gold-light); }
+.btn-plan-fill { background:var(--grad-gold); color:var(--bg-primary); box-shadow:var(--shadow-gold); }
+.btn-plan-fill:hover { transform:translateY(-2px); box-shadow:0 0 40px rgba(212,175,55,.45); }
+
+/* CTA */
+#cta-section { padding:100px 2rem; text-align:center; position:relative; overflow:hidden; }
+.cta-bg {
+  position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(15,90,94,.15) 0%,rgba(212,175,55,.06) 50%,rgba(15,90,94,.1) 100%);
+}
+.cta-grid-overlay {
+  position:absolute; inset:0;
+  background-image:linear-gradient(rgba(212,175,55,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,175,55,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 80%);
+}
+.cta-inner { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+.cta-title { font-size:clamp(2rem,5vw,3.8rem); font-weight:900; letter-spacing:-1.5px; line-height:1.1; margin-bottom:1.25rem; }
+.cta-sub  { font-size:1.05rem; color:var(--text-secondary); margin-bottom:2.5rem; line-height:1.7; }
+.cta-note { margin-top:1.2rem; font-size:12px; color:var(--text-muted); }
+.cta-note span { color:var(--gold); font-weight:600; }
+
+/* FOOTER */
+footer { background:var(--bg-secondary); border-top:1px solid var(--border-dim); padding:64px 2rem 32px; }
+.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; max-width:1240px; margin:0 auto; }
+.footer-brand p { font-size:14px; color:var(--text-secondary); line-height:1.7; max-width:260px; margin:1rem 0 1.5rem; }
+.footer-socials { display:flex; gap:8px; }
+.social-btn {
+  width:38px; height:38px; border-radius:10px; background:var(--glass);
+  border:1px solid var(--border-dim); display:flex; align-items:center; justify-content:center;
+  font-size:17px; color:var(--text-muted); transition:all .25s;
+}
+.social-btn:hover { background:rgba(212,175,55,.1); color:var(--gold); border-color:rgba(212,175,55,.3); transform:translateY(-2px); }
+.footer-col h5 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:1.25rem; }
+.footer-col ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.footer-col ul li a { font-size:14px; color:var(--text-secondary); transition:color .2s; }
+.footer-col ul li a:hover { color:var(--gold-light); }
+.footer-bottom { max-width:1240px; margin:3rem auto 0; padding-top:2rem; border-top:1px solid var(--border-dim); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-muted); }
+
+/* CHATBOT */
+#chatbot-btn {
+  position:fixed; bottom:28px; right:28px; z-index:900;
+  width:60px; height:60px; border-radius:50%; border:none;
+  background:var(--grad-gold); color:var(--bg-primary);
+  font-size:26px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 30px rgba(212,175,55,.45); transition:all .3s var(--ease);
+  animation:floatY 3s ease-in-out infinite;
+}
+#chatbot-btn:hover { transform:scale(1.1) translateY(-3px); box-shadow:0 0 50px rgba(212,175,55,.6); }
+#chatbot-panel {
+  position:fixed; bottom:104px; right:28px; z-index:900; width:370px;
+  background:rgba(8,28,30,.95); border:1px solid var(--border);
+  border-radius:22px; box-shadow:var(--shadow-deep); overflow:hidden;
+  transform:scale(.8) translateY(20px); transform-origin:bottom right; opacity:0;
+  pointer-events:none; transition:all .35s cubic-bezier(.34,1.56,.64,1);
+}
+#chatbot-panel.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+.chatbot-header {
+  padding:16px 18px;
+  background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(15,90,94,.15));
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border-dim);
+}
+.chatbot-header h4 { font-size:15px; font-weight:700; color:var(--text-primary); }
+.chatbot-header p  { font-size:12px; color:var(--text-muted); }
+.chatbot-header-info { display:flex; align-items:center; gap:10px; }
+#chatbot-close { background:rgba(255,255,255,.08); border:1px solid var(--border-dim); color:var(--text-secondary); width:30px; height:30px; border-radius:50%; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+#chatbot-close:hover { background:rgba(231,76,60,.2); color:var(--danger); border-color:rgba(231,76,60,.3); }
+#chatbot-messages { padding:16px; display:flex; flex-direction:column; gap:10px; height:270px; overflow-y:auto; }
+#chatbot-input-row { padding:12px; border-top:1px solid var(--border-dim); display:flex; gap:8px; }
+#chatbot-input {
+  flex:1; background:rgba(22,52,54,.5); border:1px solid var(--border-dim);
+  border-radius:10px; padding:9px 13px; font-size:13px; color:var(--text-primary);
+  font-family:var(--font); outline:none; transition:border-color .2s;
+}
+#chatbot-input:focus { border-color:var(--gold); }
+#chatbot-send { width:36px; height:36px; border-radius:9px; background:var(--grad-gold); border:none; color:var(--bg-primary); font-size:15px; display:flex; align-items:center; justify-content:center; }
+
+/* MOBILE NAV */
+#mobile-nav {
+  position:fixed; top:0; right:0; bottom:0; width:280px; background:rgba(8,28,30,.98);
+  backdrop-filter:blur(20px); border-left:1px solid var(--border); z-index:1100;
+  transform:translateX(100%); transition:transform .35s var(--ease);
+  padding:80px 2rem 2rem; display:flex; flex-direction:column; gap:8px;
+}
+#mobile-nav.open { transform:translateX(0); }
+#mobile-nav a { font-size:16px; font-weight:600; color:var(--text-secondary); padding:12px 0; border-bottom:1px solid var(--border-dim); }
+#mobile-nav a:hover { color:var(--gold-light); }
+#mobile-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1050; opacity:0; pointer-events:none; transition:opacity .3s; }
+#mobile-overlay.open { opacity:1; pointer-events:all; }
+
+/* ── RESPONSIVE (index.html specific) ─────────────────────────────── */
+@media(max-width:1100px){
+  .features-grid  { grid-template-columns:repeat(2,1fr); }
+  .solution-inner,.ai-inner { grid-template-columns:1fr; gap:3rem; }
+  .solution-visual{ display:none; }
+  .testi-grid     { grid-template-columns:repeat(2,1fr); }
+  .pricing-grid   { grid-template-columns:repeat(2,1fr); }
+  .footer-grid    { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:900px){
+  .pricing-grid   { grid-template-columns:1fr; max-width:420px; margin-inline:auto; }
+  .testi-grid     { grid-template-columns:1fr; }
+}
+@media(max-width:768px){
+  .nav-links,.nav-actions .btn-glass,.nav-actions .btn-gold { display:none !important; }
+  .nav-mobile-btn { display:flex !important; }
+  #navbar { padding:0 1.25rem; height:62px; }
+  .features-grid,.testi-grid { grid-template-columns:1fr; }
+  .hero-stats   { gap:1.5rem; flex-wrap:wrap; }
+  .footer-grid  { grid-template-columns:1fr; gap:2rem; }
+  .footer-bottom{ flex-direction:column; gap:10px; text-align:center; }
+  #chatbot-panel{ right:14px; left:14px; width:auto; bottom:96px; }
+  .section      { padding:60px 1.25rem; }
+  .hero-cta     { flex-direction:column; align-items:center; }
+  .hero-cta > * { width:100% !important; max-width:340px; justify-content:center; }
+}
+@media(max-width:600px){
+  .section      { padding:48px 1rem; }
+  .section-header h2 { font-size:clamp(1.4rem,6vw,1.85rem) !important; }
+  .hero-stats   { gap:1rem; }
+  .hero-stat .num { font-size:clamp(1.2rem,6vw,1.7rem) !important; }
+  .feat-card    { padding:1.5rem !important; }
+  .price-card   { padding:1.5rem !important; }
+  .testi-card   { padding:1.5rem !important; }
+  footer        { padding:36px 1rem 20px; }
+  .footer-brand p { font-size:13px; }
+}
+@media(max-width:480px){
+  #hero         { padding:clamp(88px,20vw,110px) 1rem clamp(40px,8vw,56px); }
+  .hero-title   { font-size:clamp(1.8rem,9vw,2.6rem) !important; letter-spacing:-1px !important; }
+  .hero-sub     { font-size:14px !important; }
+  .hero-badge   { padding:6px 12px !important; font-size:11px !important; }
+  .section      { padding:44px 1rem; }
+  .section-header h2 { font-size:clamp(1.3rem,7.5vw,1.65rem) !important; }
+  .features-grid { gap:10px; }
+  .feat-card    { padding:1.25rem !important; }
+  .price-card   { padding:1.25rem !important; }
+  .pricing-grid { grid-template-columns:1fr; }
+  .footer-grid  { grid-template-columns:1fr; }
+}
+@media(max-width:375px){
+  #hero         { padding:84px 0.9rem 36px; }
+  .hero-title   { font-size:clamp(1.55rem,10vw,2rem) !important; }
+  .hero-sub     { font-size:13px !important; }
+  .section      { padding:38px 0.9rem; }
+  .feat-card    { padding:1rem !important; }
+  .hero-cta > * { font-size:14px !important; padding:12px 18px !important; }
+}
+@media(max-width:320px){
+  #hero         { padding:80px 0.75rem 32px; }
+  .hero-title   { font-size:1.45rem !important; }
+  .section      { padding:34px 0.75rem; }
+  .feat-card    { padding:0.9rem !important; }
+  .btn-hero-primary,.btn-hero-secondary { padding:12px 16px !important; font-size:13px !important; }
+}
+
+/* ═══════════════════ 6-LAYER HERO BACKGROUND ═══════════════════ */
+.hero-grad-mesh {
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 50%,rgba(15,90,94,.2) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%,rgba(212,175,55,.1) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 50% at 55% 85%,rgba(15,90,94,.15) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 35% at 40% 5%, rgba(212,175,55,.07) 0%,transparent 45%);
+  animation:gradMesh 20s ease-in-out infinite alternate;
+}
+@keyframes gradMesh {
+  0%  { opacity:.85; transform:scale(1);    }
+  50% { opacity:1;   transform:scale(1.06); }
+  100%{ opacity:.9;  transform:scale(1.02); }
+}
+.hero-aurora-extra { position:absolute;pointer-events:none;border-radius:50%;filter:blur(70px); }
+.hero-aurora-3 {
+  width:750px;height:380px;z-index:0;
+  background:linear-gradient(135deg,rgba(15,90,94,.13) 0%,transparent 55%,rgba(212,175,55,.07) 100%);
+  top:8%;left:28%;animation:auroraShift 18s ease-in-out infinite;
+}
+.hero-aurora-4 {
+  width:580px;height:580px;z-index:0;
+  background:radial-gradient(circle,rgba(212,175,55,.09) 0%,rgba(15,90,94,.05) 45%,transparent 70%);
+  bottom:5%;left:15%;animation:auroraShift 24s 6s ease-in-out infinite alternate;
+}
+#hero-network-canvas { position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.4; }
+.hero-rays { position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden; }
+.hero-ray {
+  position:absolute;top:-5%;left:50%;width:1.5px;height:120%;transform-origin:top center;
+  background:linear-gradient(to bottom,transparent 0%,rgba(212,175,55,.14) 35%,rgba(212,175,55,.07) 65%,transparent 100%);
+  animation:rayPulse 5s ease-in-out infinite;opacity:0;
+}
+.hero-ray:nth-child(1){transform:rotate(-52deg);animation-duration:4.5s;animation-delay:0s;}
+.hero-ray:nth-child(2){transform:rotate(-28deg);animation-duration:5.5s;animation-delay:.9s;}
+.hero-ray:nth-child(3){transform:rotate(-4deg); animation-duration:4.0s;animation-delay:1.8s;}
+.hero-ray:nth-child(4){transform:rotate(22deg); animation-duration:5.0s;animation-delay:2.7s;}
+.hero-ray:nth-child(5){transform:rotate(50deg); animation-duration:4.8s;animation-delay:3.6s;}
+@keyframes rayPulse { 0%,100%{opacity:0;} 50%{opacity:1;} }
+.hero-mouse-glow {
+  position:absolute;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,175,55,.14) 0%,transparent 70%);
+  pointer-events:none;z-index:1;transform:translate(-50%,-50%);
+  opacity:0;transition:opacity .5s;filter:blur(35px);
+}
+</style>
+</head>
+<body>
+
+<!-- ── LIVE BACKGROUND ── -->
+<div class="df-bg">
+  <div class="df-bg-aurora"></div>
+  <div class="df-bg-grid"></div>
+  <canvas id="df-particles" class="df-bg-particles" style="width:100%;height:100%;display:block;"></canvas>
+</div>
+
+<!-- ── CUSTOM CURSOR ── -->
+<div id="df-cursor"></div>
+<div id="df-cursor-ring"></div>
+
+<!-- ── TOAST ── -->
+<div id="df-toast-container"></div>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav id="navbar">
+  <a href="index.html" class="df-logo" style="text-decoration:none">
+    <div class="df-logo-icon"><i class="ti ti-headset"></i></div>
+    <span class="df-logo-text">DeskFlow<em>AI</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="#problem" class="df-underline-gold">Why Us</a>
+    <a href="#features" class="df-underline-gold">Features</a>
+    <a href="#ai-section" class="df-underline-gold">AI Tools</a>
+    <a href="#testimonials" class="df-underline-gold">Reviews</a>
+    <a href="#pricing" class="df-underline-gold">Pricing</a>
+  </div>
+  <div class="nav-actions">
+    <button class="df-theme-btn" onclick="DFTheme.toggle()" title="Toggle light/dark mode"><i class="ti ti-sun df-theme-icon"></i></button>
+    <button class="btn-glass df-ripple-btn" onclick="window.location.href='signin.html'" style="padding:9px 20px;font-size:14px">Sign In</button>
+    <button class="btn-gold df-ripple-btn" onclick="window.location.href='signup.html'" style="padding:9px 20px;font-size:14px"><i class="ti ti-rocket"></i> Start Free</button>
+  </div>
+  <button class="nav-mobile-btn" id="mobile-menu-btn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div id="mobile-overlay"></div>
+<div id="mobile-nav">
+  <a href="#problem">Why Us</a>
+  <a href="#features">Features</a>
+  <a href="#ai-section">AI Tools</a>
+  <a href="#testimonials">Reviews</a>
+  <a href="#pricing">Pricing</a>
+  <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:10px">
+    <button class="btn-glass df-ripple-btn" onclick="window.location.href='signin.html'" style="width:100%;padding:12px;justify-content:center;font-size:15px;font-weight:600">
+      <i class="ti ti-login"></i> Sign In
+    </button>
+    <button class="btn-gold df-ripple-btn" onclick="window.location.href='signup.html'" style="justify-content:center;width:100%;padding:13px;font-size:15px">
+      <i class="ti ti-rocket"></i> Start Free
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section id="hero">
+  <!-- Layer 1: Animated gradient mesh -->
+  <div class="hero-grad-mesh"></div>
+  <!-- Layer 2: Extra aurora waves -->
+  <div class="hero-aurora-extra hero-aurora-3"></div>
+  <div class="hero-aurora-extra hero-aurora-4"></div>
+  <!-- Layer 5: Digital network lines -->
+  <canvas id="hero-network-canvas"></canvas>
+  <!-- Layer 6: Floating light rays -->
+  <div class="hero-rays">
+    <div class="hero-ray"></div>
+    <div class="hero-ray"></div>
+    <div class="hero-ray"></div>
+    <div class="hero-ray"></div>
+    <div class="hero-ray"></div>
+  </div>
+  <!-- Layer 3: Particle universe (existing) -->
+  <canvas id="df-hero-canvas" style="position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5"></canvas>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+  <!-- Layer 4: Interactive mouse glow -->
+  <div class="hero-mouse-glow" id="hero-mouse-glow"></div>
+
+  <!-- Floating cards -->
+  <div class="hero-float-cards">
+    <div class="float-card fc-1 df-glow-border">
+      <div class="float-card-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-check"></i></div>
+      <div><div>Ticket Resolved</div><div class="meta">AI handled in 1.2s · Just now</div></div>
+    </div>
+    <div class="float-card fc-2 df-glow-border">
+      <div class="float-card-icon" style="background:rgba(212,175,55,.12);color:var(--gold)"><i class="ti ti-brain"></i></div>
+      <div><div>Zia AI Online</div><div class="meta">Advanced AI · Ready</div></div>
+    </div>
+    <div class="float-card fc-3 df-glow-border">
+      <div class="float-card-icon" style="background:rgba(52,152,219,.12);color:var(--info)"><i class="ti ti-chart-bar"></i></div>
+      <div><div>CSAT Score</div><div class="meta">4.9 / 5.0 this week</div></div>
+    </div>
+    <div class="float-card fc-4 df-glow-border">
+      <div class="float-card-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-clock"></i></div>
+      <div><div>Avg Response</div><div class="meta">2.1 seconds · Live</div></div>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge" id="hero-badge">
+      <span class="dot"></span>
+      AI-Powered · Trusted by 12,000+ teams globally
+    </div>
+    <h1 class="hero-title" id="hero-title" aria-label="AI-Powered Customer Support That Never Sleeps">
+      <span id="ht-main"></span><span class="gold" id="ht-gold"></span><span id="ht-caret" class="ht-caret">|</span>
+    </h1>
+    <p class="hero-sub" id="hero-sub">
+      Automate conversations, resolve tickets instantly, and deliver exceptional customer experiences 24/7. Powered by Advanced AI and built for modern teams.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-hero-primary df-ripple-btn" onclick="window.location.href='signup.html'">
+        <i class="ti ti-rocket"></i> Start Free Trial
+      </button>
+      <button class="btn-hero-secondary df-ripple-btn" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">
+        <i class="ti ti-player-play"></i> Book Demo
+      </button>
+    </div>
+    <div class="hero-stats" id="hero-stats">
+      <div class="hero-stat"><div class="num" data-count="80" data-suffix="%">80%</div><div class="lbl">Tickets auto-resolved</div></div>
+      <div class="hero-stat" style="display:flex;align-items:center"><div class="sep"></div></div>
+      <div class="hero-stat"><div class="num" data-count="3" data-suffix="x">3x</div><div class="lbl">Faster response time</div></div>
+      <div class="hero-stat" style="display:flex;align-items:center"><div class="sep"></div></div>
+      <div class="hero-stat"><div class="num" data-count="12" data-suffix="K+">12K+</div><div class="lbl">Companies trust us</div></div>
+      <div class="hero-stat" style="display:flex;align-items:center"><div class="sep"></div></div>
+      <div class="hero-stat"><div class="num" data-count="4.9" data-suffix="★">4.9★</div><div class="lbl">Average rating</div></div>
+    </div>
+  </div>
+  <div class="hero-scroll" onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PROBLEM ═══════════════════ -->
+<section id="problem" class="section">
+  <div class="container">
+    <div class="text-center section-header df-fade-up">
+      <div class="df-section-tag"><i class="ti ti-alert-triangle"></i> The Problem</div>
+      <h2 class="df-heading" style="margin-bottom:.75rem">Support teams are <span style="color:var(--danger)">drowning</span></h2>
+      <p class="df-sub" style="margin:0 auto">Traditional help desks weren't built for AI-first, omnichannel, always-on support. Here's what breaks every day.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card df-fade-up">
+        <div class="prob-icon"><i class="ti ti-clock-x"></i></div>
+        <div class="prob-title">Slow response times</div>
+        <div class="prob-desc">Customers wait hours for answers that should take seconds. Every delay compounds frustration and erodes trust.</div>
+      </div>
+      <div class="problem-card df-fade-up">
+        <div class="prob-icon"><i class="ti ti-layout-grid-remove"></i></div>
+        <div class="prob-title">Scattered channels</div>
+        <div class="prob-desc">Email, chat, phone, social — your team is context-switching constantly, missing tickets and duplicating effort.</div>
+      </div>
+      <div class="problem-card df-fade-up">
+        <div class="prob-icon"><i class="ti ti-mood-sad"></i></div>
+        <div class="prob-title">Agent burnout</div>
+        <div class="prob-desc">Repetitive questions, no automation, and overwhelming queues drain great agents and drive them to leave.</div>
+      </div>
+      <div class="problem-card df-fade-up">
+        <div class="prob-icon"><i class="ti ti-trending-down"></i></div>
+        <div class="prob-title">Zero insights</div>
+        <div class="prob-desc">You can't improve what you can't measure. Most desks lack real-time analytics to catch problems before they escalate.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SOLUTION ═══════════════════ -->
+<section id="solution" class="section">
+  <div class="container">
+    <div class="solution-inner">
+      <div class="df-fade-left">
+        <div class="df-section-tag"><i class="ti ti-bulb"></i> The Solution</div>
+        <h2 class="df-heading" style="margin-bottom:.75rem">One platform.<br/><span class="df-gold-text">Every answer.</span></h2>
+        <p class="df-sub" style="margin-bottom:0">DeskFlow AI brings every support channel, your knowledge base, and powerful AI into one unified workspace your team will love.</p>
+        <ul class="solution-points">
+          <li><div class="sol-icon"><i class="ti ti-brain"></i></div><div class="sol-text"><h4>AI resolves before humans see it</h4><p>Smart routing and auto-replies handle up to 80% of tickets instantly using your knowledge base and Advanced AI.</p></div></li>
+          <li><div class="sol-icon"><i class="ti ti-layout-columns"></i></div><div class="sol-text"><h4>Unified omnichannel inbox</h4><p>Email, live chat, WhatsApp, social — all in one queue with full customer context on every ticket.</p></div></li>
+          <li><div class="sol-icon"><i class="ti ti-chart-dots"></i></div><div class="sol-text"><h4>Real-time analytics dashboard</h4><p>Live CSAT scores, SLA tracking, agent performance, and trend forecasting at your fingertips.</p></div></li>
+          <li><div class="sol-icon"><i class="ti ti-plug-connected"></i></div><div class="sol-text"><h4>200+ integrations</h4><p>Connects seamlessly with Salesforce, HubSpot, Slack, Jira, Shopify, and your entire stack.</p></div></li>
+        </ul>
+      </div>
+      <div class="solution-visual df-fade-right">
+        <div class="dashboard-mock">
+          <div class="mock-topbar">
+            <div class="mock-dots"><span></span><span></span><span></span></div>
+            <span class="mock-title">DeskFlow AI — Support Dashboard</span>
+          </div>
+          <div class="mock-body">
+            <div class="mock-sidebar">
+              <div class="mock-nav-item active"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+              <div class="mock-nav-item"><i class="ti ti-ticket"></i>Tickets</div>
+              <div class="mock-nav-item"><i class="ti ti-messages"></i>Live chat</div>
+              <div class="mock-nav-item"><i class="ti ti-robot"></i>AI tools</div>
+              <div class="mock-nav-item"><i class="ti ti-chart-bar"></i>Analytics</div>
+            </div>
+            <div class="mock-main">
+              <div class="mock-metric-row">
+                <div class="mock-metric"><div class="m-num">142</div><div class="m-lbl">Open</div></div>
+                <div class="mock-metric"><div class="m-num">80%</div><div class="m-lbl">AI solved</div></div>
+                <div class="mock-metric"><div class="m-num">4.9★</div><div class="m-lbl">CSAT</div></div>
+              </div>
+              <div style="font-size:9.5px;color:var(--text-muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:1px">Recent tickets</div>
+              <div class="mock-ticket"><span class="tick-badge" style="background:rgba(231,76,60,.15);color:var(--danger)">HIGH</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary)">API auth failing in prod</span></div>
+              <div class="mock-ticket"><span class="tick-badge" style="background:rgba(46,204,113,.15);color:var(--success)">AI ✓</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary)">How to reset password?</span></div>
+              <div class="mock-ticket"><span class="tick-badge" style="background:rgba(243,156,18,.15);color:var(--warning)">MED</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary)">Billing invoice mismatch</span></div>
+              <div class="mock-ticket"><span class="tick-badge" style="background:rgba(46,204,113,.15);color:var(--success)">AI ✓</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary)">How to export CSV data?</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FEATURES ═══════════════════ -->
+<section id="features" class="section">
+  <div class="container">
+    <div class="text-center section-header df-fade-up">
+      <div class="df-section-tag"><i class="ti ti-sparkles"></i> Features</div>
+      <h2 class="df-heading" style="margin-bottom:.75rem">Everything your team needs,<br/><span class="df-gold-text">nothing they don't</span></h2>
+      <p class="df-sub" style="margin:0 auto">A complete AI support stack built for speed, intelligence, and scale.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card featured df-fade-up">
+        <div class="feat-icon fi-gold"><i class="ti ti-robot"></i></div>
+        <div class="feat-title">Zia AI Assistant</div>
+        <div class="feat-desc">Context-aware AI that reads tickets, suggests responses, auto-tags, and resolves common questions 24/7 without human intervention.</div>
+        <span class="feat-tag">★ Most popular</span>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-emerald"><i class="ti ti-layout-columns"></i></div>
+        <div class="feat-title">Omnichannel inbox</div>
+        <div class="feat-desc">One unified queue for email, live chat, WhatsApp, Twitter, Facebook, and web forms with full context on every customer.</div>
+        <span class="feat-tag">8 channels</span>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-green"><i class="ti ti-chart-dots-3"></i></div>
+        <div class="feat-title">Real-time analytics</div>
+        <div class="feat-desc">Live dashboards tracking SLA compliance, CSAT, first-contact resolution, agent productivity, and predictive ticket volume.</div>
+        <span class="feat-tag">Live data</span>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-orange"><i class="ti ti-route"></i></div>
+        <div class="feat-title">Smart automations</div>
+        <div class="feat-desc">Blueprint workflows, time-based triggers, round-robin assignment, SLA escalations, and macro actions to eliminate repetitive work.</div>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-cream"><i class="ti ti-books"></i></div>
+        <div class="feat-title">Knowledge base</div>
+        <div class="feat-desc">SEO-optimised self-service portal with AI-powered article suggestions, multilingual support, and community forums built-in.</div>
+        <span class="feat-tag">Self-service</span>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-blue"><i class="ti ti-shield-check"></i></div>
+        <div class="feat-title">SLA management</div>
+        <div class="feat-desc">Define, monitor, and enforce service level agreements with visual timers, escalation rules, and automatic breach notifications.</div>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-emerald"><i class="ti ti-users-group"></i></div>
+        <div class="feat-title">Team collaboration</div>
+        <div class="feat-desc">@mention teammates, share private notes, split complex tickets, parent-child threading, and cross-department escalations.</div>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-green"><i class="ti ti-plug-connected"></i></div>
+        <div class="feat-title">200+ integrations</div>
+        <div class="feat-desc">Native connections to Salesforce, HubSpot, Slack, Jira, Shopify, Stripe, Google Workspace, and hundreds more.</div>
+        <span class="feat-tag">No-code</span>
+      </div>
+      <div class="feat-card df-fade-up">
+        <div class="feat-icon fi-gold"><i class="ti ti-device-mobile"></i></div>
+        <div class="feat-title">Mobile apps</div>
+        <div class="feat-desc">Full-featured iOS and Android apps so your agents can handle tickets, get push notifications, and check dashboards on the go.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ AI SECTION ═══════════════════ -->
+<section id="ai-section" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="ai-inner">
+      <div class="df-fade-left">
+        <div class="df-section-tag"><i class="ti ti-brain"></i> AI-First</div>
+        <h2 class="df-heading" style="margin-bottom:.75rem">Your AI support<br/><span class="df-gold-text">never sleeps</span></h2>
+        <p class="df-sub" style="margin-bottom:0">Zia, powered by Advanced AI, learns from every ticket, suggests the perfect response, and handles entire conversations end-to-end.</p>
+        <div class="ai-features-list">
+          <div class="ai-feat"><div class="ai-feat-icon"><i class="ti ti-message-chatbot"></i></div><div class="ai-feat-text"><h4>Conversational AI chatbot</h4><p>Deploy on any channel in minutes. Handles FAQs, account lookups, and ticket creation autonomously.</p></div></div>
+          <div class="ai-feat"><div class="ai-feat-icon"><i class="ti ti-wand"></i></div><div class="ai-feat-text"><h4>AI reply composer</h4><p>One-click to generate perfectly-toned, contextual responses tailored to each customer and issue.</p></div></div>
+          <div class="ai-feat"><div class="ai-feat-icon"><i class="ti ti-mood-happy"></i></div><div class="ai-feat-text"><h4>Sentiment analysis</h4><p>Detects frustrated customers in real-time and auto-escalates to your best agents before they churn.</p></div></div>
+          <div class="ai-feat"><div class="ai-feat-icon"><i class="ti ti-microphone"></i></div><div class="ai-feat-text"><h4>Multilingual voice assistant</h4><p>Speaks English, Hindi, and Tamil. Understands natural language and responds in the customer's language.</p></div></div>
+        </div>
+      </div>
+      <div class="ai-chat-demo df-fade-right">
+        <div class="ai-chat-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="ai-avatar"><i class="ti ti-robot" style="font-size:18px"></i></div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary)">Zia AI</div>
+              <div style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px"><div class="ai-online"></div> Online · Avg 2s reply</div>
+            </div>
+          </div>
+          <div class="df-badge df-badge-gold"><span class="dot"></span>AI Powered</div>
+        </div>
+        <div class="ai-chat-body" id="ai-demo-chat">
+          <div class="msg bot">
+            <div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:12px"></i></div>
+            <div class="msg-bubble">Hi! I'm Zia, your AI support assistant. How can I help you today? 👋</div>
+          </div>
+          <div class="msg user">
+            <div class="msg-av user-av">AJ</div>
+            <div class="msg-bubble">My API is returning 401 errors after the latest update.</div>
+          </div>
+          <div class="msg bot">
+            <div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:12px"></i></div>
+            <div class="msg-bubble">I can help! 401 errors usually mean your API key expired or wasn't re-authenticated after v2.4. Try regenerating it in Settings → API Keys → Revoke &amp; Reissue. Still failing after that?</div>
+          </div>
+          <div class="msg user">
+            <div class="msg-av user-av">AJ</div>
+            <div class="msg-bubble">That fixed it! Thank you 🙏</div>
+          </div>
+          <div class="msg bot">
+            <div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:12px"></i></div>
+            <div class="msg-bubble">Great! I've marked this resolved and added a note to your account. Is there anything else I can help with?</div>
+          </div>
+        </div>
+        <div class="ai-chat-input">
+          <input id="ai-demo-input" placeholder="Ask Zia anything…" onkeydown="if(event.key==='Enter')sendAiDemo()"/>
+          <button class="ai-send" onclick="sendAiDemo()"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ LIVE DEMO ═══════════════════ -->
+<section id="demo-section" class="section">
+  <div class="container">
+    <div class="text-center section-header df-fade-up">
+      <div class="df-section-tag"><i class="ti ti-player-play"></i> Live Demo</div>
+      <h2 class="df-heading" style="margin-bottom:.75rem">Watch Zia resolve a<br/><span class="df-gold-text">real support ticket</span></h2>
+      <p class="df-sub" style="margin:0 auto">See how Zia handles a real conversation — from problem to resolution — in under 30 seconds.</p>
+    </div>
+    <div class="demo-container df-fade-up">
+      <div class="demo-header">
+        <div>
+          <div class="demo-title"><i class="ti ti-robot" style="color:var(--gold);margin-right:8px"></i>Zia AI — Live Conversation</div>
+          <div class="demo-sub">Real-time support simulation · Powered by DeskFlow AI</div>
+        </div>
+        <button class="demo-action-btn" onclick="restartDemo()"><i class="ti ti-refresh"></i> Replay</button>
+      </div>
+      <div class="demo-body" id="live-demo-chat">
+        <div style="text-align:center;color:var(--text-muted);padding:2rem 0">
+          <i class="ti ti-player-play" style="font-size:2.5rem;display:block;margin-bottom:1rem;color:var(--gold)"></i>
+          <p style="font-size:15px;margin-bottom:1.5rem">Click below to watch the AI handle a full support conversation</p>
+          <button class="btn-gold df-ripple-btn" onclick="startLiveDemo()"><i class="ti ti-player-play"></i> Start Demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TESTIMONIALS ═══════════════════ -->
+<section id="testimonials" class="section" style="background:var(--bg-secondary)">
+  <div class="container">
+    <div class="text-center section-header df-fade-up">
+      <div class="df-section-tag"><i class="ti ti-heart"></i> Testimonials</div>
+      <h2 class="df-heading" style="margin-bottom:.75rem">Loved by support teams<br/><span class="df-gold-text">worldwide</span></h2>
+    </div>
+    <div class="testi-grid" id="reviews-grid">
+      <div id="reviews-loading" style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">
+        <i class="ti ti-loader-2" style="font-size:2rem;display:block;margin-bottom:1rem;animation:spin 1s linear infinite;color:var(--gold)"></i>
+        Loading real customer reviews…
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PRICING ═══════════════════ -->
+<section id="pricing" class="section">
+  <div class="container">
+    <div class="text-center section-header df-fade-up">
+      <div class="df-section-tag"><i class="ti ti-tag"></i> Pricing</div>
+      <h2 class="df-heading" style="margin-bottom:.75rem">Simple, transparent<br/><span class="df-gold-text">pricing</span></h2>
+      <p class="df-sub" style="margin:0 auto">Start free. Scale as you grow. No surprise bills, no locked features, no sales call required.</p>
+    </div>
+    <div class="pricing-grid df-fade-up">
+      <div class="price-card">
+        <div class="price-plan">Starter</div>
+        <div class="price-amount"><span>$</span>0</div>
+        <div class="price-period">Free forever · up to 3 agents</div>
+        <div class="price-desc">Perfect for small teams just getting started with structured support.</div>
+        <ul class="price-features">
+          <li class="included"><i class="ti ti-check"></i>3 agents included</li>
+          <li class="included"><i class="ti ti-check"></i>500 tickets / month</li>
+          <li class="included"><i class="ti ti-check"></i>Email channel</li>
+          <li class="included"><i class="ti ti-check"></i>Basic knowledge base</li>
+          <li class="included"><i class="ti ti-check"></i>Standard reports</li>
+          <li class="excluded"><i class="ti ti-x"></i>AI features</li>
+          <li class="excluded"><i class="ti ti-x"></i>Omnichannel inbox</li>
+          <li class="excluded"><i class="ti ti-x"></i>Custom workflows</li>
+        </ul>
+        <button class="btn-plan btn-plan-outline" onclick="window.location.href='signup.html'">Get started free</button>
+      </div>
+      <div class="price-card price-popular">
+        <div class="price-badge">Most popular</div>
+        <div class="price-plan">Growth</div>
+        <div class="price-amount"><span>$</span>29</div>
+        <div class="price-period">per agent / month · billed annually</div>
+        <div class="price-desc">The full DeskFlow AI experience for growing teams.</div>
+        <ul class="price-features">
+          <li class="included"><i class="ti ti-check"></i>Unlimited agents</li>
+          <li class="included"><i class="ti ti-check"></i>Unlimited tickets</li>
+          <li class="included"><i class="ti ti-check"></i>8 channels (incl. WhatsApp)</li>
+          <li class="included"><i class="ti ti-check"></i>Zia AI assistant</li>
+          <li class="included"><i class="ti ti-check"></i>Advanced analytics</li>
+          <li class="included"><i class="ti ti-check"></i>Custom workflows</li>
+          <li class="included"><i class="ti ti-check"></i>SLA management</li>
+          <li class="included"><i class="ti ti-check"></i>50+ integrations</li>
+        </ul>
+        <button class="btn-plan btn-plan-fill" onclick="window.location.href='signup.html'">Start 14-day trial</button>
+      </div>
+      <div class="price-card">
+        <div class="price-plan">Enterprise</div>
+        <div class="price-amount" style="-webkit-text-fill-color:var(--cream);color:var(--cream);font-size:2.2rem">Custom</div>
+        <div class="price-period">Volume pricing · dedicated CSM</div>
+        <div class="price-desc">For large teams needing custom SLAs, compliance, and dedicated support.</div>
+        <ul class="price-features">
+          <li class="included"><i class="ti ti-check"></i>Everything in Growth</li>
+          <li class="included"><i class="ti ti-check"></i>Custom AI model training</li>
+          <li class="included"><i class="ti ti-check"></i>SSO / SAML</li>
+          <li class="included"><i class="ti ti-check"></i>SOC 2 + HIPAA compliance</li>
+          <li class="included"><i class="ti ti-check"></i>Dedicated success manager</li>
+          <li class="included"><i class="ti ti-check"></i>200+ integrations</li>
+          <li class="included"><i class="ti ti-check"></i>99.99% uptime SLA</li>
+          <li class="included"><i class="ti ti-check"></i>Priority 24/7 support</li>
+        </ul>
+        <button class="btn-plan btn-plan-outline" onclick="window.location.href='signup.html'">Contact sales</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section id="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-grid-overlay"></div>
+  <div class="cta-inner df-fade-up">
+    <div class="df-section-tag" style="justify-content:center"><i class="ti ti-rocket"></i> Get Started</div>
+    <h2 class="cta-title">Ready to transform<br/><span class="df-gold-text">your support?</span></h2>
+    <p class="cta-sub">Join 12,000+ companies delivering faster, smarter support with DeskFlow AI. Set up in under 10 minutes.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-hero-primary df-ripple-btn" onclick="window.location.href='signup.html'"><i class="ti ti-rocket"></i> Start free trial</button>
+      <button class="btn-hero-secondary df-ripple-btn" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})"><i class="ti ti-calendar"></i> Book a demo</button>
+    </div>
+    <p class="cta-note"><span>✓ 14-day free trial</span> &nbsp;·&nbsp; <span>✓ No credit card required</span> &nbsp;·&nbsp; <span>✓ Cancel anytime</span></p>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:0">
+        <div class="df-logo-icon" style="width:36px;height:36px;border-radius:9px"><i class="ti ti-headset" style="font-size:17px"></i></div>
+        <span style="font-size:18px;font-weight:800">DeskFlow<span class="df-gold-text">AI</span></span>
+      </div>
+      <p>AI-powered customer support that resolves faster, delights customers, and scales effortlessly with your team.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn"><i class="ti ti-brand-twitter"></i></a>
+        <a href="#" class="social-btn"><i class="ti ti-brand-linkedin"></i></a>
+        <a href="#" class="social-btn"><i class="ti ti-brand-github"></i></a>
+        <a href="#" class="social-btn"><i class="ti ti-brand-youtube"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#features">Integrations</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#features">Changelog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Resources</h5>
+      <ul>
+        <li><a href="signin.html">Documentation</a></li>
+        <li><a href="signin.html">API reference</a></li>
+        <li><a href="#problem">Blog</a></li>
+        <li><a href="#testimonials">Community</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#problem">About us</a></li>
+        <li><a href="signup.html">Careers</a></li>
+        <li><a href="#pricing">Privacy policy</a></li>
+        <li><a href="#" onclick="event.preventDefault();document.getElementById('chatbot-btn').click()">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 DeskFlow AI. All rights reserved.</span>
+    <span>Built with <span style="color:var(--gold)">♥</span> for support teams everywhere</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════ FLOATING CHATBOT ═══════════════════ -->
+<button id="chatbot-btn" title="Chat with Zia AI"><i class="ti ti-message-chatbot"></i></button>
+<div id="chatbot-panel">
+  <div class="chatbot-header">
+    <div class="chatbot-header-info">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--grad-gold);display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px var(--gold-glow)"><i class="ti ti-robot" style="color:var(--bg-primary);font-size:18px"></i></div>
+      <div><h4>Zia AI</h4><p>Powered by Advanced AI · Replies in seconds</p></div>
+    </div>
+    <button id="chatbot-close"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="chatbot-messages">
+    <div class="msg bot">
+      <div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:11px"></i></div>
+      <div class="msg-bubble">👋 Hi! I'm Zia. Ask me anything about DeskFlow AI — I'm powered by Advanced AI and ready to help!</div>
+    </div>
+  </div>
+  <div id="chatbot-input-row">
+    <input id="chatbot-input" placeholder="Type your message…" onkeydown="if(event.key==='Enter')sendChatbotMsg()"/>
+    <button id="chatbot-send" onclick="sendChatbotMsg()"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script src="df-core.js"></script>
+<script>
+/* ── Navbar scroll ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+/* ── Mobile nav ── */
+const mobileBtn = document.getElementById('mobile-menu-btn');
+const mobileNav = document.getElementById('mobile-nav');
+const mobileOverlay = document.getElementById('mobile-overlay');
+mobileBtn.addEventListener('click', () => { mobileNav.classList.add('open'); mobileOverlay.classList.add('open'); });
+mobileOverlay.addEventListener('click', () => { mobileNav.classList.remove('open'); mobileOverlay.classList.remove('open'); });
+mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mobileNav.classList.remove('open'); mobileOverlay.classList.remove('open'); }));
+
+/* ── Chatbot toggle ── */
+document.getElementById('chatbot-btn').addEventListener('click', () => document.getElementById('chatbot-panel').classList.toggle('open'));
+document.getElementById('chatbot-close').addEventListener('click', () => document.getElementById('chatbot-panel').classList.remove('open'));
+
+/* ── GSAP Hero Entrance ── */
+if (typeof gsap !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.fromTo('#hero-badge',  { y:-20, opacity:0 }, { y:0, opacity:1, duration:.8, ease:'back.out(1.5)' });
+  gsap.fromTo('#hero-title',  { y:40,  opacity:0 }, { y:0, opacity:1, duration:.9, delay:.12, ease:'power3.out' });
+  gsap.fromTo('#hero-sub',    { y:30,  opacity:0 }, { y:0, opacity:1, duration:.8, delay:.24, ease:'power2.out' });
+  gsap.fromTo('.hero-cta',    { y:20,  opacity:0 }, { y:0, opacity:1, duration:.7, delay:.36, ease:'power2.out' });
+  gsap.fromTo('#hero-stats',  { y:20,  opacity:0 }, { y:0, opacity:1, duration:.7, delay:.48, ease:'power2.out' });
+  gsap.fromTo('.hero-scroll', { opacity:0 }, { opacity:1, duration:.8, delay:1, ease:'power1.out' });
+
+  /* Float cards stagger */
+  gsap.fromTo('.float-card', { y:30, opacity:0 }, { y:0, opacity:1, duration:.8, stagger:.15, delay:.6, ease:'back.out(1.2)' });
+
+  /* Scroll-triggered sections */
+  document.querySelectorAll('.df-fade-up').forEach(el => {
+    gsap.fromTo(el, { y:40, opacity:0 }, { y:0, opacity:1, duration:.8, ease:'power2.out', scrollTrigger:{ trigger:el, start:'top 88%' } });
+  });
+  document.querySelectorAll('.df-fade-left').forEach(el => {
+    gsap.fromTo(el, { x:-40, opacity:0 }, { x:0, opacity:1, duration:.9, ease:'power2.out', scrollTrigger:{ trigger:el, start:'top 85%' } });
+  });
+  document.querySelectorAll('.df-fade-right').forEach(el => {
+    gsap.fromTo(el, { x:40, opacity:0 }, { x:0, opacity:1, duration:.9, ease:'power2.out', scrollTrigger:{ trigger:el, start:'top 85%' } });
+  });
+
+  /* Feature cards stagger */
+  ScrollTrigger.create({ trigger:'.features-grid', start:'top 85%', once:true, onEnter:() =>
+    gsap.fromTo('.feat-card', { y:40, opacity:0 }, { y:0, opacity:1, duration:.6, stagger:.07, ease:'power2.out' })
+  });
+  /* Pricing cards stagger */
+  ScrollTrigger.create({ trigger:'.pricing-grid', start:'top 85%', once:true, onEnter:() =>
+    gsap.fromTo('.price-card', { y:50, opacity:0 }, { y:0, opacity:1, duration:.7, stagger:.12, ease:'back.out(1.2)' })
+  });
+  /* Problem cards stagger */
+  ScrollTrigger.create({ trigger:'.problem-grid', start:'top 85%', once:true, onEnter:() =>
+    gsap.fromTo('.problem-card', { y:30, opacity:0, scale:.96 }, { y:0, opacity:1, scale:1, duration:.6, stagger:.1, ease:'back.out(1.4)' })
+  });
+}
+
+/* ── Counter animation ── */
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const isFloat = String(target).includes('.');
+    let start = null;
+    const dur = 1800;
+    (function step(ts) {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = (isFloat ? (ease * target).toFixed(1) : Math.floor(ease * target)) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    })(performance.now());
+    counterObserver.unobserve(el);
+  });
+}, { threshold:.5 });
+document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+/* ── Mock nav click ── */
+document.querySelectorAll('.mock-nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.mock-nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+/* ── Real Reviews ── */
+async function loadRealReviews() {
+  const grid = document.getElementById('reviews-grid');
+  try {
+    const res = await fetch('/api/tickets/reviews');
+    const data = await res.json();
+    const reviews = data.reviews || [];
+    grid.innerHTML = '';
+    if (!reviews.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">
+        <i class="ti ti-mood-smile" style="font-size:2.5rem;display:block;margin-bottom:1rem;color:var(--gold)"></i>
+        <p style="font-size:1rem;margin-bottom:1.5rem">No reviews yet — be the first to share your experience!</p>
+        <button class="btn-gold df-ripple-btn" onclick="window.location.href='signup.html'" style="margin:0 auto"><i class="ti ti-rocket"></i> Get started free</button>
+      </div>`;
+      return;
+    }
+    const grads = [
+      'linear-gradient(135deg,#D4AF37,#F0C84E)',
+      'linear-gradient(135deg,#0F5A5E,#1A7A7F)',
+      'linear-gradient(135deg,#2ECC71,#27ae60)',
+      'linear-gradient(135deg,#F39C12,#e67e22)',
+      'linear-gradient(135deg,#3498DB,#2980b9)',
+      'linear-gradient(135deg,#8e44ad,#6c3483)'
+    ];
+    reviews.forEach((r, i) => {
+      const initials = r.user ? r.user[0].toUpperCase() : 'U';
+      const stars = Array.from({length:5}, (_, s) => s < r.rating
+        ? '<i class="ti ti-star-filled"></i>'
+        : '<i class="ti ti-star" style="opacity:.3"></i>').join('');
+      const card = document.createElement('div');
+      card.className = `testi-card${i===0?' featured-testi':''} df-fade-up`;
+      card.innerHTML = `
+        <div class="testi-stars">${stars}</div>
+        <div class="testi-text">"${r.feedback}"</div>
+        <div class="testi-author">
+          <div class="testi-av" style="background:${grads[i%grads.length]}">${initials}</div>
+          <div><div class="testi-name">${r.user}</div><div class="testi-role">Re: ${r.subject}</div></div>
+        </div>`;
+      grid.appendChild(card);
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(card, { y:30, opacity:0 }, { y:0, opacity:1, duration:.6, delay:i*.12, ease:'power2.out', scrollTrigger:{ trigger:card, start:'top 90%' } });
+      }
+    });
+  } catch(e) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">Could not load reviews right now.</div>`;
+  }
+}
+loadRealReviews();
+
+/* ── AI Demo Chat ── */
+const aiDemoResponses = [
+  "I'd be happy to help! Could you share the error message or the endpoint you're calling? That'll help me diagnose faster.",
+  "Got it — this looks like a rate-limit issue. Your current plan allows 100 req/min. Consider batching requests or upgrading to Growth plan for higher limits.",
+  "I've created a support ticket (#2048) and notified the engineering team. You'll receive an email update within 30 minutes.",
+  "Based on your account history, I'm adding a dedicated flag so our team monitors your API usage proactively going forward.",
+];
+let aiDemoIdx = 0;
+function appendMsg(container, text, type, initials) {
+  const d = document.createElement('div');
+  d.className = `msg ${type}`;
+  const isBot = type === 'bot';
+  d.innerHTML = `<div class="msg-av ${isBot?'bot-av':'user-av'}">${isBot?'<i class="ti ti-robot" style="font-size:11px"></i>':initials}</div><div class="msg-bubble">${text}</div>`;
+  container.appendChild(d);
+  container.scrollTop = container.scrollHeight;
+}
+function sendAiDemo() {
+  const input = document.getElementById('ai-demo-input');
+  const chat = document.getElementById('ai-demo-chat');
+  const text = input.value.trim(); if (!text) return;
+  appendMsg(chat, text, 'user', 'Me'); input.value = '';
+  const typing = document.createElement('div');
+  typing.className = 'msg bot';
+  typing.innerHTML = `<div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:11px"></i></div><div class="typing"><span></span><span></span><span></span></div>`;
+  chat.appendChild(typing); chat.scrollTop = chat.scrollHeight;
+  setTimeout(() => { typing.remove(); appendMsg(chat, aiDemoResponses[aiDemoIdx++ % aiDemoResponses.length], 'bot', ''); }, 1100);
+}
+
+/* ── Live Demo Sequence ── */
+const demoScript = [
+  { role:'user', text:'My printer is not working', delay:500 },
+  { role:'bot',  text:'I found 3 troubleshooting steps for you:\n1. Check if the printer is connected and powered on\n2. Run the printer troubleshooter in Settings\n3. Update or reinstall the printer driver', delay:2000 },
+  { role:'user', text:'Still not fixed after trying all steps', delay:1200 },
+  { role:'bot',  text:"I understand how frustrating that is. I'll connect you to a support specialist right away. A ticket has been created and an agent will reach out within 15 minutes.", delay:2200 },
+];
+let demoRunning = false;
+async function startLiveDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+  const chat = document.getElementById('live-demo-chat');
+  chat.innerHTML = '';
+  for (const msg of demoScript) {
+    await new Promise(r => setTimeout(r, msg.delay));
+    if (msg.role === 'bot') {
+      const typing = document.createElement('div');
+      typing.className = 'msg bot';
+      typing.innerHTML = `<div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:11px"></i></div><div class="typing"><span></span><span></span><span></span></div>`;
+      chat.appendChild(typing); chat.scrollTop = chat.scrollHeight;
+      await new Promise(r => setTimeout(r, 1400));
+      typing.remove();
+    }
+    const d = document.createElement('div');
+    d.className = `msg ${msg.role === 'bot' ? 'bot' : 'user'}`;
+    d.innerHTML = msg.role === 'bot'
+      ? `<div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:11px"></i></div><div class="msg-bubble">${msg.text.replace(/\n/g,'<br/>')}</div>`
+      : `<div class="msg-av user-av">You</div><div class="msg-bubble">${msg.text}</div>`;
+    d.style.opacity = '0'; d.style.transform = 'translateY(8px)';
+    chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+    if (typeof gsap !== 'undefined') gsap.to(d, { opacity:1, y:0, duration:.4, ease:'power2.out' });
+    else { d.style.opacity = '1'; d.style.transform = ''; }
+  }
+  await new Promise(r => setTimeout(r, 600));
+  const done = document.createElement('div');
+  done.style.cssText = 'text-align:center;padding:1.5rem 0;';
+  done.innerHTML = `<div class="df-badge df-badge-green" style="margin:0 auto;justify-content:center"><i class="ti ti-check"></i> Resolved in 4.7 seconds</div>`;
+  chat.appendChild(done);
+  demoRunning = false;
+}
+function restartDemo() { demoRunning = false; startLiveDemo(); }
+
+/* ── Chatbot ── */
+const landingChatbotHistory = [];
+async function sendChatbotMsg() {
+  const input = document.getElementById('chatbot-input');
+  const msgs  = document.getElementById('chatbot-messages');
+  const text  = input.value.trim(); if (!text) return;
+  appendMsg(msgs, text, 'user', 'Me'); input.value = '';
+  const typing = document.createElement('div');
+  typing.className = 'msg bot';
+  typing.innerHTML = `<div class="msg-av bot-av"><i class="ti ti-robot" style="font-size:11px"></i></div><div class="typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight;
+  landingChatbotHistory.push({ sender:'customer', text });
+  try {
+    const res = await fetch('/api/chat/bot', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ message:text, email:'guest@deskflow.ai', history:landingChatbotHistory }) });
+    const data = await res.json();
+    typing.remove(); appendMsg(msgs, data.reply, 'bot', '');
+    landingChatbotHistory.push({ sender:'bot', text:data.reply });
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch {
+    typing.remove(); appendMsg(msgs, 'Sorry, I am having trouble connecting right now. Please try again shortly.', 'bot', '');
+  }
+}
+</script>
+
+<!-- Hero one-shot typer + sparkle engine -->
+<script>
+(function(){
+  var mainEl = document.getElementById('ht-main');
+  var goldEl = document.getElementById('ht-gold');
+  var caret  = document.getElementById('ht-caret');
+  var title  = document.getElementById('hero-title');
+  if(!mainEl||!goldEl||!caret||!title) return;
+
+  /* ── Sparkle layer: inserted as first child of h1, sits behind text ── */
+  var layer = document.createElement('span');
+  layer.style.cssText = 'position:absolute;inset:-40px 0;pointer-events:none;overflow:visible;z-index:0;display:block;';
+  title.insertBefore(layer, title.firstChild);
+
+  var COLORS = [
+    '#D4AF37','#F5C842','#FFE566','#C8960C',
+    '#FFF0A0','#E8B800','#FFDA00','#B8860B',
+    '#FAD55C','#D4AF37','#FFD700','#F0C040'
+  ];
+  var CHARS = ['✦','✧','⋆','✺','★','✱','◆','✴','❋','✸'];
+  var spawnId = null;
+
+  function spawnSparkle(){
+    var el    = document.createElement('span');
+    var color = COLORS[Math.random()*COLORS.length|0];
+    var char  = CHARS[Math.random()*CHARS.length|0];
+    var size  = 10 + Math.random()*20;      /* 10–30 px */
+    var dur   = 900 + Math.random()*800;    /* 900–1700 ms */
+    var tx    = (Math.random()-0.5)*140;    /* horizontal drift */
+    var sx    = 5 + Math.random()*90;       /* % across width   */
+    var sy    = 20 + Math.random()*60;      /* % down height    */
+
+    el.textContent = char;
+    el.style.cssText = [
+      'position:absolute',
+      'left:'+sx+'%',
+      'top:'+sy+'%',
+      'color:'+color,
+      'font-size:'+size+'px',
+      'line-height:1',
+      'pointer-events:none',
+      'user-select:none',
+      'will-change:transform,opacity',
+      'text-shadow:0 0 10px '+color+',0 0 22px '+color+'bb,0 0 40px '+color+'55'
+    ].join(';');
+
+    layer.appendChild(el);
+
+    var t0 = performance.now();
+    (function frame(now){
+      var t = Math.min((now - t0) / dur, 1);
+      var easeOut = 1 - t * t;
+      var fadeIn  = t < 0.12 ? t / 0.12 : 1;
+      el.style.transform = [
+        'translate('+( tx*t )+'px,'+( -80*t )+'px)',
+        'rotate('+(t*200)+'deg)',
+        'scale('+(1 - t*0.5)+')'
+      ].join(' ');
+      el.style.opacity = (easeOut * fadeIn).toFixed(3);
+      if(t < 1) requestAnimationFrame(frame);
+      else el.remove();
+    })(t0);
+  }
+
+  function startSparkles(){ if(!spawnId) spawnId = setInterval(spawnSparkle, 50); }
+  function stopSparkles(){  clearInterval(spawnId); spawnId = null; }
+
+  /* ── Typer ── */
+  var SPEED = 105;
+  function jitter(){ return SPEED + (Math.random()*20|0); }
+  function typeStr(str, target, cb){
+    var i = 0;
+    (function tick(){
+      target.textContent = str.slice(0, ++i);
+      if(i < str.length) setTimeout(tick, jitter());
+      else if(cb)        setTimeout(cb,   jitter());
+    })();
+  }
+
+  setTimeout(function(){
+    startSparkles();
+
+    typeStr('AI-Powered Customer', mainEl, function(){
+      mainEl.appendChild(document.createElement('br'));
+      var p2 = document.createElement('span');
+      mainEl.appendChild(p2);
+
+      typeStr('Support That ', p2, function(){
+        typeStr('Never Sleeps', goldEl, function(){
+          stopSparkles();
+
+          setTimeout(function(){
+            /* Fade caret */
+            caret.style.transition = 'opacity .5s ease';
+            caret.style.opacity    = '0';
+            /* Fade remaining sparkles */
+            layer.style.transition = 'opacity .9s ease';
+            layer.style.opacity    = '0';
+            setTimeout(function(){
+              caret.style.display = 'none';
+              layer.remove();
+            }, 950);
+          }, 900);
+        });
+      });
+    });
+
+  }, 1100);
+})();
+</script>
+
+<!-- ═══════════════════ MEGA 3D ENHANCEMENTS ═══════════════════ -->
+<script>
+/* ── Layer 4: Mouse Glow ── */
+(function(){
+  const glow=document.getElementById('hero-mouse-glow');
+  const hero=document.getElementById('hero');
+  if(!glow||!hero)return;
+  hero.addEventListener('mousemove',e=>{
+    const r=hero.getBoundingClientRect();
+    glow.style.left=(e.clientX-r.left)+'px';
+    glow.style.top =(e.clientY-r.top) +'px';
+    glow.style.opacity='1';
+  });
+  hero.addEventListener('mouseleave',()=>{ glow.style.opacity='0'; });
+})();
+
+/* ── Layer 5: Digital Network Lines ── */
+(function(){
+  const cv=document.getElementById('hero-network-canvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W,H,nodes;
+  const init=()=>{
+    W=cv.width=cv.offsetWidth; H=cv.height=cv.offsetHeight;
+    const n=Math.min(Math.floor(W*H/22000),50);
+    nodes=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22}));
+  };
+  init();
+  let rt; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(init,280); });
+  (function draw(){
+    requestAnimationFrame(draw);
+    ctx.clearRect(0,0,W,H);
+    nodes.forEach(n=>{
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1; if(n.y<0||n.y>H)n.vy*=-1;
+      ctx.beginPath(); ctx.arc(n.x,n.y,1.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(212,175,55,.5)'; ctx.fill();
+    });
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<150){
+        ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.strokeStyle='rgba(212,175,55,'+(0.18*(1-d/150)).toFixed(3)+')';
+        ctx.lineWidth=.8; ctx.stroke();
+      }
+    }
+  })();
+})();
+
+</script>
+</body>
+</html>

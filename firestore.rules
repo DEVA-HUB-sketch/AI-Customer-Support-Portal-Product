@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ───────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(email) {
+      return request.auth.token.email == email;
+    }
+
+    function hasRole(role) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && hasRole('admin');
+    }
+
+    function isAgent() {
+      return isSignedIn() && (hasRole('agent') || hasRole('admin'));
+    }
+
+    // ── users ──────────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Users can read their own document; admins can read all
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can create their own account; admins can create any
+      allow create: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can update their own profile; role field can only be changed by admin
+      allow update: if isSignedIn() && (
+        (request.auth.uid == userId && !('role' in request.resource.data.diff(resource.data).affectedKeys())) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ── tickets ────────────────────────────────────────────────────────────────
+    match /tickets/{ticketId} {
+      // Customers can read their own tickets; agents/admins can read all
+      allow read: if isSignedIn() && (
+        resource.data.createdBy == request.auth.token.email || isAgent()
+      );
+      // Any authenticated user can create a ticket
+      allow create: if isSignedIn();
+      // Agents and admins can update; customers can only update messages/feedback fields
+      allow update: if isSignedIn() && (
+        isAgent() ||
+        (resource.data.createdBy == request.auth.token.email &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['messages', 'rating', 'feedback', 'updatedAt']))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ── kb (Knowledge Base) ────────────────────────────────────────────────────
+    match /kb/{articleId} {
+      // All authenticated users can read KB articles
+      allow read: if isSignedIn();
+      // Only admins can create, update, or delete KB articles
+      allow write: if isAdmin();
+    }
+
+    // ── activity_logs ──────────────────────────────────────────────────────────
+    match /activity_logs/{logId} {
+      // Only admins can read logs; server-side only writes (no client writes)
+      allow read: if isAdmin();
+      allow write: if false; // All writes via Admin SDK server-side
+    }
+
+    // ── ai_conversations ───────────────────────────────────────────────────────
+    match /ai_conversations/{sessionId} {
+      // Users can read their own sessions; admins can read all
+      allow read: if isSignedIn() && (
+        resource.data.email == request.auth.token.email || isAdmin()
+      );
+      allow write: if false; // Server-side only
+    }
+
+    // ── ai_sentiment ───────────────────────────────────────────────────────────
+    match /ai_sentiment/{docId} {
+      allow read: if isAgent();
+      allow write: if false;
+    }
+
+    // ── ai_categorizations ─────────────────────────────────────────────────────
+    match /ai_categorizations/{docId} {
+      allow read: if isAgent();
+      allow write: if false;
+    }
+
+    // ── notifications ──────────────────────────────────────────────────────────
+    match /notifications/{notifId} {
+      // Users can read their own notifications
+      allow read: if isSignedIn() && (
+        resource.data.recipientEmail == request.auth.token.email || isAdmin()
+      );
+      allow write: if false; // Server-side only
+    }
+  }
+}

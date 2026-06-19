@@ -1,0 +1,98 @@
+/* ═══════════════════════════════════════════════════════════════
+   DeskFlow AI — TextType Component Styles
+   Premium hero typing animation
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Static title line ── */
+.hero-title-static {
+  display: block;
+  color: var(--text-primary);
+}
+
+/* ── Animated text wrapper ── */
+.tt-animated-wrap {
+  display: block;
+  position: relative;
+  min-height: 1.08em;
+  margin-top: 0.05em;
+}
+
+/* ── Typing text ── */
+.tt-text {
+  color: #D4AF37;
+  text-shadow: 0 0 24px rgba(212,175,55,.6), 0 0 48px rgba(212,175,55,.22);
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+  display: inline;
+  will-change: transform, opacity;
+}
+
+/* ── Blinking cursor ── */
+.tt-cursor {
+  display: inline-block;
+  margin-left: 3px;
+  color: #D4AF37;
+  opacity: 0.9;
+  animation: ttCursorBlink 0.88s step-start infinite;
+  font-weight: 300;
+  vertical-align: baseline;
+  transition: color 0.35s ease;
+}
+
+@keyframes ttCursorBlink {
+  0%, 100% { opacity: 0.95; }
+  50%       { opacity: 0;    }
+}
+
+/* ── Soft ambient aura behind the text ── */
+.tt-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110%;
+  height: 220%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 50%,
+    rgba(212,175,55, 0.10) 0%,
+    rgba(15, 90, 94, 0.05) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: -1;
+  animation: ttAuraPulse 3s ease-in-out infinite;
+}
+
+@keyframes ttAuraPulse {
+  0%, 100% { opacity: 0.65; transform: translate(-50%,-50%) scale(1);    }
+  50%       { opacity: 1;    transform: translate(-50%,-50%) scale(1.14); }
+}
+
+/* ── Ambient floating particles ── */
+.tt-pt {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: ttPtFloat var(--dur, 4s) var(--delay, 0s) ease-in-out infinite;
+}
+
+@keyframes ttPtFloat {
+  0%   { opacity: 0;   transform: translateY(0)    translateX(0); }
+  15%  { opacity: 0.8; }
+  85%  { opacity: 0.55;}
+  100% { opacity: 0;   transform: translateY(-55px) translateX(var(--tx, 10px)); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .tt-animated-wrap { min-height: 1.12em; }
+  .tt-aura          { display: none; } /* save repaints on mobile */
+  .tt-pt            { display: none; }
+}
+
+@media (max-width: 480px) {
+  .tt-cursor { margin-left: 1px; }
+}

@@ -1,0 +1,2875 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DeskFlow AI — Control Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="df-system.css"/>
+<link rel="stylesheet" href="df-responsive.css"/>
+<script src="df-theme.js"></script>
+<style>
+body { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.admin-shell { display:flex; flex:1; min-height:0; position:relative; z-index:1; }
+
+/* ── SIDEBAR ── */
+.admin-sidebar {
+  width:230px; flex-shrink:0; background:rgba(8,20,22,.97);
+  border-right:1px solid var(--border-dim); display:flex; flex-direction:column;
+  padding:22px 14px; position:sticky; top:0;
+  height:100vh; height:100dvh;
+  overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.a-brand { display:flex; align-items:center; gap:9px; margin-bottom:2rem; text-decoration:none; }
+.a-nav-link {
+  display:flex; align-items:center; gap:10px; padding:10px 13px;
+  border-radius:11px; color:var(--text-secondary); font-size:13.5px; font-weight:600;
+  text-decoration:none; transition:all .2s; position:relative; cursor:pointer;
+  background:none; border:none; font-family:var(--font); width:100%; text-align:left;
+}
+.a-nav-link i { font-size:17px; flex-shrink:0; }
+.a-nav-link:hover  { background:rgba(212,175,55,.06); color:var(--gold-light); transform:translateX(3px); }
+.a-nav-link.active { background:rgba(212,175,55,.1); color:var(--gold); border:1px solid rgba(212,175,55,.15); }
+.a-nav-link.active::before { content:''; position:absolute; left:0; top:25%; bottom:25%; width:3px; border-radius:0 3px 3px 0; background:var(--gold); }
+.a-nav-spacer { flex:1; }
+
+/* ── MAIN ── */
+.admin-main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+.admin-header {
+  padding:14px 28px; border-bottom:1px solid var(--border-dim);
+  background:rgba(8,20,22,.8); backdrop-filter:blur(16px);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.admin-user { display:flex; align-items:center; gap:11px; }
+.admin-avatar {
+  width:38px; height:38px; border-radius:50%; background:var(--grad-gold);
+  display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800;
+  color:var(--bg-primary); box-shadow:0 0 14px var(--gold-glow);
+}
+.admin-header-info h4 { font-size:14px; font-weight:700; color:var(--text-primary); }
+.admin-header-info p  { font-size:11px; color:var(--text-muted); }
+.btn-header-action {
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--border-dim);
+  background:var(--glass); color:var(--text-muted); display:flex; align-items:center;
+  justify-content:center; cursor:pointer; transition:all .25s; font-size:16px;
+}
+.btn-header-action:hover { border-color:rgba(212,175,55,.3); color:var(--gold); }
+
+/* ── CONTENT ── */
+.content-area { flex:1; overflow-y:auto; padding:28px; }
+.panel { display:none; animation:fadeIn .35s ease both; }
+.panel.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* Page heading */
+.page-title { font-size:1.6rem; font-weight:900; letter-spacing:-.5px; margin-bottom:4px; }
+.page-sub   { font-size:13px; color:var(--text-muted); margin-bottom:1.6rem; }
+
+/* Stat cards */
+.stat-grid { display:grid; gap:14px; margin-bottom:24px; }
+.stat-grid-3 { grid-template-columns:repeat(3,1fr); }
+.stat-grid-4 { grid-template-columns:repeat(4,1fr); }
+.stat-card {
+  background:var(--glass); border:1px solid var(--border-dim);
+  border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;
+  transition:all .25s;
+}
+.stat-card:hover { border-color:rgba(212,175,55,.2); transform:translateY(-2px); }
+.stat-icon { width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.stat-num { font-size:1.5rem; font-weight:900; background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat-label { font-size:11.5px; color:var(--text-muted); margin-top:2px; font-weight:600; }
+
+/* Chart cards */
+.charts-grid { display:grid; gap:18px; margin-bottom:22px; }
+.charts-grid-3 { grid-template-columns:repeat(3,1fr); }
+.chart-card {
+  background:var(--glass); border:1px solid var(--border-dim);
+  border-radius:14px; padding:20px;
+}
+.chart-title {
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px;
+  color:var(--text-muted); margin-bottom:16px; display:flex; align-items:center; gap:7px;
+}
+.chart-title i { color:var(--gold); font-size:14px; }
+
+/* Table */
+.df-table-card {
+  background:var(--glass); border:1px solid var(--border-dim);
+  border-radius:14px; overflow:hidden; margin-bottom:22px;
+}
+.df-table-header {
+  padding:13px 20px; border-bottom:1px solid var(--border-dim);
+  font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.df-table { width:100%; border-collapse:collapse; text-align:left; font-size:13px; }
+.df-table th {
+  padding:11px 18px; background:rgba(8,18,20,.8); font-size:10.5px; font-weight:800;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.8px;
+  border-bottom:1px solid var(--border-dim); white-space:nowrap;
+}
+.df-table td { padding:12px 18px; border-bottom:1px solid rgba(255,255,255,.035); vertical-align:middle; }
+.df-table tr:hover td { background:rgba(212,175,55,.025); }
+.df-table tr:last-child td { border-bottom:none; }
+.role-select {
+  padding:6px 10px; border:1px solid var(--border-dim); border-radius:8px;
+  background:rgba(22,52,54,.6); color:var(--text-primary); font-family:var(--font);
+  font-size:12px; outline:none; cursor:pointer;
+}
+.role-select:focus { border-color:var(--gold); }
+.role-select option { background:var(--bg-secondary); }
+.btn-delete {
+  padding:5px 11px; border:1px solid rgba(231,76,60,.3); background:rgba(231,76,60,.08);
+  border-radius:8px; color:var(--danger); font-size:11.5px; font-weight:700;
+  cursor:pointer; transition:all .2s; font-family:var(--font); display:inline-flex; align-items:center; gap:4px;
+}
+.btn-delete:hover { background:rgba(231,76,60,.15); border-color:var(--danger); }
+
+/* Feedback bars */
+.fb-bar-row { display:grid; grid-template-columns:140px 1fr 80px 60px; align-items:center; gap:14px; margin-bottom:12px; }
+.fb-bar-track { height:8px; background:rgba(255,255,255,.06); border-radius:4px; overflow:hidden; }
+.fb-bar-fill  { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--emerald),var(--gold)); transition:width .5s; }
+
+/* Logs filters */
+.logs-filters {
+  display:grid; grid-template-columns:1fr 150px 180px 145px 145px auto;
+  gap:11px; margin-bottom:18px; align-items:end;
+}
+.filter-group label { font-size:10.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.07em; display:block; margin-bottom:5px; }
+.filter-input, .filter-select, .filter-date {
+  width:100%; padding:8px 12px; background:rgba(22,52,54,.5);
+  border:1px solid var(--border-dim); border-radius:9px;
+  color:var(--text-primary); font-size:12.5px; outline:none; font-family:var(--font);
+  transition:border-color .2s;
+}
+.filter-input:focus, .filter-select:focus, .filter-date:focus { border-color:var(--gold); }
+.filter-select option, .filter-date option { background:var(--bg-secondary); }
+.btn-filter-action {
+  padding:8px 13px; border-radius:9px; font-size:12px; font-weight:700;
+  cursor:pointer; font-family:var(--font); display:inline-flex; align-items:center; gap:5px;
+  transition:all .2s; white-space:nowrap;
+}
+.btn-filter-refresh { background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.25); color:var(--gold); }
+.btn-filter-csv     { background:rgba(46,204,113,.1);  border:1px solid rgba(46,204,113,.25); color:var(--success); }
+.btn-filter-refresh:hover { background:rgba(212,175,55,.18); }
+.btn-filter-csv:hover     { background:rgba(46,204,113,.18); }
+
+/* Settings toggles */
+.settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.settings-card { background:var(--glass); border:1px solid var(--border-dim); border-radius:14px; padding:20px; }
+.settings-title { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--border-dim); }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-info h4 { font-size:13px; font-weight:700; color:var(--text-primary); }
+.toggle-info p  { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+.switch { position:relative; display:inline-block; width:46px; height:24px; flex-shrink:0; }
+.switch input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
+  background:rgba(255,255,255,.1); transition:.35s; border-radius:24px;
+  border:1px solid var(--border-dim);
+}
+.slider:before { position:absolute; content:''; height:16px; width:16px; left:3px; bottom:3px; background:#fff; transition:.35s; border-radius:50%; }
+input:checked + .slider { background:var(--emerald); border-color:var(--emerald); }
+input:checked + .slider:before { transform:translateX(22px); }
+
+/* KB form */
+.kb-form-grid { display:grid; gap:14px; }
+.kb-form-field label { font-size:11.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:5px; }
+.kb-form-input, .kb-form-textarea, .kb-form-select {
+  width:100%; padding:10px 13px; background:rgba(22,52,54,.5);
+  border:1px solid var(--border-dim); border-radius:10px;
+  color:var(--text-primary); font-family:var(--font); font-size:13px; outline:none; transition:border-color .2s;
+}
+.kb-form-input:focus, .kb-form-textarea:focus, .kb-form-select:focus { border-color:var(--gold); }
+.kb-form-textarea { resize:vertical; min-height:90px; }
+.kb-form-select option { background:var(--bg-secondary); }
+.kb-article-item { background:var(--glass); border:1px solid var(--border-dim); border-radius:11px; padding:13px 15px; display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+.kb-article-q { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+.kb-article-cat { font-size:10.5px; color:var(--text-muted); }
+
+/* Toast */
+#toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+.toast { padding:11px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.3); animation:toastSlide .3s ease; backdrop-filter:blur(12px); }
+.toast-success { background:rgba(46,204,113,.15);  border:1px solid rgba(46,204,113,.3);  color:var(--success); }
+.toast-error   { background:rgba(231,76,60,.15);   border:1px solid rgba(231,76,60,.3);   color:var(--danger); }
+.toast-info    { background:rgba(212,175,55,.12);  border:1px solid rgba(212,175,55,.25); color:var(--gold); }
+@keyframes toastSlide { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+
+/* ═══════════════════════════════════════════
+   EXTENDED ADMIN CSS — Features 1-14
+═══════════════════════════════════════════ */
+
+/* Live stat cards */
+.live-grid { display:grid; gap:14px; grid-template-columns:repeat(3,1fr); margin-bottom:22px; }
+.live-card {
+  background:var(--glass); border:1px solid var(--border-dim); border-radius:14px;
+  padding:18px 20px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden;
+  transition:all .25s;
+}
+.live-card:hover { border-color:rgba(212,175,55,.25); transform:translateY(-2px); }
+.live-card::after {
+  content:''; position:absolute; top:0; right:0; width:3px; height:100%;
+  background:var(--live-accent,rgba(212,175,55,.5)); border-radius:0 14px 14px 0;
+}
+.live-pulse { width:8px; height:8px; border-radius:50%; margin-left:auto;
+  background:var(--live-accent,var(--gold)); animation:livePulse 1.8s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
+.live-num   { font-size:1.7rem; font-weight:900; background:var(--grad-gold-text);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.live-label { font-size:11.5px; color:var(--text-muted); font-weight:600; margin-top:2px; }
+
+/* Activity feed */
+.feed-wrap { max-height:480px; overflow-y:auto; display:flex; flex-direction:column; gap:2px;
+  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.1) transparent; }
+.feed-item {
+  display:flex; align-items:flex-start; gap:12px; padding:11px 16px;
+  border-radius:10px; border:1px solid transparent; transition:background .15s;
+}
+.feed-item:hover { background:rgba(212,175,55,.04); border-color:rgba(212,175,55,.08); }
+.feed-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.feed-txt  { font-size:12.5px; color:var(--text-secondary); flex:1; }
+.feed-time { font-size:10.5px; color:var(--text-muted); white-space:nowrap; }
+
+/* Notification badge */
+.notif-badge {
+  position:absolute; top:-3px; right:-3px; min-width:17px; height:17px; border-radius:999px;
+  background:var(--danger); color:#fff; font-size:9px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; padding:0 4px;
+  border:2px solid rgba(8,20,22,.97);
+}
+
+/* Performance table controls */
+.perf-controls {
+  display:grid; grid-template-columns:1fr 160px 170px 160px auto; gap:10px;
+  margin-bottom:18px; align-items:end;
+}
+.score-bar { height:6px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; width:80px; display:inline-block; vertical-align:middle; margin-left:6px; }
+.score-fill{ height:100%; border-radius:3px; background:linear-gradient(90deg,var(--emerald),var(--gold)); }
+
+/* Block request cards */
+.block-tabs { display:flex; gap:8px; margin-bottom:18px; }
+.btab {
+  padding:7px 18px; border-radius:10px; border:1px solid var(--border-dim);
+  background:var(--glass); color:var(--text-muted); font-size:12.5px; font-weight:700;
+  cursor:pointer; transition:all .2s; font-family:var(--font);
+}
+.btab.active { background:rgba(212,175,55,.12); border-color:rgba(212,175,55,.3); color:var(--gold); }
+.block-card {
+  background:var(--glass); border:1px solid var(--border-dim); border-radius:14px;
+  padding:18px 20px; margin-bottom:12px; transition:border-color .2s;
+}
+.block-card:hover { border-color:rgba(212,175,55,.18); }
+.block-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; flex-wrap:wrap; }
+.block-target { font-size:14px; font-weight:700; color:var(--text-primary); }
+.vote-badge  { display:inline-flex; align-items:center; gap:5px; padding:5px 13px; border-radius:999px; font-size:12px; font-weight:800; }
+.vote-pending  { background:rgba(243,156,18,.12); color:var(--warning); border:1px solid rgba(243,156,18,.25); }
+.vote-approved { background:rgba(231,76,60,.12);  color:var(--danger);  border:1px solid rgba(231,76,60,.25); }
+.vote-rejected { background:rgba(144,144,176,.1); color:var(--text-muted); border:1px solid rgba(144,144,176,.2); }
+.vote-step { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.block-reason { font-size:12.5px; color:var(--text-secondary); margin:10px 0; border-left:3px solid rgba(212,175,55,.3); padding-left:12px; }
+.block-voters { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.voter-chip { padding:3px 10px; border-radius:999px; font-size:10.5px; font-weight:700; background:rgba(46,204,113,.1); color:var(--success); border:1px solid rgba(46,204,113,.2); }
+.block-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.btn-approve { padding:7px 16px; border-radius:9px; border:1px solid rgba(46,204,113,.35); background:rgba(46,204,113,.1); color:var(--success); font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .2s; display:inline-flex; align-items:center; gap:5px; }
+.btn-approve:hover { background:rgba(46,204,113,.2); }
+.btn-reject  { padding:7px 16px; border-radius:9px; border:1px solid rgba(231,76,60,.35); background:rgba(231,76,60,.1); color:var(--danger); font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .2s; display:inline-flex; align-items:center; gap:5px; }
+.btn-reject:hover  { background:rgba(231,76,60,.2); }
+.btn-detail  { padding:7px 14px; border-radius:9px; border:1px solid var(--border-dim); background:var(--glass); color:var(--text-muted); font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .2s; display:inline-flex; align-items:center; gap:5px; }
+.btn-detail:hover  { border-color:rgba(212,175,55,.3); color:var(--gold); }
+
+/* Appeal cards */
+.appeal-card { background:var(--glass); border:1px solid var(--border-dim); border-radius:14px; padding:18px 20px; margin-bottom:12px; }
+.appeal-card-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+
+/* Fraud severity */
+.fraud-item { background:var(--glass); border-radius:12px; padding:13px 16px; display:flex; align-items:flex-start; gap:12px; border:1px solid var(--border-dim); margin-bottom:8px; }
+.fraud-sev { padding:4px 10px; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }
+.fraud-sev.critical { background:rgba(231,76,60,.15); color:var(--danger);  border:1px solid rgba(231,76,60,.3); }
+.fraud-sev.warning  { background:rgba(243,156,18,.12); color:var(--warning); border:1px solid rgba(243,156,18,.25); }
+
+/* Online user table */
+.online-dot { width:9px; height:9px; border-radius:50%; display:inline-block; background:var(--success); box-shadow:0 0 7px var(--success); }
+
+/* Notification items */
+.notif-item {
+  display:flex; align-items:flex-start; gap:13px; padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,.04); transition:background .15s; cursor:default;
+}
+.notif-item:last-child { border-bottom:none; }
+.notif-item:hover { background:rgba(212,175,55,.03); }
+.notif-item.unread { border-left:3px solid var(--gold); background:rgba(212,175,55,.04); }
+.notif-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.notif-title { font-size:13px; font-weight:700; color:var(--text-primary); }
+.notif-msg   { font-size:11.5px; color:var(--text-muted); margin-top:3px; }
+.notif-time  { font-size:10.5px; color:var(--text-muted); white-space:nowrap; margin-top:4px; }
+
+/* AI alert sections */
+.alert-section { margin-bottom:22px; }
+.alert-section-title { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-muted); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+.alert-item { background:var(--glass); border:1px solid var(--border-dim); border-radius:11px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.alert-item-title { font-size:13px; font-weight:700; color:var(--text-primary); }
+.alert-item-sub   { font-size:11.5px; color:var(--text-muted); margin-top:3px; }
+.tag-neg  { padding:3px 9px; border-radius:999px; font-size:10px; font-weight:800; background:rgba(231,76,60,.12); color:var(--danger); border:1px solid rgba(231,76,60,.25); }
+.tag-high { padding:3px 9px; border-radius:999px; font-size:10px; font-weight:800; background:rgba(243,156,18,.12); color:var(--warning); border:1px solid rgba(243,156,18,.25); }
+.tag-idle { padding:3px 9px; border-radius:999px; font-size:10px; font-weight:800; background:rgba(144,144,200,.1); color:#a0a0c0; border:1px solid rgba(144,144,200,.2); }
+
+/* Modal overlay */
+.df-modal { position:fixed; inset:0; z-index:900; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgba(0,0,0,.65); backdrop-filter:blur(6px); animation:fadeIn .2s ease; box-sizing:border-box; }
+.df-modal.hidden { display:none; }
+.df-modal-box { background:var(--bg-secondary); border:1px solid var(--border-dim); border-radius:18px; padding:28px; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.6); position:relative; box-sizing:border-box; }
+.df-modal-box.wide { max-width:740px; }
+.df-modal-title { font-size:1.1rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; gap:9px; }
+.df-modal-close { position:absolute; top:18px; right:18px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.07); border:none; color:var(--text-muted); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.df-modal-field label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:5px; }
+.df-modal-field { margin-bottom:14px; }
+.df-modal-input, .df-modal-select, .df-modal-textarea {
+  width:100%; padding:10px 13px; background:rgba(22,52,54,.5);
+  border:1px solid var(--border-dim); border-radius:10px; color:var(--text-primary);
+  font-family:var(--font); font-size:13px; outline:none; transition:border-color .2s;
+  box-sizing:border-box; pointer-events:all;
+}
+.df-modal-input:focus, .df-modal-select:focus, .df-modal-textarea:focus { border-color:var(--gold); }
+.df-modal-textarea { resize:vertical; min-height:80px; }
+.df-modal-select option { background:var(--bg-secondary); }
+.df-modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-dim); flex-wrap:wrap; }
+/* Modal responsiveness */
+@media(max-width:600px){
+  .df-modal { padding:.75rem; align-items:flex-end; }
+  .df-modal-box { padding:20px 16px; border-radius:16px 16px 0 0; max-height:92vh; max-width:100%; }
+  .df-modal-title { font-size:1rem; }
+  .df-modal-footer { justify-content:stretch; }
+  .df-modal-footer button { flex:1; justify-content:center; }
+}
+@media(max-width:400px){
+  .df-modal-box { padding:16px 12px; }
+  .df-modal-input, .df-modal-select, .df-modal-textarea { font-size:16px; } /* prevent iOS zoom */
+}
+.btn-primary { padding:9px 22px; border-radius:10px; background:var(--grad-gold); color:var(--bg-primary); border:none; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .25s; display:inline-flex; align-items:center; gap:6px; }
+.btn-primary:hover { box-shadow:0 0 20px var(--gold-glow); }
+.btn-secondary { padding:9px 22px; border-radius:10px; background:var(--glass); border:1px solid var(--border-dim); color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .2s; }
+.btn-secondary:hover { border-color:rgba(212,175,55,.3); color:var(--gold); }
+
+/* Report print view */
+.report-block { background:rgba(8,20,22,.6); border:1px solid rgba(212,175,55,.2); border-radius:12px; padding:20px; margin-bottom:14px; }
+.report-row { display:flex; gap:12px; margin-bottom:10px; font-size:13px; }
+.report-row .lbl { color:var(--text-muted); font-weight:700; width:140px; flex-shrink:0; }
+.report-row .val { color:var(--text-primary); }
+.report-approver { display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(46,204,113,.06); border:1px solid rgba(46,204,113,.15); border-radius:9px; margin-bottom:6px; font-size:12.5px; }
+
+/* Pagination */
+.pagination { display:flex; gap:6px; align-items:center; justify-content:center; margin-top:16px; }
+.pg-btn { width:34px; height:34px; border-radius:8px; border:1px solid var(--border-dim); background:var(--glass); color:var(--text-muted); font-size:12.5px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all .2s; display:flex; align-items:center; justify-content:center; }
+.pg-btn:hover, .pg-btn.active { background:rgba(212,175,55,.12); border-color:rgba(212,175,55,.3); color:var(--gold); }
+.pg-btn:disabled { opacity:.35; cursor:default; }
+
+/* Responsive */
+@media(max-width:1200px) {
+  .charts-grid-3 { grid-template-columns:1fr 1fr; }
+  .stat-grid-3 { grid-template-columns:repeat(2,1fr); }
+  .logs-filters { grid-template-columns:1fr 1fr 1fr; }
+}
+@media(max-width:900px) {
+  .admin-sidebar { display:none; }
+  .stat-grid-3, .stat-grid-4 { grid-template-columns:1fr 1fr; }
+  .charts-grid-3 { grid-template-columns:1fr; }
+  .settings-grid { grid-template-columns:1fr; }
+  .logs-filters { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:600px) {
+  .stat-grid-3, .stat-grid-4 { grid-template-columns:1fr; }
+  .content-area { padding:16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="df-bg"><div class="df-bg-aurora"></div><div class="df-bg-grid"></div></div>
+<div id="df-cursor"></div>
+<div id="df-cursor-ring"></div>
+<div id="df-toast-container"></div>
+<div id="toast-container"></div>
+
+<!-- Mobile overlay — OUTSIDE shell (same pattern as customer dashboard) -->
+<div id="admin-nav-overlay" onclick="closeAdminSidebar()"></div>
+
+<div class="admin-shell">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="admin-sidebar">
+    <a href="admin.html" class="a-brand" style="text-decoration:none">
+      <div class="df-logo-icon" style="width:34px;height:34px;border-radius:9px"><i class="ti ti-crown" style="font-size:15px"></i></div>
+      <span class="df-logo-text" style="font-size:15px">DeskFlow<em>AI</em></span>
+    </a>
+    <button class="a-nav-link active" id="nav-analytics" onclick="switchPanel('analytics',this)"><i class="ti ti-chart-pie"></i> Analytics Center</button>
+    <button class="a-nav-link" id="nav-users" onclick="switchPanel('users',this)"><i class="ti ti-users"></i> Users Directory</button>
+    <button class="a-nav-link" id="nav-tickets" onclick="switchPanel('tickets',this)"><i class="ti ti-ticket"></i> Ticket Operations</button>
+    <button class="a-nav-link" id="nav-logs" onclick="switchPanel('logs',this)"><i class="ti ti-activity"></i> Activity Logs</button>
+    <button class="a-nav-link" id="nav-settings" onclick="switchPanel('settings',this)"><i class="ti ti-adjustments"></i> Core Settings</button>
+    <button class="a-nav-link" id="nav-live" onclick="switchPanel('live',this)"><i class="ti ti-activity-heartbeat"></i> Live Dashboard</button>
+    <button class="a-nav-link" id="nav-performance" onclick="switchPanel('performance',this)"><i class="ti ti-award"></i> Agent Performance</button>
+    <button class="a-nav-link" id="nav-blocks" onclick="switchPanel('blocks',this)"><i class="ti ti-ban"></i> Block Requests</button>
+    <button class="a-nav-link" id="nav-appeals" onclick="switchPanel('appeals',this)"><i class="ti ti-flag"></i> Appeals</button>
+    <button class="a-nav-link" id="nav-monitoring" onclick="switchPanel('monitoring',this)"><i class="ti ti-eye"></i> User Monitoring</button>
+    <button class="a-nav-link" id="nav-alerts" onclick="switchPanel('alerts',this)"><i class="ti ti-alert-triangle"></i> AI Alerts</button>
+    <button class="a-nav-link" id="nav-notifications" onclick="switchPanel('notifications',this)" style="position:relative">
+      <i class="ti ti-bell"></i> Notifications
+      <span class="notif-badge" id="sidebar-notif-badge" style="display:none">0</span>
+    </button>
+    <button class="a-nav-link" id="nav-fraud" onclick="switchPanel('fraud',this)"><i class="ti ti-shield-x"></i> Fraud Alerts</button>
+    <button class="a-nav-link" id="nav-reputation" onclick="switchPanel('reputation',this)"><i class="ti ti-star"></i> Reputation</button>
+    <button class="a-nav-link" id="nav-insights" onclick="switchPanel('insights',this)"><i class="ti ti-chart-pie"></i> AI Insights</button>
+    <button class="a-nav-link" id="nav-weeklyreport" onclick="switchPanel('weeklyreport',this)"><i class="ti ti-file-analytics"></i> Weekly Report</button>
+    <div class="a-nav-spacer"></div>
+    <button class="a-nav-link" onclick="logout()" style="color:var(--danger)"><i class="ti ti-logout"></i> Logout</button>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <div class="admin-main">
+
+    <header class="admin-header">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="df-hamburger" id="admin-hamburger" onclick="toggleAdminSidebar()" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="admin-user">
+        <div class="admin-avatar" id="admin-avatar">X</div>
+        <div class="admin-header-info">
+          <h4 id="admin-name">Loading…</h4>
+          <p>Administrator Account</p>
+        </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="df-badge df-badge-gold"><i class="ti ti-crown" style="font-size:11px"></i> Admin</div>
+        <button class="btn-header-action" style="position:relative" onclick="switchPanel('notifications',document.getElementById('nav-notifications'))" title="Notifications">
+          <i class="ti ti-bell"></i>
+          <span class="notif-badge" id="header-notif-badge" style="display:none">0</span>
+        </button>
+        <button class="df-theme-btn" onclick="DFTheme.toggle()" title="Toggle light/dark mode"><i class="ti ti-sun df-theme-icon"></i></button>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- ═══ PANEL 1: Analytics ═══ -->
+      <div id="panel-analytics" class="panel active">
+        <div class="page-title">Analytics Center</div>
+        <div class="page-sub">System-wide indicators, CSAT ratings, agent resolution workloads, and statistics</div>
+
+        <div class="stat-grid stat-grid-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(52,152,219,.12);color:var(--info)"><i class="ti ti-ticket"></i></div>
+            <div><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Tickets</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-chart-pie"></i></div>
+            <div><div class="stat-num" id="stat-resolution-rate">0%</div><div class="stat-label">Resolution Rate</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(212,175,55,.12);color:var(--gold)"><i class="ti ti-users"></i></div>
+            <div><div class="stat-num" id="stat-total-users">0</div><div class="stat-label">Total Users</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(167,139,250,.12);color:#a78bfa"><i class="ti ti-headset"></i></div>
+            <div><div class="stat-num" id="stat-total-agents">0</div><div class="stat-label">Total Agents</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(244,114,182,.1);color:#f472b6"><i class="ti ti-mood-smile"></i></div>
+            <div><div class="stat-num" id="stat-csat">N/A</div><div class="stat-label">Avg CSAT</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-loader"></i></div>
+            <div><div class="stat-num" id="stat-open">0</div><div class="stat-label">Open Tickets</div></div>
+          </div>
+        </div>
+
+        <div class="charts-grid charts-grid-3">
+          <div class="chart-card">
+            <div class="chart-title"><i class="ti ti-category"></i> Ticket Categories</div>
+            <canvas id="cat-chart" height="220"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><i class="ti ti-alert-triangle"></i> Priority Breakdown</div>
+            <canvas id="priority-chart" height="220"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><i class="ti ti-mood-happy"></i> Sentiment Analysis</div>
+            <canvas id="sentiment-chart" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="df-table-card">
+          <div class="df-table-header"><span><i class="ti ti-users" style="margin-right:6px;color:var(--gold)"></i>Agent Performance</span></div>
+          <table class="df-table">
+            <thead>
+              <tr>
+                <th>Agent</th><th>Assigned</th><th>Resolved</th>
+                <th>CSAT</th><th>Avg Response</th><th>Rank</th>
+              </tr>
+            </thead>
+            <tbody id="agent-perf-table">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px">Loading agent stats…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-star"></i> Feedback Summary</div>
+          <div id="feedback-summary-overall" style="font-size:1.5rem;font-weight:900;background:var(--grad-gold-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:18px">Overall Avg: —</div>
+          <div id="feedback-summary-bars"></div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL 2: Users ═══ -->
+      <div id="panel-users" class="panel">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <div class="page-title" style="margin-bottom:0">User Directory</div>
+            <div class="page-sub" style="margin-top:4px">View user roles and update access logs (RBAC authorization control)</div>
+          </div>
+          <button class="btn-primary" onclick="openModal('modal-create-user')" style="display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0">
+            <i class="ti ti-user-plus"></i> Create Account
+          </button>
+        </div>
+        <div class="df-table-card">
+          <table class="df-table">
+            <thead>
+              <tr>
+                <th>User ID</th><th>Full Name</th><th>Email</th>
+                <th>Current Role</th><th>Change Role</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:28px">Loading users…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL 3: Tickets ═══ -->
+      <div id="panel-tickets" class="panel">
+        <div class="page-title">System Ticket Operations</div>
+        <div class="page-sub">Audit all support queues and manually override support agent assignments</div>
+        <div style="overflow-x:auto">
+          <div class="df-table-card">
+            <table class="df-table">
+              <thead>
+                <tr>
+                  <th>ID</th><th>Customer</th><th>Subject</th><th>Category</th>
+                  <th>Priority</th><th>Status</th><th>Assigned Agent</th><th>Reassign</th><th>Delete</th>
+                </tr>
+              </thead>
+              <tbody id="tickets-table-body">
+                <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:28px">Loading tickets…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL 4: Logs ═══ -->
+      <div id="panel-logs" class="panel">
+        <div class="page-title">Activity Logs</div>
+        <div class="page-sub">Enterprise-grade audit trail — every user action, ticket event, and AI interaction recorded.</div>
+
+        <div class="stat-grid stat-grid-4" style="margin-bottom:20px">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(52,152,219,.12);color:var(--info)"><i class="ti ti-list"></i></div>
+            <div><div class="stat-num" id="log-total">0</div><div class="stat-label">Total Events</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-clock"></i></div>
+            <div><div class="stat-num" id="log-24h">0</div><div class="stat-label">Last 24 Hours</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(167,139,250,.12);color:#a78bfa"><i class="ti ti-users"></i></div>
+            <div><div class="stat-num" id="log-users">0</div><div class="stat-label">Active Users</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-ticket"></i></div>
+            <div><div class="stat-num" id="log-tickets">0</div><div class="stat-label">Ticket Events</div></div>
+          </div>
+        </div>
+
+        <div class="logs-filters">
+          <div class="filter-group">
+            <label>Search email / detail</label>
+            <input type="text" id="log-search" class="filter-input" placeholder="e.g. deva@gmail.com" oninput="filterLogs()"/>
+          </div>
+          <div class="filter-group">
+            <label>Role</label>
+            <select id="log-filter-role" class="filter-select" onchange="filterLogs()">
+              <option value="">All Roles</option>
+              <option value="customer">Customer</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Action Type</label>
+            <select id="log-filter-action" class="filter-select" onchange="filterLogs()">
+              <option value="">All Actions</option>
+              <option value="USER_LOGIN">Login</option>
+              <option value="USER_LOGOUT">Logout</option>
+              <option value="USER_SIGNUP">Signup</option>
+              <option value="GOOGLE_LOGIN">Google Login</option>
+              <option value="PASSWORD_RESET">Password Reset</option>
+              <option value="TICKET_CREATED">Ticket Created</option>
+              <option value="TICKET_UPDATED">Ticket Updated</option>
+              <option value="TICKET_ASSIGNED">Ticket Assigned</option>
+              <option value="TICKET_RESOLVED">Ticket Resolved</option>
+              <option value="TICKET_DELETED">Ticket Deleted</option>
+              <option value="TICKET_MESSAGE">Message Sent</option>
+              <option value="TICKET_FEEDBACK">Feedback Submitted</option>
+              <option value="AI_CHAT_USED">AI Chat Used</option>
+              <option value="KB_SEARCHED">KB Searched</option>
+              <option value="KB_ARTICLE_ADDED">KB Article Added</option>
+              <option value="ROLE_CHANGED">Role Changed</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" id="log-from" class="filter-date" onchange="filterLogs()"/>
+          </div>
+          <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" id="log-to" class="filter-date" onchange="filterLogs()"/>
+          </div>
+          <div class="filter-group" style="display:flex;gap:7px;align-items:flex-end">
+            <button class="btn-filter-action btn-filter-refresh" onclick="loadActivityLogs()"><i class="ti ti-refresh"></i> Refresh</button>
+            <button class="btn-filter-action btn-filter-csv" onclick="exportLogsCSV()"><i class="ti ti-download"></i> CSV</button>
+          </div>
+        </div>
+
+        <div class="df-table-card">
+          <div class="df-table-header">
+            <span><i class="ti ti-file-text" style="margin-right:6px;color:var(--gold)"></i>Audit Trail</span>
+            <span id="log-count-label" style="font-size:11px;color:var(--text-muted)">Loading…</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="df-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th><th>Email</th><th>Role</th>
+                  <th>Action</th><th>Details</th><th>IP Address</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body">
+                <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">Loading activity logs…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL 5: Settings ═══ -->
+      <div id="panel-settings" class="panel">
+        <div class="page-title">Core Settings</div>
+        <div class="page-sub">Configure AI rules, automated SLAs, and virtual chatbot responders</div>
+
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-title"><i class="ti ti-robot"></i> AI Engine Rules</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>24/7 Zia Chatbot Responding</h4>
+                <p>Autopilot responses using self-service KB documentation.</p>
+              </div>
+              <label class="switch"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Auto-escalation ticketing</h4>
+                <p>Create a support ticket automatically if chatbot escalation triggers.</p>
+              </div>
+              <label class="switch"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Automated Sentiment Alerting</h4>
+                <p>Notify agents when a negative customer ticket is received.</p>
+              </div>
+              <label class="switch"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-title"><i class="ti ti-alarm-warning"></i> Service Level Agreements (SLA)</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>High Priority Escalation (2 Hours)</h4>
+                <p>Mark high-priority tickets as urgent after SLA expiration.</p>
+              </div>
+              <label class="switch"><input type="checkbox" checked/><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Email Ticket Alerts</h4>
+                <p>Log automated mock email delivery updates.</p>
+              </div>
+              <label class="switch"><input type="checkbox"/><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- KB Management -->
+        <div>
+          <div class="page-title" style="font-size:1.2rem;margin-bottom:4px"><i class="ti ti-book" style="color:var(--gold)"></i> Knowledge Base Management</div>
+          <div class="page-sub">Add new help articles that the Zia chatbot and customers can search.</div>
+
+          <div class="chart-card" style="max-width:720px;margin-bottom:22px">
+            <div class="chart-title"><i class="ti ti-plus"></i> Add New KB Article</div>
+            <div class="kb-form-grid">
+              <div class="kb-form-field">
+                <label>Question / Title</label>
+                <input type="text" id="kb-question" class="kb-form-input" placeholder="e.g. How do I upgrade my plan?"/>
+              </div>
+              <div class="kb-form-field">
+                <label>Answer</label>
+                <textarea id="kb-answer" class="kb-form-textarea" placeholder="Detailed answer that will be shown to customers…"></textarea>
+              </div>
+              <div class="kb-form-field">
+                <label>Category</label>
+                <select id="kb-category" class="kb-form-select">
+                  <option value="Account Access">Account Access</option>
+                  <option value="Billing">Billing</option>
+                  <option value="Technical Support">Technical Support</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Feature Request">Feature Request</option>
+                </select>
+              </div>
+              <div>
+                <button onclick="addKBArticle()" style="padding:11px 20px;background:var(--grad-gold);color:var(--bg-primary);border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:var(--font);transition:all .25s" onmouseover="this.style.boxShadow='0 0 24px var(--gold-glow)'" onmouseout="this.style.boxShadow='none'"><i class="ti ti-plus"></i> Add Article</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:12px">Existing Articles</div>
+            <div id="kb-admin-list" style="display:grid;gap:10px;max-width:720px">
+              <div style="color:var(--text-muted);font-size:13px">Loading articles…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Authorized Email Whitelist ── -->
+        <div style="margin-top:32px">
+          <div class="page-title" style="font-size:1.2rem;margin-bottom:4px"><i class="ti ti-mail-check" style="color:var(--gold)"></i> Authorized Staff Emails</div>
+          <div class="page-sub">Only emails listed here can register as <strong>Agent</strong> or <strong>Admin</strong>. Customers can sign up freely.</div>
+
+          <div class="chart-card" style="max-width:720px;margin:16px 0 18px">
+            <div class="chart-title"><i class="ti ti-plus"></i> Add New Authorization</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-top:8px">
+              <div style="flex:1;min-width:220px">
+                <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Email Address</label>
+                <input id="auth-email-input" type="email" class="df-modal-input" placeholder="agent@company.com" style="width:100%;box-sizing:border-box"/>
+              </div>
+              <div style="min-width:140px">
+                <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">Role</label>
+                <select id="auth-role-input" class="df-modal-select" style="width:100%">
+                  <option value="agent">Support Agent</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <button onclick="addAuthorizedEmail()" style="padding:10px 18px;background:var(--grad-gold);color:var(--bg-primary);border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap"><i class="ti ti-send"></i> Authorize</button>
+            </div>
+          </div>
+
+          <div id="auth-emails-list" style="max-width:720px">
+            <div style="color:var(--text-muted);font-size:13px">Loading authorized emails…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: LIVE DASHBOARD ═══ -->
+      <div id="panel-live" class="panel">
+        <div class="page-title">Live Dashboard</div>
+        <div class="page-sub">Real-time system health — auto-refreshes every 30 seconds</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+          <button class="btn-filter-action btn-filter-refresh" onclick="loadLiveStats()"><i class="ti ti-refresh"></i> Refresh Now</button>
+          <span id="live-last-updated" style="font-size:11px;color:var(--text-muted)">Updating…</span>
+        </div>
+        <div class="live-grid">
+          <div class="live-card" style="--live-accent:rgba(46,204,113,.6)">
+            <div class="stat-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-users"></i></div>
+            <div><div class="live-num" id="lv-cust-online">—</div><div class="live-label">Customers Online</div></div>
+            <div class="live-pulse" style="background:var(--success)"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(167,139,250,.6)">
+            <div class="stat-icon" style="background:rgba(167,139,250,.12);color:#a78bfa"><i class="ti ti-headset"></i></div>
+            <div><div class="live-num" id="lv-agents-online">—</div><div class="live-label">Agents Online</div></div>
+            <div class="live-pulse" style="background:#a78bfa"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(243,156,18,.6)">
+            <div class="stat-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-ticket"></i></div>
+            <div><div class="live-num" id="lv-open">—</div><div class="live-label">Open Tickets</div></div>
+            <div class="live-pulse" style="background:var(--warning)"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(46,204,113,.5)">
+            <div class="stat-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-circle-check"></i></div>
+            <div><div class="live-num" id="lv-resolved-today">—</div><div class="live-label">Resolved Today</div></div>
+            <div class="live-pulse" style="background:var(--success)"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(52,152,219,.6)">
+            <div class="stat-icon" style="background:rgba(52,152,219,.12);color:var(--info)"><i class="ti ti-loader"></i></div>
+            <div><div class="live-num" id="lv-pending">—</div><div class="live-label">Pending Tickets</div></div>
+            <div class="live-pulse" style="background:var(--info)"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(52,211,153,.6)">
+            <div class="stat-icon" style="background:rgba(52,211,153,.12);color:#34d399"><i class="ti ti-robot"></i></div>
+            <div><div class="live-num" id="lv-ai-resp">—</div><div class="live-label">AI Responses Today</div></div>
+            <div class="live-pulse" style="background:#34d399"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(231,76,60,.6)">
+            <div class="stat-icon" style="background:rgba(231,76,60,.12);color:var(--danger)"><i class="ti ti-ban"></i></div>
+            <div><div class="live-num" id="lv-pending-blocks">—</div><div class="live-label">Pending Block Requests</div></div>
+            <div class="live-pulse" style="background:var(--danger)"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(212,175,55,.6)">
+            <div class="stat-icon" style="background:rgba(212,175,55,.12);color:var(--gold)"><i class="ti ti-star"></i></div>
+            <div><div class="live-num" id="lv-avg-rating">—</div><div class="live-label">Avg Customer Rating</div></div>
+            <div class="live-pulse"></div>
+          </div>
+          <div class="live-card" style="--live-accent:rgba(46,204,113,.6)">
+            <div class="stat-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-server"></i></div>
+            <div><div class="live-num" id="lv-health" style="font-size:1rem">Healthy</div><div class="live-label">System Health</div></div>
+            <div class="live-pulse" style="background:var(--success)"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-list"></i> Recent Activity Feed
+            <span style="margin-left:auto;font-size:11px;color:var(--text-muted);font-weight:400">Newest first</span>
+          </div>
+          <div class="feed-wrap" id="activity-feed-list">
+            <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">Loading activity…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: AGENT PERFORMANCE ═══ -->
+      <div id="panel-performance" class="panel">
+        <div class="page-title">Agent Performance Center</div>
+        <div class="page-sub">Comprehensive performance metrics for every support agent</div>
+
+        <div class="perf-controls">
+          <div class="filter-group"><label>Search Agent</label>
+            <input type="text" id="perf-search" class="filter-input" placeholder="Name or email…" oninput="renderPerformanceTable()"/>
+          </div>
+          <div class="filter-group"><label>Department</label>
+            <select id="perf-dept" class="filter-select" onchange="renderPerformanceTable()">
+              <option value="">All Departments</option>
+              <option>Support</option><option>Technical</option><option>Billing</option><option>Escalation</option>
+            </select>
+          </div>
+          <div class="filter-group"><label>Status</label>
+            <select id="perf-status" class="filter-select" onchange="renderPerformanceTable()">
+              <option value="">All</option><option value="Online">Online</option><option value="Offline">Offline</option>
+            </select>
+          </div>
+          <div class="filter-group"><label>Sort By</label>
+            <select id="perf-sort" class="filter-select" onchange="renderPerformanceTable()">
+              <option value="productivityScore">Productivity</option>
+              <option value="resolved">Resolved</option>
+              <option value="csat">CSAT</option>
+              <option value="assigned">Assigned</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+          <div class="filter-group" style="display:flex;align-items:flex-end">
+            <button class="btn-filter-action btn-filter-refresh" onclick="loadAgentPerformance()"><i class="ti ti-refresh"></i> Refresh</button>
+          </div>
+        </div>
+
+        <div class="df-table-card" style="overflow-x:auto">
+          <table class="df-table" style="min-width:1000px">
+            <thead><tr>
+              <th>Agent</th><th>Dept</th><th>Status</th>
+              <th>Assigned</th><th>Resolved</th><th>Pending</th>
+              <th>Avg Resp</th><th>Avg Res</th><th>CSAT</th>
+              <th>AI%</th><th>Escalated</th><th>Score</th><th>Warnings</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="perf-table-body">
+              <tr><td colspan="14" style="text-align:center;color:var(--text-muted);padding:40px">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="perf-pagination"></div>
+      </div>
+
+      <!-- ═══ PANEL: BLOCK REQUESTS ═══ -->
+      <div id="panel-blocks" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+          <div>
+            <div class="page-title">Block &amp; Unblock Requests</div>
+            <div class="page-sub">3-admin approval required for both blocking and unblocking accounts</div>
+          </div>
+          <button class="btn-primary" onclick="openBlockModal()"><i class="ti ti-ban"></i> Request Block</button>
+        </div>
+
+        <!-- Section toggle: Block / Unblock -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--border-dim);padding-bottom:12px">
+          <button class="btab active" id="section-tab-blocks" onclick="switchBlockSection('blocks',this)"><i class="ti ti-ban" style="font-size:12px"></i> Block Requests</button>
+          <button class="btab" id="section-tab-unblocks" onclick="switchBlockSection('unblocks',this)" style="color:var(--success)"><i class="ti ti-lock-open" style="font-size:12px"></i> Unblock Requests</button>
+        </div>
+
+        <!-- BLOCK REQUESTS sub-section -->
+        <div id="section-blocks">
+          <div class="block-tabs">
+            <button class="btab active" onclick="filterBlocks('all',this)">All</button>
+            <button class="btab" onclick="filterBlocks('pending',this)">Pending</button>
+            <button class="btab" onclick="filterBlocks('approved',this)">Blocked</button>
+            <button class="btab" onclick="filterBlocks('rejected',this)">Rejected</button>
+            <button class="btab" onclick="filterBlocks('unblocked',this)">Unblocked</button>
+          </div>
+          <div id="blocks-list">
+            <div style="text-align:center;color:var(--text-muted);padding:40px">Loading block requests…</div>
+          </div>
+        </div>
+
+        <!-- UNBLOCK REQUESTS sub-section -->
+        <div id="section-unblocks" style="display:none">
+          <div class="block-tabs">
+            <button class="btab active" id="ubtab-all"      onclick="filterUnblocks('all',this)">All</button>
+            <button class="btab"        id="ubtab-pending"  onclick="filterUnblocks('pending',this)">Pending (Needs Votes)</button>
+            <button class="btab"        id="ubtab-approved" onclick="filterUnblocks('approved',this)">Approved</button>
+            <button class="btab"        id="ubtab-rejected" onclick="filterUnblocks('rejected',this)">Rejected</button>
+          </div>
+          <div id="unblocks-list">
+            <div style="text-align:center;color:var(--text-muted);padding:40px">Loading unblock requests…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: APPEALS ═══ -->
+      <div id="panel-appeals" class="panel">
+        <div class="page-title">Appeal System</div>
+        <div class="page-sub">Review and resolve account reinstatement appeals from blocked users</div>
+
+        <div class="block-tabs">
+          <button class="btab active" onclick="filterAppeals('all',this)">All</button>
+          <button class="btab" onclick="filterAppeals('pending',this)">Pending</button>
+          <button class="btab" onclick="filterAppeals('approved',this)">Approved</button>
+          <button class="btab" onclick="filterAppeals('rejected',this)">Rejected</button>
+        </div>
+
+        <div id="appeals-list">
+          <div style="text-align:center;color:var(--text-muted);padding:40px">Loading appeals…</div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: USER MONITORING ═══ -->
+      <div id="panel-monitoring" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div class="page-title">Live User Monitoring</div>
+            <div class="page-sub">Currently active users and fraud / abuse detection alerts</div>
+          </div>
+          <button class="btn-filter-action btn-filter-refresh" onclick="loadMonitoring()"><i class="ti ti-refresh"></i> Refresh</button>
+        </div>
+
+        <div class="df-table-card" style="margin-bottom:24px">
+          <div class="df-table-header"><span><span class="online-dot" style="margin-right:7px"></span>Currently Online Users</span>
+            <span id="online-count" style="font-size:11px;color:var(--text-muted)">—</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="df-table" style="min-width:700px">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Current Page</th><th>Session Time</th><th>Last Active</th><th>Status</th></tr></thead>
+              <tbody id="monitoring-table">
+                <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:28px">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="page-title" style="font-size:1.1rem;margin-bottom:6px"><i class="ti ti-shield-exclamation" style="color:var(--danger)"></i> Fraud &amp; Abuse Alerts</div>
+        <div class="page-sub">Auto-detected suspicious patterns in user behaviour</div>
+        <div id="fraud-alerts-list" style="margin-top:14px">
+          <div style="color:var(--text-muted);font-size:13px;padding:20px 0">Checking for suspicious activity…</div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: AI ALERTS ═══ -->
+      <div id="panel-alerts" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div class="page-title">AI Alert Center</div>
+            <div class="page-sub">Live alerts from AI engine — sentiment, priority, escalations, and workload</div>
+          </div>
+          <button class="btn-filter-action btn-filter-refresh" onclick="loadAIAlerts()"><i class="ti ti-refresh"></i> Refresh</button>
+        </div>
+
+        <div class="stat-grid stat-grid-3" style="margin-bottom:22px">
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(231,76,60,.12);color:var(--danger)"><i class="ti ti-mood-sad"></i></div><div><div class="stat-num" id="al-neg">0</div><div class="stat-label">Negative Sentiment</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-flame"></i></div><div><div class="stat-num" id="al-high">0</div><div class="stat-label">High Priority Open</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(144,144,200,.12);color:#a0a0c8"><i class="ti ti-clock-pause"></i></div><div><div class="stat-num" id="al-idle">0</div><div class="stat-label">Inactive Tickets (48h)</div></div></div>
+        </div>
+
+        <div class="alert-section">
+          <div class="alert-section-title"><i class="ti ti-mood-sad" style="color:var(--danger)"></i> Negative Sentiment Alerts</div>
+          <div id="al-neg-list"></div>
+        </div>
+        <div class="alert-section">
+          <div class="alert-section-title"><i class="ti ti-flame" style="color:var(--warning)"></i> High Priority Open Tickets</div>
+          <div id="al-high-list"></div>
+        </div>
+        <div class="alert-section">
+          <div class="alert-section-title"><i class="ti ti-users-group" style="color:#a78bfa"></i> Overloaded Agents</div>
+          <div id="al-overload-list"></div>
+        </div>
+        <div class="alert-section">
+          <div class="alert-section-title"><i class="ti ti-clock-pause" style="color:#a0a0c8"></i> Inactive Tickets (&gt;48h)</div>
+          <div id="al-idle-list"></div>
+        </div>
+        <div class="alert-section">
+          <div class="alert-section-title"><i class="ti ti-arrow-up-right" style="color:var(--gold)"></i> Escalation Suggestions (Unassigned)</div>
+          <div id="al-escalate-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: NOTIFICATIONS ═══ -->
+      <div id="panel-notifications" class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div class="page-title">Notification Center</div>
+            <div class="page-sub">System-wide admin alerts — block requests, appeals, priority tickets, and more</div>
+          </div>
+          <button class="btn-filter-action btn-filter-csv" onclick="markAllNotifsRead()" style="color:var(--success)"><i class="ti ti-checks"></i> Mark All Read</button>
+        </div>
+        <div class="df-table-card">
+          <div id="notif-list">
+            <div style="padding:40px;text-align:center;color:var(--text-muted)">Loading notifications…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: FRAUD ALERTS ═══ -->
+      <div id="panel-fraud" class="panel">
+        <div class="page-title">Fraud Alerts</div>
+        <div class="page-sub">AI-detected spam, duplicate tickets, bot behaviour, and abuse reports</div>
+        <div class="df-table-card">
+          <div id="fraud-alerts-list"><div style="padding:40px;text-align:center;color:var(--text-muted)">Loading fraud alerts…</div></div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: REPUTATION ═══ -->
+      <div id="panel-reputation" class="panel">
+        <div class="page-title">Customer Reputation Scores</div>
+        <div class="page-sub">AI-calculated reputation based on ticket history, spam reports, and account behaviour</div>
+        <div class="df-table-card">
+          <table class="df-table">
+            <thead><tr><th>Email</th><th>Score</th><th>Tier</th><th>Recent Events</th><th>Action</th></tr></thead>
+            <tbody id="reputation-table-body"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:28px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: AI INSIGHTS ═══ -->
+      <div id="panel-insights" class="panel">
+        <div class="page-title">AI Dashboard Insights</div>
+        <div class="page-sub">Real-time KPIs: ticket trends, resolution rate, agent performance, satisfaction scores</div>
+        <div id="insights-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex-wrap:wrap">
+          <div class="df-table-card">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">Tickets by Priority</div>
+            <div id="insights-priority"></div>
+          </div>
+          <div class="df-table-card">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">Tickets by Category</div>
+            <div id="insights-category"></div>
+          </div>
+        </div>
+        <div class="df-table-card" style="margin-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px">Ticket Trend (Last 30 Days)</div>
+          <div id="insights-trend" style="font-size:12px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:4px;align-items:flex-end;height:80px"></div>
+        </div>
+      </div>
+
+      <!-- ═══ PANEL: WEEKLY REPORT ═══ -->
+      <div id="panel-weeklyreport" class="panel">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div>
+            <div class="page-title" style="margin-bottom:0">Weekly AI Report</div>
+            <div class="page-sub" style="margin-top:4px">Auto-generated weekly performance summary with AI recommendations</div>
+          </div>
+          <button class="btn-primary" id="generate-report-btn" onclick="generateWeeklyReport()"><i class="ti ti-file-analytics"></i> Generate Report</button>
+        </div>
+        <div id="weekly-report-content"><div style="padding:40px;text-align:center;color:var(--text-muted)">Click "Generate Report" to create this week's AI summary.</div></div>
+      </div>
+
+    </div><!-- /content-area -->
+
+  <!-- ═══ MODALS ═══ -->
+
+  <!-- Block Request Modal -->
+  <div class="df-modal hidden" id="modal-block">
+    <div class="df-modal-box">
+      <button class="df-modal-close" onclick="closeModal('modal-block')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-ban" style="color:var(--danger)"></i> Request Account Block</div>
+      <div class="df-modal-field"><label>Target Email *</label><input id="mb-email" class="df-modal-input" type="email" placeholder="user@example.com"/></div>
+      <div class="df-modal-field"><label>Full Name</label><input id="mb-name" class="df-modal-input" type="text" placeholder="Account holder name (optional)"/></div>
+      <div class="df-modal-field"><label>Role</label>
+        <select id="mb-role" class="df-modal-select">
+          <option value="">— Select role —</option>
+          <option value="customer">Customer</option>
+          <option value="agent">Support Agent</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="df-modal-field"><label>Policy Violated *</label>
+        <select id="mb-policy" class="df-modal-select">
+          <option>Terms of Service</option><option>Spam Policy</option><option>Abuse Policy</option>
+          <option>Fraud Prevention</option><option>Community Guidelines</option>
+        </select>
+      </div>
+      <div class="df-modal-field"><label>Reason (mandatory) *</label>
+        <textarea id="mb-reason" class="df-modal-textarea" placeholder="Describe the specific behaviour that warrants blocking this account…"></textarea>
+      </div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-block')">Cancel</button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#e74c3c,#c0392b);box-shadow:none" onclick="submitBlockRequest()"><i class="ti ti-send"></i> Submit Request (1/3)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block Report Modal -->
+  <div class="df-modal hidden" id="modal-report">
+    <div class="df-modal-box wide">
+      <button class="df-modal-close" onclick="closeModal('modal-report')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-file-description" style="color:var(--gold)"></i> Account Block Report</div>
+      <div id="modal-report-content"></div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-report')">Close</button>
+        <button class="btn-primary" onclick="printReport()"><i class="ti ti-printer"></i> Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent Detail Report Modal -->
+  <div class="df-modal hidden" id="modal-agent-report">
+    <div class="df-modal-box wide">
+      <button class="df-modal-close" onclick="closeModal('modal-agent-report')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-user-check" style="color:var(--gold)"></i> Agent Performance Report</div>
+      <div id="modal-agent-report-content"></div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-agent-report')">Close</button>
+        <button class="btn-primary" onclick="printReport()"><i class="ti ti-download"></i> Download Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Detail Report Modal -->
+  <div class="df-modal hidden" id="modal-cust-report">
+    <div class="df-modal-box wide">
+      <button class="df-modal-close" onclick="closeModal('modal-cust-report')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-user" style="color:var(--info)"></i> Customer Detail Report</div>
+      <div id="modal-cust-report-content"></div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-cust-report')">Close</button>
+        <button class="btn-primary" onclick="printReport()"><i class="ti ti-download"></i> Download Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appeal Review Modal -->
+  <div class="df-modal hidden" id="modal-appeal-review">
+    <div class="df-modal-box">
+      <button class="df-modal-close" onclick="closeModal('modal-appeal-review')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-flag" style="color:var(--info)"></i> Review Appeal</div>
+      <div id="modal-appeal-info" style="margin-bottom:16px;font-size:13px;color:var(--text-secondary)"></div>
+      <div class="df-modal-field"><label>Review Note</label>
+        <textarea id="appeal-note" class="df-modal-textarea" placeholder="Optional note for the decision…"></textarea>
+      </div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-appeal-review')">Cancel</button>
+        <button class="btn-reject" onclick="submitAppealReview('reject')"><i class="ti ti-x"></i> Reject</button>
+        <button class="btn-approve" onclick="submitAppealReview('approve')"><i class="ti ti-check"></i> Approve & Restore</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Account Modal -->
+  <div class="df-modal hidden" id="modal-create-user">
+    <div class="df-modal-box">
+      <button class="df-modal-close" onclick="closeModal('modal-create-user')"><i class="ti ti-x"></i></button>
+      <div class="df-modal-title"><i class="ti ti-user-plus" style="color:var(--gold)"></i> Create User Account</div>
+      <div class="df-modal-field">
+        <label>Full Name</label>
+        <input id="cu-name" class="df-modal-input" type="text" placeholder="Full name"/>
+      </div>
+      <div class="df-modal-field">
+        <label>Email Address</label>
+        <input id="cu-email" class="df-modal-input" type="email" placeholder="user@example.com"/>
+      </div>
+      <div class="df-modal-field">
+        <label>Password</label>
+        <input id="cu-password" class="df-modal-input" type="password" placeholder="Minimum 6 characters"/>
+      </div>
+      <div class="df-modal-field">
+        <label>Role</label>
+        <select id="cu-role" class="df-modal-input">
+          <option value="customer">Customer</option>
+          <option value="agent">Support Agent</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="df-modal-footer">
+        <button class="btn-secondary" onclick="closeModal('modal-create-user')">Cancel</button>
+        <button class="btn-primary" id="cu-submit-btn" onclick="adminCreateUser()"><i class="ti ti-user-plus"></i> Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /admin-main -->
+</div><!-- /admin-shell -->
+
+<script src="df-core.js"></script>
+<script src="df-features.js"></script>
+<script>
+/* ── Auth ── */
+let currentUser = null;
+try { currentUser = JSON.parse(localStorage.getItem("deskflow_user")); } catch(e) {}
+
+function _dfRoleRedirect(role) {
+  if (role === "admin")    { window.location.href = "admin.html";     return; }
+  if (role === "agent")    { window.location.href = "agent.html";     return; }
+  if (role === "customer") { window.location.href = "dashboard.html"; return; }
+  window.location.href = "signin.html";
+}
+
+if (!currentUser) {
+  window.location.href = "signin.html";
+} else if (currentUser.role !== "admin") {
+  _dfRoleRedirect(currentUser.role);
+} else {
+  document.getElementById("admin-name").innerText = currentUser.name;
+  document.getElementById("admin-avatar").innerText = currentUser.name.charAt(0).toUpperCase();
+}
+
+/* Server-side verification — catches tampered localStorage and role changes */
+(async function _verifySession() {
+  const _tok = localStorage.getItem("deskflow_token");
+  if (!_tok) { window.location.href = "signin.html"; return; }
+  try {
+    const r = await fetch("/api/auth/me", { headers: { Authorization: "Bearer " + _tok } });
+    if (!r.ok) {
+      localStorage.removeItem("deskflow_token");
+      localStorage.removeItem("deskflow_user");
+      window.location.href = "signin.html";
+      return;
+    }
+    const d = await r.json();
+    currentUser = { ...(currentUser || {}), ...d.user, role: d.role };
+    localStorage.setItem("deskflow_user", JSON.stringify(currentUser));
+    if (d.role !== "admin") { _dfRoleRedirect(d.role); return; }
+    /* Refresh displayed name in case it was updated */
+    const nameEl = document.getElementById("admin-name");
+    const avatarEl = document.getElementById("admin-avatar");
+    if (nameEl && d.user.name) nameEl.innerText = d.user.name;
+    if (avatarEl && d.user.name) avatarEl.innerText = d.user.name.charAt(0).toUpperCase();
+  } catch (_) { /* network failure — keep page loaded with localStorage fallback */ }
+})();
+
+/* ── Fetch patch ── */
+(function patchFetch() {
+  const _orig = window.fetch;
+  window.fetch = function(url, opts = {}) {
+    const token = localStorage.getItem("deskflow_token");
+    if (token && typeof url === "string" && url.includes("/api")) {
+      opts.headers = { ...opts.headers, "Authorization": `Bearer ${token}` };
+    }
+    return _orig.call(this, url, opts);
+  };
+}());
+
+/* ── Chart defaults ── */
+Chart.defaults.color = "rgba(214,214,214,0.7)";
+let catChartInst = null, priorityChartInst = null, sentimentChartInst = null;
+let allTickets = [], allUsers = [];
+
+/* ── Toast ── */
+function showToast(message, type = 'info', duration = 3200) {
+  if (window.dfToast) { window.dfToast(message, type, duration); return; }
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`; toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, duration);
+}
+
+/* ── Panel switch ── */
+const _newAdminPanels = ["live","performance","blocks","appeals","monitoring","alerts","notifications","fraud","reputation","insights","weeklyreport"];
+function switchPanel(panelId, element) {
+  document.querySelectorAll(".panel").forEach(p => { p.classList.remove("active"); p.style.display = ""; });
+  document.querySelectorAll(".a-nav-link").forEach(i => i.classList.remove("active"));
+  if (element) element.classList.add("active");
+
+  if (_newAdminPanels.includes(panelId)) {
+    // new panels: show via style.display (they don't have .active CSS)
+    const panel = document.getElementById("panel-" + panelId);
+    if (panel) panel.style.display = "block";
+    const _newLoaders = {
+      live:          function() { loadLiveStats(); loadActivityFeed(); },
+      performance:   function() { loadAgentPerformance(); },
+      blocks:        function() { loadBlockRequests(); loadUnblockRequests(); },
+      appeals:       function() { loadAppeals(); },
+      monitoring:    function() { loadMonitoring(); },
+      alerts:        function() { loadAIAlerts(); },
+      notifications: function() { loadNotifications(); },
+      fraud:         function() { loadFraudAlerts(); },
+      reputation:    function() { loadReputations(); },
+      insights:      function() { loadInsights(); },
+      weeklyreport:  function() { /* user clicks Generate */ }
+    };
+    if (_newLoaders[panelId]) _newLoaders[panelId]();
+  } else {
+    document.getElementById("panel-" + panelId).classList.add("active");
+    loadData();
+    if (panelId === "settings") { loadKBAdminList(); loadAuthorizedEmails(); }
+    if (panelId === "logs") loadActivityLogs();
+  }
+}
+
+/* ── Data load ── */
+async function loadData() {
+  try {
+    const ticketRes = await fetch("/api/tickets");
+    allTickets = await ticketRes.json();
+    const userRes = await fetch("/api/auth/users");
+    if (userRes.status === 200) allUsers = await userRes.json();
+    await updateAnalytics();
+    renderUsers();
+    renderTickets();
+    if (document.getElementById("panel-settings").classList.contains("active")) loadKBAdminList();
+  } catch(e) { console.error(e); }
+}
+
+/* ── Analytics ── */
+async function updateAnalytics() {
+  try {
+    const res = await fetch("/api/analytics?role=admin");
+    const data = await res.json();
+
+    document.getElementById("stat-total").innerText = data.total || 0;
+    document.getElementById("stat-resolution-rate").innerText = (data.resolutionRate || 0) + "%";
+    document.getElementById("stat-total-users").innerText = data.totalUsers || 0;
+    document.getElementById("stat-total-agents").innerText = data.totalAgents || 0;
+    document.getElementById("stat-csat").innerText = data.avgCSAT !== "N/A" ? data.avgCSAT + "★" : "N/A";
+    document.getElementById("stat-open").innerText = data.open || 0;
+
+    const catLabels = Object.keys(data.categories || {});
+    const catVals   = Object.values(data.categories || {});
+    const catColors = ["#D4AF37","#22d3a5","#f472b6","#fb923c","#38bdf8","#a78bfa"];
+    if (catChartInst) catChartInst.destroy();
+    catChartInst = new Chart(document.getElementById("cat-chart"), {
+      type:"doughnut",
+      data:{ labels:catLabels, datasets:[{ data:catVals, backgroundColor:catColors.slice(0,catLabels.length), borderColor:"rgba(255,255,255,0.05)", borderWidth:2 }] },
+      options:{ responsive:true, plugins:{ legend:{ position:"bottom", labels:{ boxWidth:12, padding:12, font:{size:11} } } } }
+    });
+
+    const prioData = data.priorities || { High:0, Medium:0, Low:0 };
+    if (priorityChartInst) priorityChartInst.destroy();
+    priorityChartInst = new Chart(document.getElementById("priority-chart"), {
+      type:"bar",
+      data:{ labels:["High","Medium","Low"], datasets:[{ label:"Tickets", data:[prioData.High||0,prioData.Medium||0,prioData.Low||0], backgroundColor:["rgba(231,76,60,.7)","rgba(243,156,18,.7)","rgba(52,152,219,.7)"], borderColor:["#e74c3c","#f39c12","#3498db"], borderWidth:1, borderRadius:6 }] },
+      options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ color:"rgba(255,255,255,0.05)" }, ticks:{ color:"rgba(214,214,214,.7)" } }, y:{ grid:{ color:"rgba(255,255,255,0.05)" }, ticks:{ color:"rgba(214,214,214,.7)", stepSize:1 } } } }
+    });
+
+    const sentData = data.sentiments || { Positive:0, Neutral:0, Negative:0 };
+    if (sentimentChartInst) sentimentChartInst.destroy();
+    sentimentChartInst = new Chart(document.getElementById("sentiment-chart"), {
+      type:"doughnut",
+      data:{ labels:["Positive","Neutral","Negative"], datasets:[{ data:[sentData.Positive||0,sentData.Neutral||0,sentData.Negative||0], backgroundColor:["rgba(46,204,113,.7)","rgba(144,144,176,.6)","rgba(231,76,60,.7)"], borderColor:"rgba(255,255,255,0.05)", borderWidth:2 }] },
+      options:{ responsive:true, plugins:{ legend:{ position:"bottom", labels:{ boxWidth:12, padding:12, font:{size:11} } } } }
+    });
+
+    const agentStats = data.agentStats || [];
+    const agentTable = document.getElementById("agent-perf-table");
+    if (!agentStats.length) {
+      agentTable.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px">No agents found in the system.</td></tr>`;
+    } else {
+      agentTable.innerHTML = agentStats.map(a => `
+        <tr>
+          <td><strong>${a.name}</strong><br><span style="font-size:10.5px;color:var(--text-muted)">${a.email}</span></td>
+          <td>${a.assigned}</td><td>${a.resolved}</td>
+          <td style="color:var(--success);font-weight:700">${a.csat !== "N/A" ? a.csat + "★" : "N/A"}</td>
+          <td>${a.avgResponseHours !== "N/A" ? a.avgResponseHours + "h" : "N/A"}</td>
+          <td><span style="color:var(--gold);font-weight:700">${a.rank || "Unranked"}</span></td>
+        </tr>`).join('');
+    }
+
+    const fbBars = document.getElementById("feedback-summary-bars");
+    const fbOverall = document.getElementById("feedback-summary-overall");
+    let allRatings = [];
+    agentStats.forEach(a => { if (a.csat !== "N/A") allRatings.push(parseFloat(a.csat)); });
+    const overallAvg = allRatings.length > 0 ? (allRatings.reduce((s,v)=>s+v,0)/allRatings.length).toFixed(1) : null;
+    fbOverall.textContent = overallAvg ? `Overall Avg CSAT: ${overallAvg}★` : "Overall Avg CSAT: No data yet";
+    if (!agentStats.length) {
+      fbBars.innerHTML = `<div style="color:var(--text-muted);font-size:13px">No agent feedback data available yet.</div>`;
+    } else {
+      fbBars.innerHTML = agentStats.map(a => {
+        const csatNum = a.csat !== "N/A" ? parseFloat(a.csat) : 0;
+        const pct = (csatNum/5)*100;
+        const rc = (a.recentFeedback||[]).length;
+        return `<div class="fb-bar-row">
+          <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span>
+          <div class="fb-bar-track"><div class="fb-bar-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:13px;font-weight:700;color:var(--success)">${a.csat !== "N/A" ? a.csat + "★" : "N/A"}</span>
+          <span style="font-size:11px;color:var(--text-muted)">${rc} review${rc!==1?"s":""}</span>
+        </div>`;
+      }).join('');
+    }
+  } catch(e) { console.error("Analytics load error:", e); }
+}
+
+/* ── Render Users ── */
+function renderUsers() {
+  const tableBody = document.getElementById("users-table-body");
+  if (!allUsers.length) { tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:28px">No users found.</td></tr>`; return; }
+  tableBody.innerHTML = allUsers.map(u => {
+    const roleColor = u.role==="admin" ? "var(--danger)" : u.role==="agent" ? "var(--warning)" : "var(--success)";
+    const blockLabel = u.blocked ? '<span style="font-size:10px;color:var(--danger);margin-left:6px">(Blocked)</span>' : "";
+    const repBadge = u.reputation && window.dfReputationBadge ? window.dfReputationBadge(u.reputation.score||50, u.reputation.tier||"Standard") : "";
+    return `<tr>
+      <td style="font-family:monospace;font-size:11px;color:var(--gold)">#${(u.uid||u.id||"").substring(0,8)}</td>
+      <td><strong>${u.name}</strong>${blockLabel}</td>
+      <td style="color:var(--text-muted)">${u.email}</td>
+      <td><span style="padding:4px 10px;border-radius:100px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.05);color:${roleColor};border:1px solid currentColor;opacity:.8">${u.role}</span>${repBadge ? `<span style="margin-left:5px">${repBadge}</span>` : ""}</td>
+      <td style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <select class="role-select" onchange="updateUserRole('${u.email}',this.value)">
+          <option value="customer" ${u.role==="customer"?"selected":""}>Customer</option>
+          <option value="agent" ${u.role==="agent"?"selected":""}>Agent</option>
+          <option value="admin" ${u.role==="admin"?"selected":""}>Admin</option>
+        </select>
+        ${!u.blocked ? `<button class="btn-secondary" style="padding:3px 8px;font-size:11px;color:var(--danger)" title="Request Block" onclick="openBlockModal('${u.email}','${(u.name||"").replace(/'/g,"\\'")}','${u.role||""}')"><i class="ti ti-ban"></i></button>` : `<button class="btn-secondary" style="padding:3px 8px;font-size:11px;color:var(--success)" title="View Customer Report" onclick="showCustomerReport('${u.email}')"><i class="ti ti-file-analytics"></i></button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Render Tickets ── */
+function renderTickets() {
+  const tableBody = document.getElementById("tickets-table-body");
+  if (!allTickets.length) {
+    tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:28px">No tickets found.</td></tr>`;
+    return;
+  }
+  const agents = allUsers.filter(u => u.role === "agent");
+  const PRIORITY_COLORS = { Critical:"#e74c3c", High:"#e67e22", Medium:"#f1c40f", Low:"#2ecc71" };
+
+  tableBody.innerHTML = allTickets.map(t => {
+    let statusColor = "var(--info)";
+    if (t.status === "In Progress") statusColor = "var(--warning)";
+    if (t.status === "Resolved")    statusColor = "var(--success)";
+
+    const pColor = PRIORITY_COLORS[t.priority] || "#888";
+    const priorityBadge = `<span title="${escH(t.priorityReason || t.priority)}" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:100px;font-size:10.5px;font-weight:800;background:${pColor}18;color:${pColor};border:1px solid ${pColor}44">
+      <i class="ti ti-flag" style="font-size:9px"></i>${escH(t.priority || "Low")}
+    </span>`;
+
+    const aiTag = t.aiAnalyzed
+      ? `<span title="AI Analyzed" style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(52,152,219,.12);color:var(--info);margin-left:4px">AI</span>`
+      : "";
+    const autoTag = t.assignmentMethod === "AI Auto Assignment"
+      ? `<span title="AI Auto Assignment" style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(212,175,55,.1);color:var(--gold);display:inline-flex;align-items:center;gap:2px"><i class="ti ti-robot" style="font-size:8px"></i>AI</span>`
+      : "";
+
+    // Agent display: prefer name, fall back to email prefix
+    const agentDisplay = t.assignedAgentName
+      ? `${t.assignedAgentName}${autoTag}`
+      : t.assignedTo
+        ? `${t.assignedTo.split("@")[0]}${autoTag}`
+        : `<span style="color:var(--text-muted)">Unassigned</span>`;
+
+    let agentOptions = `<option value="">Unassigned</option>`;
+    agents.forEach(a => {
+      agentOptions += `<option value="${a.email}" ${t.assignedTo === a.email ? "selected" : ""}>${a.name}</option>`;
+    });
+
+    return `<tr>
+      <td style="font-family:monospace;font-size:11px;color:var(--text-muted)">#${t.id.substring(0,6).toUpperCase()}</td>
+      <td>${escH(t.createdBy.split("@")[0])}</td>
+      <td><strong>${escH(t.subject)}</strong>${aiTag}</td>
+      <td style="color:var(--text-muted);font-size:12px">${escH(t.category || "")}</td>
+      <td>${priorityBadge}</td>
+      <td style="color:${statusColor};font-weight:700">${escH(t.status)}</td>
+      <td style="font-size:12px">${agentDisplay}</td>
+      <td><select class="role-select" onchange="assignAgent('${t.id}',this.value)">${agentOptions}</select></td>
+      <td><button class="btn-delete" onclick="deleteTicket('${t.id}')"><i class="ti ti-trash"></i> Delete</button></td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── Admin Create User ── */
+async function adminCreateUser() {
+  const name     = document.getElementById("cu-name").value.trim();
+  const email    = document.getElementById("cu-email").value.trim();
+  const password = document.getElementById("cu-password").value;
+  const role     = document.getElementById("cu-role").value;
+  const btn      = document.getElementById("cu-submit-btn");
+
+  if (!name || !email || !password) { showToast("All fields are required.", "error"); return; }
+  if (password.length < 6)          { showToast("Password must be at least 6 characters.", "error"); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite;display:inline-block"></i> Creating…';
+  try {
+    const res  = await fetch("/api/auth/admin-create-user", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, role })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, "success");
+      closeModal("modal-create-user");
+      document.getElementById("cu-name").value = "";
+      document.getElementById("cu-email").value = "";
+      document.getElementById("cu-password").value = "";
+      document.getElementById("cu-role").value = "customer";
+      loadData();
+    } else {
+      showToast(data.message || "Failed to create account.", "error");
+    }
+  } catch (_) { showToast("Network error. Could not create account.", "error"); }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-user-plus"></i> Create Account';
+}
+
+/* ── CRUD ── */
+async function updateUserRole(email, newRole) {
+  try {
+    const response = await fetch("/api/auth/users/role", { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email, role:newRole }) });
+    const data = await response.json();
+    showToast(data.message || `Role updated to ${newRole}`, 'success');
+    loadData();
+  } catch(e) { showToast('Error updating user role', 'error'); }
+}
+
+async function deleteTicket(ticketId) {
+  if (!confirm(`Permanently delete ticket #${ticketId.substring(0,6).toUpperCase()}? This cannot be undone.`)) return;
+  try {
+    const response = await fetch(`/api/tickets/${ticketId}`, { method:"DELETE" });
+    if (response.ok) { showToast('Ticket deleted successfully', 'success'); loadData(); }
+    else showToast('Failed to delete ticket', 'error');
+  } catch(e) { showToast('Error deleting ticket', 'error'); }
+}
+
+async function assignAgent(ticketId, agentEmail) {
+  try {
+    await fetch(`/api/tickets/${ticketId}/assign`, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ assignedTo:agentEmail, updatedBy:currentUser.email }) });
+    loadData();
+  } catch(e) { console.error(e); }
+}
+
+/* ── KB ── */
+async function loadKBAdminList() {
+  try {
+    const res = await fetch("/api/kb");
+    const articles = await res.json();
+    const container = document.getElementById("kb-admin-list");
+    if (!articles || !articles.length) { container.innerHTML = `<div style="color:var(--text-muted);font-size:13px">No articles yet.</div>`; return; }
+    container.innerHTML = articles.map(a => `
+      <div class="kb-article-item">
+        <div>
+          <div class="kb-article-q">${a.question}</div>
+          <div class="kb-article-cat">${a.category}</div>
+        </div>
+        <button class="btn-delete" onclick="deleteKBArticle('${a.id}')"><i class="ti ti-trash"></i></button>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function addKBArticle() {
+  const question = document.getElementById("kb-question").value.trim();
+  const answer   = document.getElementById("kb-answer").value.trim();
+  const category = document.getElementById("kb-category").value;
+  if (!question || !answer) { showToast("Question and answer are required", "error"); return; }
+  try {
+    const res = await fetch("/api/kb", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ question, answer, category }) });
+    const data = await res.json();
+    if (res.status === 201) { showToast("KB article added successfully!", "success"); document.getElementById("kb-question").value=""; document.getElementById("kb-answer").value=""; loadKBAdminList(); }
+    else showToast(data.message || "Failed to add article", "error");
+  } catch(e) { showToast("Error adding article", "error"); }
+}
+
+async function deleteKBArticle(articleId) {
+  if (!confirm("Delete this KB article?")) return;
+  try {
+    const res = await fetch(`/api/kb/${articleId}`, { method:"DELETE" });
+    if (res.ok) { showToast("Article deleted", "success"); loadKBAdminList(); }
+  } catch(e) { showToast("Error deleting article", "error"); }
+}
+
+/* ── Activity Logs ── */
+let allLogs = [];
+
+async function loadActivityLogs() {
+  try {
+    const res   = await fetch("/api/activity");
+    const data  = await res.json();
+    allLogs = data.logs || [];
+    const statsRes = await fetch("/api/activity/stats");
+    const stats    = await statsRes.json();
+    document.getElementById("log-total").textContent = stats.total || 0;
+    document.getElementById("log-24h").textContent   = stats.last24h || 0;
+    const uniqueUsers   = new Set(allLogs.map(l => l.email).filter(Boolean)).size;
+    document.getElementById("log-users").textContent = uniqueUsers;
+    const ticketActions = ["TICKET_CREATED","TICKET_UPDATED","TICKET_ASSIGNED","TICKET_RESOLVED","TICKET_DELETED","TICKET_MESSAGE","TICKET_FEEDBACK","TICKET_CLOSED"];
+    const ticketEvents  = allLogs.filter(l => ticketActions.includes(l.action)).length;
+    document.getElementById("log-tickets").textContent = ticketEvents;
+    renderLogs(allLogs);
+  } catch(e) {
+    console.error("[ActivityLogs] Load error:", e);
+    document.getElementById("logs-table-body").innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">Unable to load activity logs.</td></tr>`;
+  }
+}
+
+function filterLogs() {
+  const search = (document.getElementById("log-search").value || "").toLowerCase();
+  const role   = document.getElementById("log-filter-role").value;
+  const action = document.getElementById("log-filter-action").value;
+  const from   = document.getElementById("log-from").value;
+  const to     = document.getElementById("log-to").value;
+  let filtered = allLogs;
+  if (search) filtered = filtered.filter(l => (l.email||"").includes(search) || JSON.stringify(l.details||{}).toLowerCase().includes(search));
+  if (role)   filtered = filtered.filter(l => l.role === role);
+  if (action) filtered = filtered.filter(l => l.action === action);
+  if (from)   filtered = filtered.filter(l => l.timestamp >= from);
+  if (to)     filtered = filtered.filter(l => l.timestamp <= to + "T23:59:59");
+  renderLogs(filtered);
+}
+
+const ACTION_COLORS = {
+  USER_LOGIN:"#38bdf8", GOOGLE_LOGIN:"#38bdf8", USER_SIGNUP:"#22d3a5",
+  USER_LOGOUT:"#9090b0", PASSWORD_RESET:"#fb923c", PROFILE_UPDATED:"#9090b0",
+  TICKET_CREATED:"#D4AF37", TICKET_ASSIGNED:"#f472b6", TICKET_RESOLVED:"#22d3a5",
+  TICKET_CLOSED:"#9090b0", TICKET_UPDATED:"#fb923c", TICKET_DELETED:"#ef4444",
+  TICKET_MESSAGE:"#a78bfa", TICKET_FEEDBACK:"#22d3a5",
+  AI_CHAT_USED:"#34d399", KB_SEARCHED:"#60a5fa", KB_ARTICLE_ADDED:"#22d3a5",
+  KB_ARTICLE_DELETED:"#ef4444", ROLE_CHANGED:"#f59e0b", VOICE_USED:"#a78bfa"
+};
+
+function renderLogs(logs) {
+  const tbody = document.getElementById("logs-table-body");
+  document.getElementById("log-count-label").textContent = `${logs.length} event${logs.length!==1?"s":""}`;
+  if (!logs.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px">No logs match your filters.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = logs.map(l => {
+    const color   = ACTION_COLORS[l.action] || "var(--text-secondary)";
+    const ts      = l.timestamp ? new Date(l.timestamp).toLocaleString() : "—";
+    const details = Object.entries(l.details || {})
+      .filter(([,v]) => v !== null && v !== undefined && v !== "")
+      .map(([k,v]) => `<span style="color:var(--text-muted)">${k}:</span> ${v}`)
+      .join(" &nbsp;·&nbsp; ") || "—";
+    const roleBadge = `<span style="padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;background:rgba(212,175,55,.1);color:var(--gold);text-transform:uppercase">${l.role||"—"}</span>`;
+    return `<tr>
+      <td style="font-size:11px;color:var(--text-muted);white-space:nowrap">${ts}</td>
+      <td style="font-size:12px">${l.email||"—"}</td>
+      <td>${roleBadge}</td>
+      <td><span style="font-size:11px;font-weight:800;color:${color};font-family:monospace;letter-spacing:.04em">${l.action||"—"}</span></td>
+      <td style="font-size:11px;color:var(--text-secondary);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${details}</td>
+      <td style="font-size:11px;color:var(--text-muted);white-space:nowrap">${l.ipAddress||"—"}</td>
+    </tr>`;
+  }).join("");
+}
+
+function exportLogsCSV() {
+  const search = (document.getElementById("log-search").value || "").toLowerCase();
+  const role   = document.getElementById("log-filter-role").value;
+  const action = document.getElementById("log-filter-action").value;
+  let toExport = allLogs;
+  if (search) toExport = toExport.filter(l => (l.email||"").includes(search) || JSON.stringify(l.details||{}).toLowerCase().includes(search));
+  if (role)   toExport = toExport.filter(l => l.role === role);
+  if (action) toExport = toExport.filter(l => l.action === action);
+  const header = ["Timestamp","Email","Role","Action","Details","IP Address"];
+  const rows   = toExport.map(l => [ l.timestamp||"", l.email||"", l.role||"", l.action||"", JSON.stringify(l.details||{}), l.ipAddress||"" ]);
+  const csvContent = [header,...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csvContent], { type:"text/csv;charset=utf-8;" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url; a.download = `deskflow_activity_logs_${new Date().toISOString().split("T")[0]}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showToast("Activity logs exported as CSV", "success");
+}
+
+function logout() {
+  localStorage.removeItem("deskflow_token");
+  localStorage.removeItem("deskflow_user");
+  window.location.href = "signin.html";
+}
+
+loadData();
+/* Load notification badge count on startup, then refresh every 60 s */
+setTimeout(refreshNotifBadge, 800);
+setInterval(refreshNotifBadge, 60000);
+
+// ═══════════════════════════════════════════════════════════
+//  NEW ADMIN FEATURES — Live, Performance, Blocks, Appeals,
+//  Monitoring, AI Alerts, Notifications
+// ═══════════════════════════════════════════════════════════
+
+/* ── helpers ── */
+function tok() { return localStorage.getItem("deskflow_token") || ""; }
+function apiFetch(url, opts={}) {
+  return fetch(url, { headers: { Authorization: "Bearer "+tok(), "Content-Type":"application/json", ...(opts.headers||{}) }, ...opts });
+}
+function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
+function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+function printReport() { window.print(); }
+
+/* switchPanel is extended in the main panel switch block above */
+
+/* ══════════════════════════════════════
+   LIVE DASHBOARD
+══════════════════════════════════════ */
+let _liveInterval = null;
+
+function loadLiveStats() {
+  apiFetch("/api/admin/live-stats")
+    .then(r => r.json())
+    .then(d => {
+      const s = d.stats || d;
+      setText("lv-cust-online",    s.customersOnline ?? "—");
+      setText("lv-agents-online",  s.agentsOnline    ?? "—");
+      setText("lv-open",           s.openTickets     ?? "—");
+      setText("lv-resolved-today", s.resolvedToday   ?? "—");
+      setText("lv-pending",        s.pendingTickets  ?? "—");
+      setText("lv-ai-resp",        s.aiResponses     ?? "—");
+      setText("lv-pending-blocks", s.pendingBlocks   ?? "—");
+      const rating = s.avgRating ? Number(s.avgRating).toFixed(1)+"★" : "—";
+      setText("lv-avg-rating", rating);
+      const health = s.systemHealth || "Healthy";
+      setText("lv-health", health);
+      const unread = s.unreadNotifications || 0;
+      const hb = document.getElementById("header-notif-badge");
+      const sb = document.getElementById("sidebar-notif-badge");
+      if (hb) { hb.textContent = unread; hb.style.display = unread ? "flex" : "none"; }
+      if (sb) { sb.textContent = unread; sb.style.display = unread ? "flex" : "none"; }
+      const ts = document.getElementById("live-last-updated");
+      if (ts) ts.textContent = "Last updated: " + new Date().toLocaleTimeString();
+    })
+    .catch(() => {});
+}
+
+function loadActivityFeed() {
+  apiFetch("/api/admin/activity-feed")
+    .then(r => r.json())
+    .then(d => {
+      const items = d.logs || d.feed || [];
+      const el = document.getElementById("activity-feed-list");
+      if (!el) return;
+      if (!items.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted)">No recent activity</div>'; return; }
+      el.innerHTML = items.map(a => {
+        const icon = activityIcon(a.action || a.type);
+        const ts   = a.timestamp ? new Date(a.timestamp).toLocaleString() : "";
+        return `<div class="feed-item">
+          <div class="feed-icon">${icon}</div>
+          <div class="feed-body">
+            <div class="feed-action"><strong>${escH(a.email||"System")}</strong> — ${escH(a.action||a.type||"")}</div>
+            <div class="feed-meta">${escH(a.role||"")} · ${ts}</div>
+          </div>
+        </div>`;
+      }).join("");
+    })
+    .catch(() => {});
+}
+
+function activityIcon(action="") {
+  const a = action.toLowerCase();
+  if (a.includes("login"))  return '<i class="ti ti-login" style="color:var(--success)"></i>';
+  if (a.includes("block"))  return '<i class="ti ti-ban" style="color:var(--danger)"></i>';
+  if (a.includes("ticket")) return '<i class="ti ti-ticket" style="color:var(--info)"></i>';
+  if (a.includes("appeal")) return '<i class="ti ti-flag" style="color:var(--warning)"></i>';
+  if (a.includes("logout")) return '<i class="ti ti-logout" style="color:var(--text-muted)"></i>';
+  return '<i class="ti ti-activity" style="color:var(--primary)"></i>';
+}
+
+/* ══════════════════════════════════════
+   AGENT PERFORMANCE
+══════════════════════════════════════ */
+let _perfData = [];
+let _perfPage = 1;
+const PERF_PER_PAGE = 10;
+
+function loadAgentPerformance() {
+  document.getElementById("perf-table-body").innerHTML =
+    '<tr><td colspan="14" style="text-align:center;color:var(--text-muted);padding:40px">Loading…</td></tr>';
+  apiFetch("/api/admin/agent-performance")
+    .then(r => r.json())
+    .then(d => {
+      _perfData = d.agents || d || [];
+      _perfPage = 1;
+      renderPerformanceTable();
+    })
+    .catch(() => {
+      document.getElementById("perf-table-body").innerHTML =
+        '<tr><td colspan="14" style="text-align:center;color:var(--danger);padding:40px">Failed to load performance data</td></tr>';
+    });
+}
+
+function renderPerformanceTable() {
+  const search = (document.getElementById("perf-search")?.value||"").toLowerCase();
+  const dept   = document.getElementById("perf-dept")?.value||"";
+  const status = document.getElementById("perf-status")?.value||"";
+  const sort   = document.getElementById("perf-sort")?.value||"productivityScore";
+
+  let data = _perfData.filter(a => {
+    const name = (a.name||a.email||"").toLowerCase();
+    if (search && !name.includes(search) && !(a.email||"").toLowerCase().includes(search)) return false;
+    if (dept && a.department !== dept) return false;
+    if (status && a.status !== status) return false;
+    return true;
+  });
+
+  data.sort((a,b) => {
+    if (sort === "name") return (a.name||"").localeCompare(b.name||"");
+    return (b[sort]||0) - (a[sort]||0);
+  });
+
+  const total = data.length;
+  const pages = Math.max(1, Math.ceil(total / PERF_PER_PAGE));
+  if (_perfPage > pages) _perfPage = pages;
+  const slice = data.slice((_perfPage-1)*PERF_PER_PAGE, _perfPage*PERF_PER_PAGE);
+
+  const body = document.getElementById("perf-table-body");
+  if (!slice.length) {
+    body.innerHTML = '<tr><td colspan="14" style="text-align:center;color:var(--text-muted);padding:40px">No agents match filters</td></tr>';
+    renderPerfPagination(0,1);
+    return;
+  }
+
+  body.innerHTML = slice.map(a => {
+    const score = a.productivityScore ?? 0;
+    const scoreColor = score>=80?"var(--success)":score>=60?"var(--warning)":"var(--danger)";
+    const statusDot = a.status==="Online"
+      ? '<span class="online-dot" style="margin-right:5px"></span>Online'
+      : '<span style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);display:inline-block;margin-right:5px"></span>Offline';
+    const warns = (a.warnings||0);
+    const warnBadge = warns>0 ? `<span class="badge-warn">${warns}</span>` : '<span style="color:var(--text-muted)">0</span>';
+    return `<tr>
+      <td><div style="font-weight:600">${escH(a.name||a.email||"")}</div><div style="font-size:11px;color:var(--text-muted)">${escH(a.email||"")}</div></td>
+      <td>${escH(a.department||"—")}</td>
+      <td>${statusDot}</td>
+      <td>${a.assigned??0}</td>
+      <td>${a.resolved??0}</td>
+      <td>${a.pending??0}</td>
+      <td>${a.avgResponseHours!=null?a.avgResponseHours+"h":"—"}</td>
+      <td>${a.avgResolutionHours!=null?a.avgResolutionHours+"h":"—"}</td>
+      <td>${a.csat!=null?Number(a.csat).toFixed(1)+"★":"—"}</td>
+      <td>${a.aiUsagePct!=null?Math.round(a.aiUsagePct)+"%":"—"}</td>
+      <td>${a.escalated??0}</td>
+      <td><span style="font-weight:700;color:${scoreColor}">${Math.round(score)}</span></td>
+      <td>${warnBadge}</td>
+      <td><button class="btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showAgentReport('${escH(a.email||"")}')"><i class="ti ti-file-analytics"></i> Report</button></td>
+    </tr>`;
+  }).join("");
+  renderPerfPagination(total, pages);
+}
+
+function renderPerfPagination(total, pages) {
+  const el = document.getElementById("perf-pagination");
+  if (!el) return;
+  if (pages<=1) { el.innerHTML=""; return; }
+  let html = `<span style="color:var(--text-muted);font-size:12px;margin-right:8px">Total: ${total}</span>`;
+  for (let i=1;i<=pages;i++) {
+    html += `<button class="page-btn${i===_perfPage?" active":""}" onclick="_perfPage=${i};renderPerformanceTable()">${i}</button>`;
+  }
+  el.innerHTML = html;
+}
+
+function fmtTime(mins) {
+  if (mins==null) return "—";
+  if (mins<60) return Math.round(mins)+"m";
+  return Math.round(mins/60)+"h "+Math.round(mins%60)+"m";
+}
+
+/* ══════════════════════════════════════
+   BLOCK REQUESTS
+══════════════════════════════════════ */
+let _blockData = [];
+let _blockFilter = "all";
+let _pendingBlockTarget = null;
+
+function loadBlockRequests() {
+  document.getElementById("blocks-list").innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px">Loading…</div>';
+  apiFetch("/api/admin/blocks")
+    .then(r => r.json())
+    .then(d => { _blockData = Array.isArray(d) ? d : (d.requests || []); renderBlockRequests(); })
+    .catch(() => { document.getElementById("blocks-list").innerHTML = '<div style="color:var(--danger);padding:20px">Failed to load block requests</div>'; });
+}
+
+function filterBlocks(status, btn) {
+  _blockFilter = status;
+  document.querySelectorAll("#panel-blocks .btab").forEach(b=>b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderBlockRequests();
+}
+
+function renderBlockRequests() {
+  const filtered = _blockFilter==="all" ? _blockData : _blockData.filter(r=>r.status===_blockFilter);
+  const el = document.getElementById("blocks-list");
+  if (!filtered.length) { el.innerHTML = '<div style="color:var(--text-muted);padding:40px;text-align:center">No block requests found</div>'; return; }
+  el.innerHTML = filtered.map(r => {
+    const votes   = r.votes || [];
+    const approves= votes.filter(v=>v.vote==="approve").length;
+    const rejects = votes.filter(v=>v.vote==="reject").length;
+    const statusClass = { pending:"badge-pending", approved:"badge-approved", rejected:"badge-rejected", unblocked:"badge-info" }[r.status] || "badge-pending";
+    const canVote = r.status === "pending";
+    const isApproved = r.status === "approved";
+    const isUnblocked = r.status === "unblocked";
+    return `<div class="block-card">
+      <div class="block-card-header">
+        <div>
+          <div class="block-card-title"><i class="ti ti-ban"></i> ${escH(r.targetName||r.targetEmail||"")}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${escH(r.targetEmail||"")} · ${escH(r.targetRole||"")}</div>
+        </div>
+        <span class="badge ${statusClass}">${r.status||"pending"}</span>
+      </div>
+      <div class="block-card-reason"><strong>Policy:</strong> ${escH(r.policyViolated||"—")}</div>
+      <div class="block-card-reason">${escH(r.reason||"")}</div>
+      <div class="block-card-reason" style="font-size:11px;color:var(--text-muted)">
+        Requested by: ${escH(r.requestedByEmail||"—")} · ${r.createdAt ? new Date(r.createdAt).toLocaleString() : ""}
+      </div>
+      ${isUnblocked ? `<div class="block-card-reason" style="font-size:11px;color:var(--success)"><i class="ti ti-lock-open"></i> Unblocked by ${escH(r.unblockedBy||"admin")} · ${r.unblockedAt ? new Date(r.unblockedAt).toLocaleString() : ""}</div>` : ""}
+      <div class="vote-progress">
+        <div class="vote-bar-wrap">
+          <div class="vote-bar" style="width:${(approves/3)*100}%;background:var(--success)"></div>
+        </div>
+        <span style="font-size:12px;color:var(--text-muted)">Approved: ${approves}/3 · Rejected: ${rejects}</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+        ${canVote ? `
+          <button class="btn-approve" onclick="castBlockVote('${r.id}','approve')"><i class="ti ti-check"></i> Approve</button>
+          <button class="btn-reject"  onclick="castBlockVote('${r.id}','reject')"><i class="ti ti-x"></i> Reject</button>
+        ` : ""}
+        ${isApproved ? `
+          <button class="btn-secondary" onclick="viewBlockReport('${r.id}')"><i class="ti ti-file"></i> View Report</button>
+          <button class="btn-secondary" style="color:var(--success);border-color:rgba(46,204,113,.3)" onclick="unblockAccount('${r.id}','${escH(r.targetEmail||"")}')">
+            <i class="ti ti-lock-open"></i> Unblock Account
+          </button>
+        ` : ""}
+        ${isUnblocked ? `
+          <button class="btn-secondary" onclick="viewBlockReport('${r.id}')"><i class="ti ti-file"></i> View Report</button>
+        ` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openBlockModal(targetEmail, targetName, targetRole) {
+  document.getElementById("mb-email").value  = targetEmail || "";
+  document.getElementById("mb-name").value   = targetName  || "";
+  document.getElementById("mb-reason").value = "";
+  const roleSelect = document.getElementById("mb-role");
+  roleSelect.value = targetRole || "";
+  _pendingBlockTarget = { email: targetEmail, name: targetName, role: targetRole };
+  openModal("modal-block");
+}
+
+function submitBlockRequest() {
+  const email  = document.getElementById("mb-email").value.trim();
+  const reason = document.getElementById("mb-reason").value.trim();
+  const policy = document.getElementById("mb-policy").value;
+  const name   = document.getElementById("mb-name").value.trim();
+  const role   = document.getElementById("mb-role").value;
+  if (!email) { showToast("Target email is required", "error"); return; }
+  if (!reason) { showToast("Reason is required", "error"); return; }
+  apiFetch("/api/admin/blocks", {
+    method:"POST",
+    body: JSON.stringify({ targetEmail:email, targetName:name, targetRole:role, reason, policyViolated:policy })
+  })
+    .then(r=>r.json())
+    .then(d => {
+      if (d.error || d.message?.includes("Error")) { showToast(d.error||d.message, "error"); return; }
+      showToast("Block request submitted — 2 more admin approvals needed", "success");
+      closeModal("modal-block");
+      loadBlockRequests();
+    })
+    .catch(()=>showToast("Failed to submit block request","error"));
+}
+
+function castBlockVote(reqId, vote) {
+  apiFetch(`/api/admin/blocks/${reqId}/vote`, { method:"PUT", body:JSON.stringify({vote}) })
+    .then(r=>r.json())
+    .then(d => {
+      if (d.error) { showToast(d.error,"error"); return; }
+      const msg = d.status==="approved" ? "Block request approved — account blocked!" : vote==="approve" ? "Vote recorded (waiting for more approvals)" : "Rejection vote recorded";
+      showToast(msg, d.status==="approved"?"success":"info");
+      loadBlockRequests();
+      if (d.status==="approved") refreshNotifBadge();
+    })
+    .catch(()=>showToast("Vote failed","error"));
+}
+
+/* ─── Section toggle: Block / Unblock ─── */
+function switchBlockSection(section, btn) {
+  document.querySelectorAll("#section-tab-blocks, #section-tab-unblocks").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  document.getElementById("section-blocks").style.display   = section === "blocks"   ? "block" : "none";
+  document.getElementById("section-unblocks").style.display = section === "unblocks" ? "block" : "none";
+  if (section === "unblocks") loadUnblockRequests();
+}
+
+/* ─── Initiate unblock request (vote 1 of 3) ─── */
+function unblockAccount(reqId, targetEmail) {
+  const reason = prompt(`Request to unblock ${targetEmail}.\n\nReason for unblocking (required):`);
+  if (reason === null) return; // cancelled
+  if (!reason.trim()) { showToast("Please provide a reason for unblocking.", "warning"); return; }
+
+  apiFetch(`/api/admin/blocks/${reqId}/unblock`, {
+    method: "POST",
+    body: JSON.stringify({ reason: reason.trim() })
+  })
+    .then(r => r.json())
+    .then(d => {
+      if (d.message && (d.message.includes("error") || d.message.includes("already"))) {
+        showToast(d.message, "error"); return;
+      }
+      showToast(d.message || "Unblock request created — 2 more admin votes needed", "success");
+      loadBlockRequests();
+      refreshNotifBadge();
+      // Switch to unblock requests tab to see the new request
+      setTimeout(() => {
+        switchBlockSection("unblocks", document.getElementById("section-tab-unblocks"));
+      }, 600);
+    })
+    .catch(() => showToast("Failed to create unblock request", "error"));
+}
+
+/* ══════════════════════════════════════
+   UNBLOCK REQUESTS — 3-admin vote system
+══════════════════════════════════════ */
+let _unblockData = [];
+let _unblockFilter = "all";
+
+function loadUnblockRequests() {
+  const el = document.getElementById("unblocks-list");
+  if (el) el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px">Loading…</div>';
+  apiFetch("/api/admin/unblock-requests")
+    .then(r => r.json())
+    .then(d => {
+      _unblockData = Array.isArray(d) ? d : [];
+      renderUnblockRequests();
+    })
+    .catch(() => {
+      const el = document.getElementById("unblocks-list");
+      if (el) el.innerHTML = '<div style="color:var(--danger);padding:20px">Failed to load unblock requests.</div>';
+    });
+}
+
+function filterUnblocks(status, btn) {
+  _unblockFilter = status;
+  document.querySelectorAll("#section-unblocks .btab").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderUnblockRequests();
+}
+
+function renderUnblockRequests() {
+  const el = document.getElementById("unblocks-list");
+  if (!el) return;
+  const filtered = _unblockFilter === "all"
+    ? _unblockData
+    : _unblockData.filter(r => r.status === _unblockFilter);
+
+  if (!filtered.length) {
+    el.innerHTML = '<div style="color:var(--text-muted);padding:40px;text-align:center">No unblock requests found.</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(r => {
+    const approves     = (r.votes || []).filter(v => v.vote === "approve").length;
+    const rejects      = (r.votes || []).filter(v => v.vote === "reject").length;
+    const isPending    = r.status === "pending";
+    const isApproved   = r.status === "approved";
+    const isRejected   = r.status === "rejected";
+    const myVote       = (r.votes || []).find(v => v.adminEmail === (currentUser && currentUser.email));
+    const alreadyVoted = !!myVote;
+
+    const statusColors = {
+      pending:  { bg: "rgba(243,156,18,.12)", color: "var(--warning)" },
+      approved: { bg: "rgba(46,204,113,.12)",  color: "var(--success)" },
+      rejected: { bg: "rgba(231,76,60,.12)",   color: "var(--danger)"  }
+    };
+    const sc = statusColors[r.status] || statusColors.pending;
+
+    return `<div class="block-card" style="${isApproved ? "border-color:rgba(46,204,113,.25)" : ""}">
+      <div class="block-card-header">
+        <div>
+          <div class="block-card-title"><i class="ti ti-lock-open" style="color:var(--success)"></i> ${escH(r.targetName || r.targetEmail || "")}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${escH(r.targetEmail || "")} · ${escH(r.targetRole || "")}</div>
+        </div>
+        <span class="badge" style="background:${sc.bg};color:${sc.color};padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">${r.status}</span>
+      </div>
+      <div class="block-card-reason"><strong>Reason:</strong> ${escH(r.reason || "—")}</div>
+      <div class="block-card-reason" style="font-size:11px;color:var(--text-muted)">
+        Requested by: ${escH(r.requestedBy || "—")} · ${r.requestedAt ? new Date(r.requestedAt).toLocaleString() : ""}
+      </div>
+
+      <!-- Vote progress bar -->
+      <div class="vote-progress" style="margin-top:10px">
+        <div class="vote-bar-wrap">
+          <div class="vote-bar" style="width:${(approves / 3) * 100}%;background:var(--success)"></div>
+        </div>
+        <span style="font-size:12px;color:var(--text-muted)">Approved: ${approves}/3 · Rejected: ${rejects}</span>
+      </div>
+
+      <!-- Who voted -->
+      ${(r.votes || []).length ? `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">
+        ${(r.votes || []).map(v => `<span style="font-size:10px;padding:1px 7px;border-radius:8px;background:${v.vote==="approve"?"rgba(46,204,113,.1)":"rgba(231,76,60,.1)"};color:${v.vote==="approve"?"var(--success)":"var(--danger)"};border:1px solid currentColor">
+          <i class="ti ti-${v.vote==="approve"?"check":"x"}" style="font-size:9px"></i> ${escH(v.adminEmail.split("@")[0])}
+        </span>`).join("")}
+      </div>` : ""}
+
+      ${isApproved ? `<div style="margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);font-size:12px;color:var(--success)">
+        <i class="ti ti-check-circle"></i> Account successfully unblocked after 3 admin approvals on ${r.completedAt ? new Date(r.completedAt).toLocaleString() : "—"}
+      </div>` : ""}
+
+      <!-- Vote buttons -->
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        ${isPending && !alreadyVoted ? `
+          <button class="btn-approve" onclick="castUnblockVote('${r.id}','approve')"><i class="ti ti-check"></i> Approve Unblock</button>
+          <button class="btn-reject"  onclick="castUnblockVote('${r.id}','reject')"><i class="ti ti-x"></i> Reject</button>
+        ` : ""}
+        ${isPending && alreadyVoted ? `<span style="font-size:11.5px;color:var(--text-muted);padding:6px 0"><i class="ti ti-check" style="color:var(--success)"></i> You voted: <strong style="color:${myVote.vote==="approve"?"var(--success)":"var(--danger)"}">${myVote.vote}</strong></span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function castUnblockVote(reqId, vote) {
+  apiFetch(`/api/admin/unblock-requests/${reqId}/vote`, {
+    method: "PUT",
+    body: JSON.stringify({ vote })
+  })
+    .then(r => r.json())
+    .then(d => {
+      if (d.message && d.message.toLowerCase().includes("already")) {
+        showToast(d.message, "warning"); return;
+      }
+      const isComplete = d.status === "approved";
+      showToast(
+        isComplete ? "Account unblocked! All 3 admins approved." : d.message,
+        isComplete ? "success" : "info"
+      );
+      loadUnblockRequests();
+      if (isComplete) { loadData(); loadBlockRequests(); refreshNotifBadge(); }
+    })
+    .catch(() => showToast("Vote failed", "error"));
+}
+
+function viewBlockReport(reqId) {
+  const req = _blockData.find(r => r.id === reqId);
+  const rpt = req && req.report ? req.report : req;
+  if (!rpt) { showToast("Report not available yet — block must be fully approved first", "info"); return; }
+  const approvers = rpt.approvedBy || rpt.approvers || (req ? (req.votes||[]).filter(v=>v.vote==="approve").map(v=>v.adminEmail) : []);
+  document.getElementById("modal-report-content").innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr><td style="padding:6px 0;color:var(--text-muted);width:160px">Block ID</td><td style="font-family:monospace">${escH(reqId)}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Target</td><td>${escH(rpt.accountName||rpt.targetName||req.targetName||"")}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Email</td><td>${escH(rpt.email||rpt.targetEmail||req.targetEmail||"")}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Role</td><td>${escH(rpt.role||rpt.targetRole||req.targetRole||"")}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Policy Violated</td><td>${escH(rpt.policyViolated||req.policyViolated||"")}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Reason</td><td>${escH(rpt.reason||req.reason||"")}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Blocked On</td><td>${(rpt.date||rpt.generatedAt||req.completedAt) ? new Date(rpt.date||rpt.generatedAt||req.completedAt).toLocaleString() : "—"}</td></tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Approvers (${approvers.length}/3)</td>
+        <td>${approvers.map(a=>`<span style="display:inline-block;background:rgba(46,204,113,.1);color:var(--success);padding:2px 8px;border-radius:12px;margin:2px">${escH(typeof a==="object"?a.email||a.name:a)}</span>`).join("")}</td>
+      </tr>
+      <tr><td style="padding:6px 0;color:var(--text-muted)">Status</td><td><span style="color:var(--danger);font-weight:600">Blocked</span></td></tr>
+    </table>`;
+  openModal("modal-report");
+}
+
+/* ══════════════════════════════════════
+   APPEALS
+══════════════════════════════════════ */
+let _appealsData = [];
+let _appealFilter = "all";
+let _reviewingAppealId = null;
+
+function loadAppeals() {
+  document.getElementById("appeals-list").innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px">Loading…</div>';
+  apiFetch("/api/admin/appeals")
+    .then(r=>r.json())
+    .then(d => { _appealsData = d.appeals || d || []; renderAppeals(); })
+    .catch(()=>{ document.getElementById("appeals-list").innerHTML='<div style="color:var(--danger);padding:20px">Failed to load appeals</div>'; });
+}
+
+function filterAppeals(status, btn) {
+  _appealFilter = status;
+  document.querySelectorAll("#panel-appeals .btab").forEach(b=>b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderAppeals();
+}
+
+function renderAppeals() {
+  const filtered = _appealFilter==="all" ? _appealsData : _appealsData.filter(a=>a.status===_appealFilter);
+  const el = document.getElementById("appeals-list");
+  if (!filtered.length) { el.innerHTML = '<div style="color:var(--text-muted);padding:40px;text-align:center">No appeals found</div>'; return; }
+  el.innerHTML = filtered.map(a => {
+    const statusClass = { pending:"badge-pending", approved:"badge-approved", rejected:"badge-rejected" }[a.status]||"badge-pending";
+    return `<div class="block-card">
+      <div class="block-card-header">
+        <div>
+          <div class="block-card-title"><i class="ti ti-flag"></i> Appeal from ${escH(a.userEmail||a.userId||"")}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${a.createdAt ? new Date(a.createdAt).toLocaleString() : ""}</div>
+        </div>
+        <span class="badge ${statusClass}">${a.status||"pending"}</span>
+      </div>
+      <div class="block-card-reason">${escH(a.reason||"")}</div>
+      ${a.status==="pending" ? `<div style="margin-top:10px"><button class="btn-primary" style="padding:6px 14px" onclick="openAppealReview('${a.id}','${escH(a.userEmail||"")}')"><i class="ti ti-eye"></i> Review Appeal</button></div>` : `<div style="font-size:12px;color:var(--text-muted);margin-top:8px">Reviewed by: ${escH(a.reviewedByEmail||"Admin")} · ${a.reviewedAt ? new Date(a.reviewedAt).toLocaleString() : ""}</div>`}
+    </div>`;
+  }).join("");
+}
+
+function openAppealReview(appealId, userEmail) {
+  _reviewingAppealId = appealId;
+  document.getElementById("modal-appeal-info").textContent = `Appeal by: ${userEmail}`;
+  document.getElementById("appeal-note").value = "";
+  openModal("modal-appeal-review");
+}
+
+function submitAppealReview(decision) {
+  if (!_reviewingAppealId) return;
+  const note = document.getElementById("appeal-note").value.trim();
+  apiFetch(`/api/admin/appeals/${_reviewingAppealId}/review`, { method:"PUT", body:JSON.stringify({decision, note}) })
+    .then(r=>r.json())
+    .then(d => {
+      if (d.error) { showToast(d.error,"error"); return; }
+      showToast(decision==="approve" ? "Appeal approved — account restored!" : "Appeal rejected", decision==="approve"?"success":"info");
+      closeModal("modal-appeal-review");
+      loadAppeals();
+    })
+    .catch(()=>showToast("Review submission failed","error"));
+}
+
+/* ══════════════════════════════════════
+   MONITORING
+══════════════════════════════════════ */
+function loadMonitoring() {
+  apiFetch("/api/admin/monitoring")
+    .then(r=>r.json())
+    .then(d => {
+      const online = d.onlineUsers || [];
+      const fraud  = d.fraudAlerts || [];
+      setText("online-count", online.length + " users online");
+      const tb = document.getElementById("monitoring-table");
+      if (tb) {
+        tb.innerHTML = !online.length
+          ? '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:28px">No users currently online</td></tr>'
+          : online.map(u => `<tr>
+              <td>${escH(u.name||"")}</td>
+              <td>${escH(u.email||"")}</td>
+              <td><span class="badge" style="background:rgba(167,139,250,.15);color:#a78bfa">${escH(u.role||"")}</span></td>
+              <td>${escH(u.currentPage||"—")}</td>
+              <td>${fmtTime(u.sessionDurationMinutes)}</td>
+              <td>${u.lastActive ? new Date(u.lastActive).toLocaleTimeString() : "—"}</td>
+              <td><span class="online-dot"></span> Online</td>
+            </tr>`).join("");
+      }
+      const fl = document.getElementById("fraud-alerts-list");
+      if (fl) {
+        fl.innerHTML = !fraud.length
+          ? '<div style="color:var(--success);font-size:13px;padding:10px 0"><i class="ti ti-circle-check"></i> No suspicious activity detected</div>'
+          : fraud.map(f => `<div class="alert-item alert-item-${f.severity||'warn'}">
+              <i class="ti ti-alert-triangle" style="color:var(--danger);margin-right:8px"></i>
+              <div>
+                <div style="font-weight:600">${escH(f.type||"Fraud Alert")}</div>
+                <div style="font-size:12px;color:var(--text-secondary)">${escH(f.userEmail||"")} · ${escH(f.detail||"")}</div>
+              </div>
+              <button class="btn-reject" style="margin-left:auto;padding:4px 10px;font-size:11px" onclick="openBlockModal('${escH(f.userEmail||"")}','','customer')">Request Block</button>
+            </div>`).join("");
+      }
+    })
+    .catch(()=>showToast("Failed to load monitoring data","error"));
+}
+
+/* ══════════════════════════════════════
+   AI ALERTS
+══════════════════════════════════════ */
+function loadAIAlerts() {
+  apiFetch("/api/admin/ai-alerts")
+    .then(r=>r.json())
+    .then(d => {
+      const neg  = d.negativeSentiment || [];
+      const high = d.highPriority       || [];
+      const over = d.overloadedAgents   || [];
+      const idle = d.inactiveTickets    || [];
+      const esc  = d.escalationSuggestions || [];
+      setText("al-neg",  neg.length);
+      setText("al-high", high.length);
+      setText("al-idle", idle.length);
+      renderAlertList("al-neg-list",  neg,  a => `Ticket #${escH(a.ticketId||a.id||"")} · ${escH(a.subject||"")} · ${escH(a.userEmail||"")}`);
+      renderAlertList("al-high-list", high, a => `Ticket #${escH(a.ticketId||a.id||"")} · ${escH(a.subject||"")} · Priority: ${escH(a.priority||"High")}`);
+      renderAlertList("al-overload-list", over, a => `Agent ${escH(a.agentEmail||"")} has ${a.openCount||0} open tickets`);
+      renderAlertList("al-idle-list", idle, a => `Ticket #${escH(a.ticketId||a.id||"")} inactive for ${a.idleHours||48}h · ${escH(a.subject||"")}`);
+      renderAlertList("al-escalate-list", esc, a => `Ticket #${escH(a.ticketId||a.id||"")} · ${escH(a.subject||"")} — unassigned`);
+    })
+    .catch(()=>showToast("Failed to load AI alerts","error"));
+}
+
+function renderAlertList(elId, items, labelFn) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">No alerts</div>'; return; }
+  el.innerHTML = items.map(a => `<div class="alert-item">${labelFn(a)}</div>`).join("");
+}
+
+/* ══════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════ */
+function loadNotifications() {
+  document.getElementById("notif-list").innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading…</div>';
+  apiFetch("/api/admin/notifications")
+    .then(r=>r.json())
+    .then(d => {
+      const notifs = d.notifications || d || [];
+      const unread = typeof d.unread === "number" ? d.unread : notifs.filter(n=>!n.read).length;
+      /* Always sync badge with real unread count */
+      const hb = document.getElementById("header-notif-badge");
+      const sb = document.getElementById("sidebar-notif-badge");
+      [hb, sb].forEach(b => {
+        if (!b) return;
+        b.textContent = unread > 99 ? "99+" : unread;
+        b.style.display = unread > 0 ? "flex" : "none";
+      });
+      const el = document.getElementById("notif-list");
+      if (!notifs.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No notifications</div>'; return; }
+      el.innerHTML = notifs.map(n => {
+        const sev = n.severity || "info";
+        const sevColor = { danger:"var(--danger)", warn:"var(--warning)", warning:"var(--warning)", success:"var(--success)", info:"var(--info)" }[sev]||"var(--info)";
+        const icon = { danger:"ti-alert-circle", warn:"ti-alert-triangle", warning:"ti-alert-triangle", success:"ti-circle-check", info:"ti-info-circle" }[sev]||"ti-bell";
+        return `<div class="notif-item${n.read ? " notif-read" : " unread"}">
+          <div class="notif-icon" style="background:${sevColor}18;color:${sevColor}"><i class="ti ${icon}"></i></div>
+          <div class="notif-body" style="flex:1">
+            <div class="notif-title">${escH(n.title||"Notification")}</div>
+            <div class="notif-msg">${escH(n.message||"")}</div>
+            <div class="notif-time">${n.createdAt ? new Date(n.createdAt).toLocaleString() : ""}</div>
+          </div>
+          ${!n.read ? `<button class="btn-secondary" style="padding:3px 9px;font-size:11px;flex-shrink:0" onclick="markNotifRead('${n.id}',this)">Mark Read</button>` : ""}
+        </div>`;
+      }).join("");
+    })
+    .catch(()=>{ document.getElementById("notif-list").innerHTML='<div style="padding:20px;color:var(--danger)">Failed to load notifications</div>'; });
+}
+
+/* Fetch unread count silently and update badges (called on page load) */
+function refreshNotifBadge() {
+  apiFetch("/api/admin/notifications")
+    .then(r=>r.json())
+    .then(d => {
+      const unread = typeof d.unread === "number" ? d.unread : (d.notifications||[]).filter(n=>!n.read).length;
+      const hb = document.getElementById("header-notif-badge");
+      const sb = document.getElementById("sidebar-notif-badge");
+      [hb, sb].forEach(b => {
+        if (!b) return;
+        b.textContent = unread > 99 ? "99+" : unread;
+        b.style.display = unread > 0 ? "flex" : "none";
+      });
+    })
+    .catch(()=>{});
+}
+
+function markNotifRead(id, btn) {
+  apiFetch(`/api/admin/notifications/${id}/read`, {method:"POST"})
+    .then(()=>{ if(btn){ const row=btn.closest(".notif-item"); if(row){row.classList.add("notif-read");btn.remove();} } updateNotifBadge(-1); })
+    .catch(()=>{});
+}
+
+function markAllNotifsRead() {
+  apiFetch("/api/admin/notifications/mark-all-read", {method:"POST"})
+    .then(()=>{ loadNotifications(); updateNotifBadge(0,true); showToast("All notifications marked as read","success"); })
+    .catch(()=>{});
+}
+
+function updateNotifBadge(delta, reset=false) {
+  const hb = document.getElementById("header-notif-badge");
+  const sb = document.getElementById("sidebar-notif-badge");
+  [hb, sb].forEach(b => {
+    if (!b) return;
+    const cur = reset ? 0 : Math.max(0, (parseInt(b.textContent)||0) + delta);
+    b.textContent = cur;
+    b.style.display = cur > 0 ? "flex" : "none";
+  });
+}
+
+/* ══════════════════════════════════════
+   AGENT / CUSTOMER REPORTS
+══════════════════════════════════════ */
+function showAgentReport(agentEmail) {
+  apiFetch(`/api/admin/agent-report/${encodeURIComponent(agentEmail)}`)
+    .then(r=>r.json())
+    .then(d => {
+      if (d.message && !d.agent) { showToast(d.message, "error"); return; }
+      const ag    = d.agent || {};
+      const score = parseInt((d.overallScore||"0").split("/")[0]) || 0;
+      const scoreColor = score>=80?"var(--success)":score>=60?"var(--warning)":"var(--danger)";
+      document.getElementById("modal-agent-report-content").innerHTML = `
+        <div style="margin-bottom:14px"><strong style="font-size:15px">${escH(ag.name||agentEmail)}</strong>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:8px">${escH(ag.email||agentEmail)}</span>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:8px">· ${escH(ag.department||"Support")}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+          <div class="stat-card"><div class="stat-icon"><i class="ti ti-ticket"></i></div><div><div class="stat-num">${d.ticketsAssigned??0}</div><div class="stat-label">Total Assigned</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="color:var(--success)"><i class="ti ti-circle-check"></i></div><div><div class="stat-num">${d.ticketsClosed??0}</div><div class="stat-label">Resolved</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="color:var(--warning)"><i class="ti ti-loader"></i></div><div><div class="stat-num">${d.ticketsPending??0}</div><div class="stat-label">Pending</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="color:var(--gold)"><i class="ti ti-star"></i></div><div><div class="stat-num">${escH(d.customerRating||"—")}</div><div class="stat-label">CSAT Score</div></div></div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <tr><td style="padding:5px 0;color:var(--text-muted);width:180px">Avg Response Time</td><td>${escH(d.avgReplyTime||"—")}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Avg Resolution Time</td><td>${escH(d.avgResolutionTime||"—")}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">AI-Assisted Replies</td><td>${d.aiAssistedReplies??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Escalations</td><td>${d.escalationCount??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">This Week (Resolved)</td><td>${d.weeklyProductivity??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">This Month (Resolved)</td><td>${d.monthlyProductivity??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Overall Score</td><td><strong style="color:${scoreColor}">${escH(d.overallScore||"—")}</strong></td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted);font-size:11px">Generated</td><td style="font-size:11px;color:var(--text-muted)">${d.generatedAt ? new Date(d.generatedAt).toLocaleString() : ""}</td></tr>
+        </table>`;
+      openModal("modal-agent-report");
+    })
+    .catch(()=>showToast("Failed to load agent report","error"));
+}
+
+function showCustomerReport(customerId) {
+  apiFetch(`/api/admin/customer-report/${encodeURIComponent(customerId)}`)
+    .then(r=>r.json())
+    .then(d => {
+      if (d.message && !d.customer) { showToast(d.message, "error"); return; }
+      const c = d.customer || {};
+      document.getElementById("modal-cust-report-content").innerHTML = `
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <tr><td style="padding:5px 0;color:var(--text-muted);width:180px">Name</td><td>${escH(c.name||"")}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Email</td><td>${escH(c.email||customerId||"")}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Total Tickets</td><td>${d.ticketsCreated??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Resolved Tickets</td><td>${d.ticketsResolved??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Pending Tickets</td><td>${d.ticketsPending??0}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Avg Resolution Time</td><td>${escH(d.avgResolutionTime||"—")}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Account Status</td><td>${c.blocked?"<span style='color:var(--danger);font-weight:600'>Blocked</span>":"<span style='color:var(--success);font-weight:600'>Active</span>"}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Block History</td><td>${(d.blockHistory||[]).length} request(s)</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted)">Appeals Filed</td><td>${(d.appealHistory||[]).length}</td></tr>
+          <tr><td style="padding:5px 0;color:var(--text-muted);font-size:11px">Generated</td><td style="font-size:11px;color:var(--text-muted)">${d.generatedAt ? new Date(d.generatedAt).toLocaleString() : ""}</td></tr>
+        </table>`;
+      openModal("modal-cust-report");
+    })
+    .catch(()=>showToast("Failed to load customer report","error"));
+}
+
+/* ══════════════════════════════════════
+   FRAUD ALERTS — Feature 6
+══════════════════════════════════════ */
+function loadFraudAlerts() {
+  const el = document.getElementById("fraud-alerts-list");
+  if (el) el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted)">Loading…</div>';
+  apiFetch("/api/admin/fraud-alerts")
+    .then(r=>r.json())
+    .then(d => {
+      const alerts = d.alerts || [];
+      if (!el) return;
+      if (!alerts.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No fraud alerts detected.</div>'; return; }
+      el.innerHTML = alerts.map(a => {
+        const reviewed = a.reviewed;
+        return `<div style="padding:14px 18px;border-bottom:1px solid var(--border-dim);display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700;font-size:13px">${escH(a.email)}</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px">${escH(a.subject||"")}</div>
+            <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${(a.alerts||[]).map(al=>`<span style="font-size:10px;padding:1px 7px;border-radius:12px;background:rgba(231,76,60,.1);color:var(--danger);border:1px solid rgba(231,76,60,.2)">${escH(al)}</span>`).join("")}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+            <span style="font-size:10.5px;padding:2px 8px;border-radius:12px;background:${reviewed?"rgba(46,204,113,.1)":"rgba(231,76,60,.1)"};color:${reviewed?"var(--success)":"var(--danger)"}">
+              ${reviewed ? "Reviewed" : "Pending Review"}
+            </span>
+            <span style="font-size:10px;color:var(--text-muted)">Confidence: ${a.confidence||0}%</span>
+            ${!reviewed ? `<div style="display:flex;gap:5px">
+              <button class="btn-approve" style="padding:3px 10px;font-size:11px" onclick="reviewFraudAlert('${a.id}','false_positive')">False Positive</button>
+              <button class="btn-reject" style="padding:3px 10px;font-size:11px" onclick="reviewFraudAlert('${a.id}','confirmed')">Confirm</button>
+            </div>` : ""}
+          </div>
+        </div>`;
+      }).join("");
+    })
+    .catch(()=>{ if (el) el.innerHTML = '<div style="padding:20px;color:var(--danger)">Failed to load fraud alerts</div>'; });
+}
+
+function reviewFraudAlert(id, decision) {
+  apiFetch(`/api/admin/fraud-alerts/${id}/review`, { method:"PUT", body:JSON.stringify({ decision }) })
+    .then(()=>{ showToast("Fraud alert reviewed", "success"); loadFraudAlerts(); })
+    .catch(()=>showToast("Failed to review alert","error"));
+}
+
+/* ══════════════════════════════════════
+   REPUTATION SCORES — Feature 5
+══════════════════════════════════════ */
+function loadReputations() {
+  const el = document.getElementById("reputation-table-body");
+  if (el) el.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">Loading…</td></tr>';
+  apiFetch("/api/admin/reputations")
+    .then(r=>r.json())
+    .then(d => {
+      const reps = d.reputations || [];
+      if (!el) return;
+      if (!reps.length) { el.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:28px">No reputation data yet.</td></tr>'; return; }
+      el.innerHTML = reps.map(r => {
+        const repBadge = window.dfReputationBadge ? window.dfReputationBadge(r.score, r.tier) : `${r.score} (${r.tier})`;
+        const lastEvents = (r.events||[]).slice(-3).map(e=>`${e.event}(${e.delta>0?"+":""}${e.delta})`).join(", ");
+        return `<tr>
+          <td style="color:var(--text-muted);font-size:13px">${escH(r.email||"")}</td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div style="width:${Math.max(4,r.score)}px;height:6px;border-radius:3px;background:${r.score>=80?"var(--success)":r.score>=50?"var(--info)":r.score>=20?"var(--warning)":"var(--danger)"};max-width:80px;min-width:4px"></div><span style="font-size:13px;font-weight:700">${r.score}</span></div></td>
+          <td>${repBadge}</td>
+          <td style="font-size:11px;color:var(--text-muted)">${lastEvents||"No events"}</td>
+          <td><button class="btn-secondary" style="padding:3px 10px;font-size:11px" onclick="adjustReputation('${escH(r.email||"")}')"><i class="ti ti-edit"></i></button></td>
+        </tr>`;
+      }).join("");
+    })
+    .catch(()=>{ if (el) el.innerHTML = '<tr><td colspan="5" style="color:var(--danger);padding:20px">Failed to load reputations</td></tr>'; });
+}
+
+function adjustReputation(email) {
+  const event = prompt(`Adjust reputation for ${email}.\nEvent type:\nticket_resolved, positive_rating, negative_rating, spam_report, false_complaint, abuse_report`);
+  if (!event) return;
+  apiFetch(`/api/admin/reputation/${encodeURIComponent(email)}/event`, { method:"POST", body:JSON.stringify({ event }) })
+    .then(r=>r.json())
+    .then(d=>{ showToast(`Reputation updated: ${d.score} (${d.tier})`, "success"); loadReputations(); })
+    .catch(()=>showToast("Failed to update reputation","error"));
+}
+
+/* ══════════════════════════════════════
+   AI INSIGHTS — Feature 16
+══════════════════════════════════════ */
+function loadInsights() {
+  apiFetch("/api/admin/insights")
+    .then(r=>r.json())
+    .then(d => {
+      const s = d.summary || {};
+      const summaryEl = document.getElementById("insights-summary");
+      if (summaryEl) {
+        const items = [
+          { label:"Total Tickets",    value:s.totalTickets||0,      icon:"ti-ticket",          color:"var(--info)" },
+          { label:"Open",             value:s.openTickets||0,        icon:"ti-clock",           color:"var(--warning)" },
+          { label:"Resolved",         value:s.resolved||0,           icon:"ti-circle-check",    color:"var(--success)" },
+          { label:"Avg Rating",       value:s.avgRating?s.avgRating+"★":"—", icon:"ti-star", color:"var(--gold)" },
+          { label:"Avg Resolution",   value:s.avgResolutionHrs?s.avgResolutionHrs+"h":"—", icon:"ti-clock-hour-3", color:"var(--info)" },
+          { label:"Agents",           value:s.totalAgents||0,        icon:"ti-users",           color:"var(--success)" },
+          { label:"Fraud Alerts",     value:s.unreadFraudAlerts||0,  icon:"ti-shield-x",        color:"var(--danger)" },
+          { label:"Customers",        value:s.totalCustomers||0,     icon:"ti-user-heart",      color:"var(--info)" }
+        ];
+        summaryEl.innerHTML = items.map(i => `
+          <div class="df-table-card" style="padding:14px;display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:${i.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="ti ${i.icon}" style="font-size:16px;color:${i.color}"></i>
+            </div>
+            <div><div style="font-size:18px;font-weight:900">${escH(String(i.value))}</div><div style="font-size:11px;color:var(--text-muted)">${i.label}</div></div>
+          </div>`).join("");
+      }
+
+      // Priority breakdown
+      const priEl = document.getElementById("insights-priority");
+      if (priEl && d.byPriority) {
+        const total = Object.values(d.byPriority).reduce((s,v)=>s+v,0)||1;
+        const colors = { Critical:"var(--danger)", High:"var(--warning)", Medium:"var(--info)", Low:"var(--success)" };
+        priEl.innerHTML = Object.entries(d.byPriority).map(([k,v]) =>
+          `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="width:60px;font-size:12px;color:${colors[k]||"var(--text-muted)"};font-weight:600">${k}</span>
+            <div style="flex:1;height:8px;border-radius:4px;background:var(--border-dim)"><div style="height:100%;border-radius:4px;background:${colors[k]||"var(--text-muted)"};width:${Math.round((v/total)*100)}%"></div></div>
+            <span style="font-size:12px;color:var(--text-muted);width:28px;text-align:right">${v}</span>
+          </div>`
+        ).join("");
+      }
+
+      // Category breakdown
+      const catEl = document.getElementById("insights-category");
+      if (catEl && d.byCategory) {
+        const total = Object.values(d.byCategory).reduce((s,v)=>s+v,0)||1;
+        catEl.innerHTML = Object.entries(d.byCategory).map(([k,v]) =>
+          `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="flex:1;font-size:12px;color:var(--text-secondary);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(k)}</span>
+            <div style="width:80px;height:8px;border-radius:4px;background:var(--border-dim)"><div style="height:100%;border-radius:4px;background:var(--gold);width:${Math.round((v/total)*100)}%"></div></div>
+            <span style="font-size:12px;color:var(--text-muted);width:28px;text-align:right">${v}</span>
+          </div>`
+        ).join("");
+      }
+
+      // Trend sparkline
+      const trendEl = document.getElementById("insights-trend");
+      if (trendEl && d.ticketTrend && d.ticketTrend.length) {
+        const maxVal = Math.max(...d.ticketTrend.map(t=>t.count), 1);
+        trendEl.innerHTML = d.ticketTrend.map(t => {
+          const pct = Math.max(4, Math.round((t.count / maxVal) * 100));
+          return `<div title="${t.date}: ${t.count}" style="flex:1;background:rgba(212,175,55,.35);border-radius:3px 3px 0 0;height:${pct}%;min-width:4px;max-width:14px;cursor:default;transition:background .2s" onmouseover="this.style.background='var(--gold)'" onmouseout="this.style.background='rgba(212,175,55,.35)'"></div>`;
+        }).join("");
+      }
+    })
+    .catch(()=>showToast("Failed to load insights","error"));
+}
+
+/* ══════════════════════════════════════
+   WEEKLY REPORT — Feature 20
+══════════════════════════════════════ */
+async function generateWeeklyReport() {
+  const btn = document.getElementById("generate-report-btn");
+  const el  = document.getElementById("weekly-report-content");
+  if (btn) { btn.disabled=true; btn.innerHTML='<i class="ti ti-loader-2" style="animation:spin .8s linear infinite;display:inline-block"></i> Generating…'; }
+  if (el) el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)"><i class="ti ti-loader-2" style="font-size:28px;animation:spin .8s linear infinite;display:inline-block"></i><p style="margin-top:10px">AI is generating your weekly report…</p></div>';
+  try {
+    const r = await apiFetch("/api/ai/weekly-report");
+    const d = await r.json();
+    if (!el) return;
+    const rr = d.resolutionRate||0;
+    const rrColor = rr>=80?"var(--success)":rr>=50?"var(--warning)":"var(--danger)";
+    el.innerHTML = `
+      <div class="df-table-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:16px;font-weight:800">Week of ${new Date(d.weekStart).toLocaleDateString()} — ${new Date(d.weekEnd).toLocaleDateString()}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Generated ${new Date(d.generatedAt).toLocaleString()}</div>
+          </div>
+          <button class="btn-secondary" onclick="window.print()" style="padding:7px 14px;font-size:12px"><i class="ti ti-printer"></i> Export</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+          ${[
+            ["Created",   d.totalCreated,  "ti-ticket",        "var(--info)"],
+            ["Resolved",  d.totalResolved, "ti-circle-check",  "var(--success)"],
+            ["Pending",   d.totalPending,  "ti-clock",         "var(--warning)"],
+            ["Resolution %", rr+"%",       "ti-percentage",    rrColor],
+            ["Avg CSAT",  d.avgSatisfaction?d.avgSatisfaction+"★":"—", "ti-star", "var(--gold)"],
+            ["AI Sessions", d.aiSessionsUsed||0, "ti-brain",   "var(--info)"]
+          ].map(([l,v,ic,c])=>`<div style="padding:12px;border:1px solid var(--border-dim);border-radius:10px">
+            <i class="ti ${ic}" style="font-size:18px;color:${c};display:block;margin-bottom:6px"></i>
+            <div style="font-size:20px;font-weight:900">${v}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${l}</div>
+          </div>`).join("")}
+        </div>
+      </div>
+      ${d.bestAgents&&d.bestAgents.length ? `<div class="df-table-card" style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px"><i class="ti ti-trophy" style="color:var(--gold);margin-right:6px"></i>Top Agents</div>
+        ${d.bestAgents.map((a,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-dim)">
+          <span style="font-size:14px;font-weight:800;color:${i===0?"var(--gold)":"var(--text-muted)"};width:20px">${i+1}</span>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">${escH(a.email)}</div><div style="font-size:11px;color:var(--text-muted)">${a.resolved} resolved · ${a.avgRating?a.avgRating+"★":"No ratings"}</div></div>
+        </div>`).join("")}
+      </div>` : ""}
+      ${d.aiRecommendations&&d.aiRecommendations.length ? `<div class="df-table-card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px"><i class="ti ti-brain" style="color:var(--info);margin-right:6px"></i>AI Recommendations</div>
+        ${d.aiRecommendations.map(r=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-dim)">
+          <i class="ti ti-bulb" style="color:var(--gold);font-size:14px;margin-top:2px;flex-shrink:0"></i>
+          <span style="font-size:12.5px;color:var(--text-secondary)">${escH(r)}</span>
+        </div>`).join("")}
+      </div>` : ""}`;
+  } catch {
+    if (el) el.innerHTML = '<div style="padding:20px;color:var(--danger)">Failed to generate report. Please try again.</div>';
+  }
+  if (btn) { btn.disabled=false; btn.innerHTML='<i class="ti ti-file-analytics"></i> Generate Report'; }
+}
+
+/* ══════════════════════════════════════
+   OTP FLOW — Feature 18
+══════════════════════════════════════ */
+let _pendingOTPAction  = null;
+let _pendingOTPCallback = null;
+
+async function requireOTP(action, callback) {
+  _pendingOTPAction   = action;
+  _pendingOTPCallback = callback;
+  const d = await window.dfRequestOTP(action);
+  if (d.error) { showToast(d.error, "error"); return; }
+  const otp = prompt(`A verification code has been sent to your email.\nEnter the 6-digit OTP to confirm: ${action.replace(/_/g," ")}`);
+  if (!otp) return;
+  const v = await window.dfVerifyOTP(action, otp);
+  if (v.valid) {
+    showToast("OTP verified", "success");
+    if (_pendingOTPCallback) _pendingOTPCallback();
+  } else {
+    showToast(v.message || "Invalid OTP", "error");
+  }
+  _pendingOTPAction   = null;
+  _pendingOTPCallback = null;
+}
+
+/* renderUsers is extended in the original function above to include Request Block buttons */
+
+/* ══════════════════════════════════════
+   AUTHORIZED EMAILS (whitelist management)
+══════════════════════════════════════ */
+function loadAuthorizedEmails() {
+  const el = document.getElementById("auth-emails-list");
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">Loading…</div>';
+  apiFetch("/api/admin/authorized-emails")
+    .then(r => r.json())
+    .then(d => {
+      if (d.message && !d.authorizedEmails) { el.innerHTML = `<div style="color:var(--danger);font-size:13px"><i class="ti ti-alert-circle"></i> ${escH(d.message)}</div>`; return; }
+      const list = d.authorizedEmails || [];
+      if (!list.length) {
+        el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No authorized emails yet. Add one above to allow agent or admin registration.</div>';
+        return;
+      }
+      el.innerHTML = `<div class="df-table-card"><table class="df-table"><thead><tr>
+        <th>Email</th><th>Role</th><th>Authorized By</th><th>Date</th><th>Status</th><th>Action</th>
+      </tr></thead><tbody>
+        ${list.map(e => `<tr>
+          <td style="font-weight:600">${escH(e.email||"")}</td>
+          <td><span class="badge" style="background:${e.role==="admin"?"rgba(231,76,60,.15)":"rgba(167,139,250,.15)"};color:${e.role==="admin"?"var(--danger)":"#a78bfa"}">${escH(e.role||"")}</span></td>
+          <td style="font-size:12px;color:var(--text-muted)">${escH(e.invitedByName||e.invitedBy||"")}</td>
+          <td style="font-size:12px;color:var(--text-muted)">${e.invitedAt ? new Date(e.invitedAt).toLocaleDateString() : "—"}</td>
+          <td>${e.used ? '<span style="color:var(--success);font-size:12px"><i class="ti ti-circle-check"></i> Used</span>' : '<span style="color:var(--warning);font-size:12px"><i class="ti ti-clock"></i> Pending</span>'}</td>
+          <td>${!e.used ? `<button class="btn-reject" style="padding:3px 10px;font-size:11px" onclick="revokeAuthorizedEmail('${e.id}',this)"><i class="ti ti-trash"></i> Revoke</button>` : '<span style="color:var(--text-muted);font-size:12px">—</span>'}</td>
+        </tr>`).join("")}
+      </tbody></table></div>`;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:var(--danger);font-size:13px">Failed to load authorized emails</div>'; });
+}
+
+function addAuthorizedEmail() {
+  const email = (document.getElementById("auth-email-input")?.value||"").trim();
+  const role  = document.getElementById("auth-role-input")?.value || "agent";
+  if (!email) { showToast("Please enter an email address", "error"); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast("Please enter a valid email address", "error"); return; }
+
+  apiFetch("/api/admin/authorized-emails", { method:"POST", body:JSON.stringify({email, role}) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.message && !d.id) { showToast(d.message, "error"); return; }
+      showToast(`${email} authorized as ${role}`, "success");
+      document.getElementById("auth-email-input").value = "";
+      loadAuthorizedEmails();
+    })
+    .catch(err => showToast("Failed to authorize email — is the server running?", "error"));
+}
+
+function revokeAuthorizedEmail(id, btn) {
+  if (!confirm("Revoke this email authorization?")) return;
+  apiFetch(`/api/admin/authorized-emails/${id}`, { method:"DELETE" })
+    .then(r => r.json())
+    .then(() => { showToast("Authorization revoked", "success"); loadAuthorizedEmails(); })
+    .catch(() => showToast("Failed to revoke", "error"));
+}
+
+// loadAuthorizedEmails is called from switchPanel when panelId === "settings"
+
+/* ── CSS additions for new panels ── */
+(function injectCSS() {
+  const s = document.createElement("style");
+  s.textContent = `
+  .live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:22px}
+  .live-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+  .live-card::before{content:"";position:absolute;inset:0;background:var(--live-accent,transparent);opacity:.04;pointer-events:none}
+  .live-num{font-size:1.8rem;font-weight:700;line-height:1}
+  .live-label{font-size:11px;color:var(--text-muted);margin-top:2px}
+  .live-pulse{width:8px;height:8px;border-radius:50%;background:var(--primary);position:absolute;top:12px;right:12px;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+  .feed-wrap{max-height:420px;overflow-y:auto;padding:4px 0}
+  .feed-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-color)}
+  .feed-item:last-child{border-bottom:none}
+  .feed-icon{width:32px;height:32px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+  .feed-action{font-size:13px;color:var(--text-primary)}
+  .feed-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+  .perf-controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;align-items:flex-end}
+  .perf-controls .filter-group{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-muted)}
+  .badge-warn{background:rgba(243,156,18,.15);color:var(--warning);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+  .badge-pending{background:rgba(243,156,18,.15);color:var(--warning);padding:2px 8px;border-radius:12px;font-size:11px}
+  .badge-approved{background:rgba(46,204,113,.15);color:var(--success);padding:2px 8px;border-radius:12px;font-size:11px}
+  .badge-rejected{background:rgba(231,76,60,.15);color:var(--danger);padding:2px 8px;border-radius:12px;font-size:11px}
+  .badge-info{background:rgba(52,152,219,.15);color:var(--info);padding:2px 8px;border-radius:12px;font-size:11px}
+  .block-tabs{display:flex;gap:8px;margin-bottom:16px}
+  .btab{padding:6px 16px;border-radius:20px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;transition:.2s}
+  .btab.active,.btab:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .block-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .block-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .block-card-title{font-weight:600;font-size:14px}
+  .block-card-reason{font-size:13px;color:var(--text-secondary);margin-top:4px}
+  .vote-progress{margin-top:10px}
+  .vote-bar-wrap{height:6px;background:var(--border-color);border-radius:3px;margin-bottom:5px}
+  .vote-bar{height:100%;border-radius:3px;transition:width .4s}
+  .btn-approve{background:rgba(46,204,113,.15);color:var(--success);border:1px solid rgba(46,204,113,.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+  .btn-approve:hover{background:var(--success);color:#fff}
+  .btn-reject{background:rgba(231,76,60,.15);color:var(--danger);border:1px solid rgba(231,76,60,.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+  .btn-reject:hover{background:var(--danger);color:#fff}
+  .alert-section{margin-bottom:22px}
+  .alert-section-title{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .alert-item{background:var(--card-bg);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:13px;display:flex;align-items:center;gap:10px}
+  .stat-grid-3{grid-template-columns:repeat(3,1fr)}
+  .notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px;border-bottom:1px solid var(--border-color);transition:.2s}
+  .notif-item:last-child{border-bottom:none}
+  .notif-read{opacity:.5}
+  .notif-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+  .notif-title{font-weight:600;font-size:13px}
+  .notif-msg{font-size:12px;color:var(--text-secondary);margin-top:2px}
+  .notif-time{font-size:11px;color:var(--text-muted);margin-top:4px}
+  .df-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .df-modal.hidden{display:none}
+  .df-modal-box{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:28px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;position:relative}
+  .df-modal-box.wide{width:680px}
+  .df-modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px}
+  .df-modal-title{font-size:18px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .df-modal-field{margin-bottom:14px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--text-muted)}
+  .df-modal-input,.df-modal-select,.df-modal-textarea{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box}
+  .df-modal-textarea{min-height:90px;resize:vertical}
+  .df-modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+  .online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+  .page-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border-color);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:12px;margin:0 2px}
+  .page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ── utility ── */
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function escH(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ── notification polling ── */
+setInterval(() => {
+  // only poll if live panel is not visible (live panel already refreshes)
+  const lp = document.getElementById("panel-live");
+  if (lp && lp.style.display !== "none") return;
+  apiFetch("/api/admin/live-stats")
+    .then(r=>r.json())
+    .then(d => {
+      const unread = (d.stats||d).unreadNotifications || 0;
+      const hb = document.getElementById("header-notif-badge");
+      const sb = document.getElementById("sidebar-notif-badge");
+      if (hb) { hb.textContent = unread; hb.style.display = unread?"flex":"none"; }
+      if (sb) { sb.textContent = unread; sb.style.display = unread?"flex":"none"; }
+    })
+    .catch(()=>{});
+}, 60000);
+
+/* ── Mobile sidebar (admin) — mirrors customer dashboard pattern exactly ── */
+function toggleAdminSidebar() {
+  var sidebar = document.querySelector('.admin-shell > aside');
+  var overlay = document.getElementById('admin-nav-overlay');
+  var btn     = document.getElementById('admin-hamburger');
+  if (!sidebar) return;
+  var isOpen = sidebar.classList.toggle('sidebar-open');
+  if (overlay) overlay.style.display = isOpen ? 'block' : 'none';
+  if (btn)     btn.classList.toggle('is-open', isOpen);
+}
+function closeAdminSidebar() {
+  var sidebar = document.querySelector('.admin-shell > aside');
+  var overlay = document.getElementById('admin-nav-overlay');
+  var btn     = document.getElementById('admin-hamburger');
+  if (sidebar) sidebar.classList.remove('sidebar-open');
+  if (overlay) overlay.style.display = 'none';
+  if (btn)     btn.classList.remove('is-open');
+}
+/* Close sidebar when any nav item is tapped on mobile */
+document.querySelectorAll('.a-nav-link').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 1200) closeAdminSidebar();
+  });
+});
+</script>
+</body>
+</html>

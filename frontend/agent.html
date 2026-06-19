@@ -1,0 +1,1478 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DeskFlow AI — Agent Workdesk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<link rel="stylesheet" href="df-system.css"/>
+<link rel="stylesheet" href="df-responsive.css"/>
+<script src="df-theme.js"></script>
+<style>
+body { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+
+.agent-shell { display:flex; flex:1; min-height:0; position:relative; z-index:1; }
+
+/* ── SIDEBAR ── */
+.agent-sidebar {
+  width:220px; flex-shrink:0; background:rgba(8,20,22,.97);
+  border-right:1px solid var(--border-dim); display:flex; flex-direction:column;
+  padding:22px 14px; gap:4px; position:sticky; top:0;
+  height:100vh; height:100dvh;
+  overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.a-brand { display:flex; align-items:center; gap:9px; margin-bottom:1.5rem; text-decoration:none; }
+.a-nav-link {
+  display:flex; align-items:center; gap:10px; padding:10px 13px;
+  border-radius:11px; color:var(--text-secondary); font-size:13.5px; font-weight:600;
+  text-decoration:none; transition:all .2s; position:relative;
+}
+.a-nav-link i { font-size:17px; flex-shrink:0; }
+.a-nav-link:hover  { background:rgba(212,175,55,.06); color:var(--gold-light); transform:translateX(3px); }
+.a-nav-link.active { background:rgba(212,175,55,.1); color:var(--gold); border:1px solid rgba(212,175,55,.15); }
+.a-nav-link.active::before { content:''; position:absolute; left:0; top:25%; bottom:25%; width:3px; border-radius:0 3px 3px 0; background:var(--gold); }
+.a-nav-spacer { flex:1; }
+
+/* ── MAIN ── */
+.agent-main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+.agent-header {
+  padding:14px 24px; border-bottom:1px solid var(--border-dim);
+  background:rgba(8,20,22,.8); backdrop-filter:blur(16px);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.agent-user { display:flex; align-items:center; gap:10px; }
+.agent-avatar {
+  width:38px; height:38px; border-radius:50%; background:var(--grad-gold);
+  display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800;
+  color:var(--bg-primary); box-shadow:0 0 14px var(--gold-glow);
+}
+.agent-header-info h4 { font-size:14px; font-weight:700; color:var(--text-primary); }
+.agent-header-info p  { font-size:11px; color:var(--text-muted); }
+
+/* ── METRICS ── */
+.metrics-bar { display:flex; gap:14px; padding:16px 24px; border-bottom:1px solid var(--border-dim); flex-wrap:wrap; }
+.metric-card {
+  display:flex; align-items:center; gap:12px; padding:12px 16px;
+  border-radius:12px; background:var(--glass); border:1px solid var(--border-dim);
+  flex:1; min-width:140px; transition:all .25s;
+}
+.metric-card:hover { border-color:rgba(212,175,55,.2); transform:translateY(-2px); }
+.metric-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.metric-num { font-size:1.4rem; font-weight:900; background:var(--grad-gold-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.metric-lbl { font-size:11px; color:var(--text-muted); margin-top:1px; }
+
+/* ── CONTENT ── */
+.agent-content { display:grid; grid-template-columns:300px 1fr 260px; gap:0; flex:1; overflow:hidden; min-height:0; }
+
+/* QUEUE */
+.ticket-queue {
+  border-right:1px solid var(--border-dim); display:flex; flex-direction:column;
+  background:rgba(8,18,20,.8); overflow:hidden;
+}
+.queue-header { padding:14px 16px; border-bottom:1px solid var(--border-dim); }
+.queue-header h3 { font-size:14px; font-weight:800; color:var(--text-primary); margin-bottom:10px; }
+.tab-btns { display:flex; gap:5px; }
+.tab-btn {
+  flex:1; padding:7px 10px; border-radius:8px; font-size:12px; font-weight:700;
+  background:var(--glass); border:1px solid var(--border-dim); color:var(--text-muted);
+  cursor:pointer; transition:all .2s; font-family:var(--font);
+}
+.tab-btn.active { background:rgba(212,175,55,.12); border-color:rgba(212,175,55,.25); color:var(--gold); }
+.tab-btn:hover:not(.active) { color:var(--text-primary); border-color:var(--border); }
+.queue-list { overflow-y:auto; flex:1; padding:10px; display:flex; flex-direction:column; gap:7px; }
+.q-card {
+  padding:12px 14px; border-radius:12px; background:var(--glass);
+  border:1px solid var(--border-dim); cursor:pointer; transition:all .25s;
+}
+.q-card:hover { border-color:rgba(212,175,55,.2); background:rgba(212,175,55,.03); }
+.q-card.selected { border-color:rgba(212,175,55,.35); background:rgba(212,175,55,.07); box-shadow:0 0 0 1px rgba(212,175,55,.1); }
+.q-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.q-id { font-size:10.5px; font-weight:800; color:var(--gold); }
+.q-status { font-size:10.5px; font-weight:700; }
+.q-subject { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.q-desc   { font-size:11.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.q-footer { display:flex; justify-content:space-between; align-items:center; margin-top:7px; }
+.badge { padding:3px 9px; border-radius:6px; font-size:10.5px; font-weight:700; }
+.badge-priority-critical { background:rgba(231,76,60,.25);  color:#ff4444;        border:1px solid rgba(231,76,60,.5); animation:criticalPulse 1.8s infinite; }
+.badge-priority-high     { background:rgba(231,76,60,.15);  color:var(--danger);  border:1px solid rgba(231,76,60,.2); }
+.badge-priority-med      { background:rgba(243,156,18,.12); color:var(--warning); border:1px solid rgba(243,156,18,.2); }
+.badge-priority-low      { background:rgba(46,204,113,.1);  color:var(--success); border:1px solid rgba(46,204,113,.2); }
+@keyframes criticalPulse { 0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,.4)} 50%{box-shadow:0 0 0 4px rgba(231,76,60,0)} }
+.live-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:100px; background:rgba(46,204,113,.1); border:1px solid rgba(46,204,113,.2); font-size:10px; font-weight:700; color:var(--success); }
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--success); animation:pulseDot 1.4s infinite; }
+
+/* WORKSPACE */
+.workspace { display:flex; flex-direction:column; overflow:hidden; }
+.empty-workspace {
+  flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px;
+  color:var(--text-muted);
+}
+.empty-workspace i { font-size:3rem; color:var(--gold); opacity:.3; }
+.active-workspace { flex:1; display:none; flex-direction:column; overflow:hidden; }
+.workspace-header {
+  padding:14px 18px; border-bottom:1px solid var(--border-dim);
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; flex-shrink:0;
+  background:rgba(8,22,24,.6);
+}
+.workspace-title h4 { font-size:15px; font-weight:800; color:var(--text-primary); }
+.workspace-title p  { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+.workspace-actions  { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+.status-select {
+  padding:8px 32px 8px 12px; border:1px solid var(--border-dim); border-radius:9px;
+  background:rgba(22,52,54,.85); color:var(--text-primary); font-family:var(--font);
+  font-size:12.5px; font-weight:700; outline:none; cursor:pointer; transition:all .2s;
+  -webkit-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 10px center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.status-select:hover { border-color:rgba(212,175,55,.3); background-color:rgba(22,52,54,1); }
+.status-select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.1); }
+.status-select option {
+  background:#0F2426; color:var(--text-primary); font-family:var(--font);
+  font-size:13px; padding:8px 12px;
+}
+.btn-action {
+  padding:8px 14px; border:1px solid var(--border-dim); background:var(--glass);
+  border-radius:9px; color:var(--text-secondary); font-size:12px; font-weight:700;
+  cursor:pointer; transition:all .2s; font-family:var(--font); display:inline-flex; align-items:center; gap:5px;
+}
+.btn-action:hover { border-color:rgba(212,175,55,.3); color:var(--gold-light); }
+.btn-action:disabled { opacity:.45; cursor:not-allowed; }
+.btn-primary-action {
+  background:var(--grad-gold); border:none; color:var(--bg-primary); font-weight:700;
+  padding:9px 16px; border-radius:9px; cursor:pointer; font-family:var(--font); font-size:12.5px;
+  display:inline-flex; align-items:center; gap:6px; transition:all .25s;
+}
+.btn-primary-action:hover { box-shadow:0 0 20px var(--gold-glow); }
+.chat-body { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; }
+.chat-msg { display:flex; flex-direction:column; max-width:78%; }
+.chat-msg.customer { align-self:flex-start; align-items:flex-start; }
+.chat-msg.agent    { align-self:flex-end;   align-items:flex-end; }
+.chat-bubble { padding:10px 13px; border-radius:13px; font-size:13px; line-height:1.55; }
+.chat-msg.customer .chat-bubble { background:var(--glass-light); border:1px solid var(--border-dim); color:var(--text-primary); border-bottom-left-radius:3px; }
+.chat-msg.agent    .chat-bubble { background:var(--grad-gold); color:var(--bg-primary); font-weight:600; border-bottom-right-radius:3px; }
+.chat-time { font-size:9.5px; color:var(--text-muted); margin-top:3px; }
+.chat-input-row { padding:12px 16px; border-top:1px solid var(--border-dim); display:flex; gap:8px; flex-shrink:0; background:rgba(8,18,20,.8); }
+.chat-input {
+  flex:1; background:rgba(22,52,54,.5); border:1px solid var(--border-dim);
+  border-radius:10px; padding:10px 14px; color:var(--text-primary);
+  font-family:var(--font); font-size:13.5px; outline:none; transition:border-color .2s;
+}
+.chat-input:focus { border-color:var(--gold); }
+
+/* ── Animated Send Button ── */
+.ai-send-btn{
+  position:relative; width:44px; height:44px; min-width:44px; flex-shrink:0;
+  border-radius:50%; padding:0; cursor:pointer; overflow:hidden;
+  background:linear-gradient(135deg,#0F5A5E 0%,#1a8a8f 100%);
+  border:1.5px solid rgba(212,175,55,.38);
+  box-shadow:0 2px 14px rgba(15,90,94,.4);
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.ai-send-btn::before{
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);
+  pointer-events:none;
+}
+.ai-send-btn:hover::before{ left:160%; transition:left .55s ease; }
+.ai-send-btn:hover{
+  border-color:rgba(212,175,55,.7);
+  box-shadow:0 0 18px rgba(15,90,94,.5),0 0 32px rgba(212,175,55,.18);
+}
+.ai-send-icon{
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; color:#fff; transition:transform .2s,opacity .2s;
+  z-index:1; position:relative;
+}
+.ai-send-ripple{
+  position:absolute; border-radius:50%; background:rgba(255,255,255,.18);
+  width:0; height:0; top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.ai-send-ring{
+  position:absolute; inset:-2px; border-radius:50%;
+  border:2px solid transparent;
+  border-top-color:rgba(212,175,55,.8);
+  border-right-color:rgba(212,175,55,.4);
+  animation:agentRingSpin .7s linear infinite;
+  animation-play-state:paused; opacity:0;
+  transition:opacity .2s;
+}
+.ai-send-btn.thinking{ background:linear-gradient(135deg,#081C1E,#102A2C); border-color:rgba(212,175,55,.55); }
+.ai-send-btn.thinking .ai-send-ring{ opacity:1; animation-play-state:running; }
+.ai-send-btn.thinking .ai-send-icon{ opacity:.22; }
+@keyframes agentRingSpin{ to{transform:rotate(360deg)} }
+.ai-send-prt{ position:fixed; pointer-events:none; z-index:9999; width:4px; height:4px; border-radius:50%; will-change:transform,opacity; }
+
+/* AI PANEL */
+.ai-panel {
+  border-left:1px solid var(--border-dim); overflow-y:auto; padding:14px;
+  display:flex; flex-direction:column; gap:16px; background:rgba(8,18,20,.5);
+}
+.ai-section-title {
+  font-size:10.5px; font-weight:800; color:var(--gold); text-transform:uppercase;
+  letter-spacing:1.5px; margin-bottom:8px; display:flex; align-items:center; gap:6px;
+}
+.suggested-reply {
+  background:rgba(212,175,55,.04); border:1px solid var(--border-dim);
+  border-radius:9px; padding:10px 12px; font-size:12px; line-height:1.55;
+  cursor:pointer; transition:all .2s; margin-bottom:7px; color:var(--text-secondary);
+}
+.suggested-reply:hover { border-color:rgba(212,175,55,.25); background:rgba(212,175,55,.08); color:var(--text-primary); }
+.insight-box {
+  background:rgba(52,152,219,.06); border:1px solid rgba(52,152,219,.15);
+  border-radius:9px; padding:12px; font-size:12px; line-height:1.55; color:var(--text-secondary);
+}
+.note-card { background:rgba(243,156,18,.05); border:1px solid rgba(243,156,18,.2); border-radius:9px; padding:9px 11px; margin-bottom:6px; }
+.note-card p    { font-size:12px; color:var(--text-primary); line-height:1.5; margin-bottom:3px; }
+.note-card span { font-size:10px; color:var(--text-muted); }
+.note-input {
+  width:100%; background:rgba(22,52,54,.5); border:1px solid var(--border-dim);
+  border-radius:9px; color:var(--text-primary); padding:9px 11px;
+  font-size:12px; resize:vertical; min-height:64px; outline:none;
+  font-family:var(--font); transition:border-color .2s; margin-bottom:7px;
+}
+.note-input:focus { border-color:var(--warning); }
+.feedback-item { padding:9px 11px; border-radius:9px; background:rgba(212,175,55,.05); border:1px solid var(--border-dim); margin-bottom:6px; }
+.feedback-stars { color:var(--gold); font-size:13px; margin-bottom:3px; }
+.feedback-text  { font-size:11px; color:var(--text-primary); margin-bottom:2px; }
+.feedback-meta  { font-size:10px; color:var(--text-muted); }
+
+/* TOAST */
+#toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+.toast { padding:11px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.3); animation:toastSlide .3s ease; backdrop-filter:blur(12px); }
+.toast-success { background:rgba(46,204,113,.15); border:1px solid rgba(46,204,113,.3); color:var(--success); }
+.toast-error   { background:rgba(231,76,60,.15); border:1px solid rgba(231,76,60,.3); color:var(--danger); }
+.toast-info    { background:rgba(212,175,55,.12); border:1px solid rgba(212,175,55,.25); color:var(--gold); }
+@keyframes toastSlide { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+
+@media(max-width:1100px){
+  .agent-content { grid-template-columns:260px 1fr; }
+  .ai-panel { display:none; }
+}
+@media(max-width:800px){
+  .agent-sidebar { display:none; }
+  .agent-content { grid-template-columns:1fr; }
+  .ticket-queue { display:none; }
+  .metrics-bar { gap:8px; padding:10px 14px; }
+  .metric-card { min-width:unset; }
+}
+
+/* ════ AI ORB — exact same as customer dashboard ════ */
+.ai-orb-wrap{position:relative;margin:2px 0;}
+.ai-orb-btn{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;
+  cursor:pointer;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(15,90,94,.12) 0%,rgba(8,28,30,.88) 50%,rgba(212,175,55,.06) 100%);
+  border:1px solid rgba(212,175,55,.22);color:#D4AF37;font-size:14px;font-weight:700;
+  user-select:none;animation:aiBtnFloat 4s ease-in-out infinite;
+  box-shadow:0 4px 24px rgba(15,90,94,.2);transition:border-color .3s,box-shadow .3s;
+}
+.ai-orb-btn:hover{
+  border-color:rgba(212,175,55,.5);
+  box-shadow:0 8px 36px rgba(15,90,94,.38),0 0 24px rgba(212,175,55,.12);
+  animation-play-state:paused;transform:translateX(3px);
+}
+@keyframes aiBtnFloat{
+  0%,100%{box-shadow:0 4px 24px rgba(15,90,94,.2);transform:translateX(0);}
+  50%{box-shadow:0 7px 32px rgba(15,90,94,.32),0 0 20px rgba(212,175,55,.08);transform:translateX(1px);}
+}
+.ai-orb-icon-wrap{position:relative;width:26px;height:26px;flex-shrink:0;}
+.ai-orb-cv{position:absolute;top:-11px;left:-11px;width:48px;height:48px;pointer-events:none;border-radius:50%;}
+.ai-orb-icon-glyph{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:17px;color:#D4AF37;z-index:2;
+  filter:drop-shadow(0 0 5px rgba(212,175,55,.7));transition:transform .3s;
+}
+.ai-orb-btn:hover .ai-orb-icon-glyph{transform:translate(-50%,-50%) scale(1.12) rotate(-6deg);}
+.ai-orb-ring{position:absolute;top:50%;left:50%;border-radius:50%;pointer-events:none;border:1px solid;}
+.ai-orb-ring-a{width:42px;height:42px;margin:-21px 0 0 -21px;border-color:rgba(212,175,55,.35);border-style:dashed;animation:orbRA 3s linear infinite;}
+.ai-orb-ring-b{width:58px;height:58px;margin:-29px 0 0 -29px;border-color:rgba(15,90,94,.5);animation:orbRB 5s linear infinite;}
+@keyframes orbRA{to{transform:rotate(360deg);}}
+@keyframes orbRB{to{transform:rotate(-360deg);}}
+.ai-orb-btn:hover .ai-orb-ring-a{animation-duration:1s;border-color:rgba(212,175,55,.7);}
+.ai-orb-btn:hover .ai-orb-ring-b{animation-duration:2s;border-color:rgba(15,90,94,.8);}
+.ai-orb-shimmer{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,rgba(212,175,55,.07) 50%,transparent 100%);
+  transform:translateX(-100%);animation:orbShimmer 4s ease-in-out infinite;
+}
+@keyframes orbShimmer{0%{transform:translateX(-100%);}65%,100%{transform:translateX(100%);}}
+.ai-orb-pulse{
+  width:6px;height:6px;background:#2ecc71;border-radius:50%;margin-left:auto;
+  box-shadow:0 0 6px #2ecc71;flex-shrink:0;animation:orbPD 2s ease-in-out infinite;
+}
+@keyframes orbPD{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.6;}}
+.ai-orb-wrap{display:flex;flex-direction:column;gap:2px;}
+.ai-rm-list{display:flex;flex-direction:column;gap:2px;overflow:hidden;height:0;opacity:0;}
+#ai-rm-above{flex-direction:column-reverse;}
+.ai-rm-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px 9px 14px;
+  border-radius:10px;color:rgba(255,255,255,.62);text-decoration:none;
+  font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);
+  transition:background .2s,color .2s,border-color .2s,transform .2s;
+}
+.ai-rm-item:hover{background:rgba(212,175,55,.08);color:#D4AF37;border-color:rgba(212,175,55,.22);transform:translateX(3px);}
+.ai-rm-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.agent-sidebar .a-nav-link,.agent-sidebar .a-nav-spacer{transition:opacity .22s ease,transform .22s ease;}
+.agent-sidebar.ai-open .a-nav-link,.agent-sidebar.ai-open .a-nav-spacer{opacity:0;transform:translateX(-6px);pointer-events:none;}
+.agent-sidebar.ai-open .ai-orb-wrap{opacity:1 !important;transform:none !important;pointer-events:auto !important;}
+
+/* ════ MEET NOTIFICATION ════ */
+.meet-notif{
+  position:fixed;bottom:28px;right:28px;z-index:600;
+  width:320px;background:var(--bg-secondary);
+  border:1px solid rgba(212,175,55,.35);border-radius:18px;
+  box-shadow:0 16px 60px rgba(0,0,0,.5),0 0 30px rgba(212,175,55,.1);
+  overflow:hidden;transform:translateY(120px);opacity:0;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s;
+  pointer-events:none;
+}
+.meet-notif.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.meet-notif-pulse{height:3px;background:linear-gradient(90deg,var(--gold),rgba(15,90,94,.8));animation:nmPulse 1.5s ease-in-out infinite}
+@keyframes nmPulse{0%,100%{opacity:.6}50%{opacity:1}}
+.meet-notif-body{padding:16px}
+.meet-notif-row1{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.meet-notif-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),rgba(15,90,94,.8));
+  display:flex;align-items:center;justify-content:center;font-size:18px;color:#12141E;
+  animation:iconBounce 1s ease-in-out infinite;
+}
+@keyframes iconBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.meet-notif-title{font-size:13px;font-weight:700;color:var(--text-primary)}
+.meet-notif-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.meet-notif-info{
+  background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.12);
+  border-radius:10px;padding:10px 12px;margin-bottom:14px;display:flex;flex-direction:column;gap:4px;
+}
+.meet-notif-info-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary)}
+.meet-notif-info-row i{color:var(--gold);font-size:13px;width:16px}
+.meet-notif-btns{display:flex;gap:8px}
+.meet-notif-accept{
+  flex:1;padding:9px 0;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#C8960C);color:#12141E;font-size:13px;font-weight:700;
+  transition:opacity .2s,transform .15s;
+}
+.meet-notif-accept:hover{opacity:.9;transform:translateY(-1px)}
+.meet-notif-decline{
+  padding:9px 16px;border-radius:10px;border:1px solid var(--border-dim);
+  background:rgba(231,76,60,.08);color:#e74c3c;cursor:pointer;font-size:13px;font-weight:600;
+  transition:background .2s;
+}
+.meet-notif-decline:hover{background:rgba(231,76,60,.18)}
+
+/* ── Agent Notification Bell ── */
+.agent-notif-btn {
+  position:relative; background:var(--glass); border:1px solid var(--border-dim);
+  border-radius:10px; padding:7px 9px; cursor:pointer; color:var(--text-muted);
+  font-size:18px; transition:all .2s; display:flex; align-items:center;
+}
+.agent-notif-btn:hover { border-color:rgba(212,175,55,.35); color:var(--gold); }
+.agent-notif-badge {
+  position:absolute; top:-5px; right:-5px; min-width:18px; height:18px;
+  border-radius:999px; background:var(--danger); color:#fff;
+  font-size:9px; font-weight:800; display:flex; align-items:center;
+  justify-content:center; padding:0 4px; border:2px solid var(--bg-primary);
+  animation:scalePop .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes scalePop { from{transform:scale(0)} to{transform:scale(1)} }
+
+/* ── Notification Panel (slide-in drawer) ── */
+.agent-notif-panel {
+  position:fixed; top:0; right:-380px; width:360px; height:100vh;
+  background:var(--bg-secondary); border-left:1px solid var(--border-dim);
+  z-index:800; transition:right .3s var(--ease);
+  display:flex; flex-direction:column; box-shadow:-8px 0 40px rgba(0,0,0,.4);
+}
+.agent-notif-panel.open { right:0; }
+.agent-notif-panel-header {
+  padding:18px 20px 14px; border-bottom:1px solid var(--border-dim);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.agent-notif-panel-title { font-size:15px; font-weight:800; }
+.agent-notif-panel-close {
+  background:none; border:none; color:var(--text-muted); font-size:18px;
+  cursor:pointer; padding:4px; border-radius:6px; transition:color .2s;
+}
+.agent-notif-panel-close:hover { color:var(--text-primary); }
+.agent-notif-list { flex:1; overflow-y:auto; padding:8px 0; }
+.agent-notif-item {
+  padding:13px 20px; border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:pointer; transition:background .15s; display:flex; gap:12px;
+  align-items:flex-start;
+}
+.agent-notif-item:hover { background:rgba(212,175,55,.04); }
+.agent-notif-item.unread { border-left:3px solid var(--gold); background:rgba(212,175,55,.03); }
+.agent-notif-item.unread:hover { background:rgba(212,175,55,.07); }
+.agent-notif-icon {
+  width:36px; height:36px; border-radius:10px; display:flex; align-items:center;
+  justify-content:center; font-size:16px; flex-shrink:0;
+}
+.agent-notif-body { flex:1; min-width:0; }
+.agent-notif-title { font-size:13px; font-weight:700; color:var(--text-primary); }
+.agent-notif-msg   { font-size:11.5px; color:var(--text-secondary); margin-top:3px; line-height:1.4; }
+.agent-notif-meta  { font-size:10.5px; color:var(--text-muted); margin-top:5px; display:flex; gap:6px; flex-wrap:wrap; }
+.agent-notif-meta span { display:inline-flex; align-items:center; gap:3px; }
+.agent-notif-panel-footer {
+  padding:12px 20px; border-top:1px solid var(--border-dim); flex-shrink:0;
+}
+.agent-notif-overlay {
+  position:fixed; inset:0; z-index:799; background:rgba(0,0,0,.35);
+  display:none; backdrop-filter:blur(2px);
+}
+.agent-notif-overlay.open { display:block; }
+</style>
+</head>
+<body>
+
+<div class="df-bg"><div class="df-bg-aurora"></div><div class="df-bg-grid"></div></div>
+<div id="df-cursor"></div>
+<div id="df-cursor-ring"></div>
+<div id="df-toast-container"></div>
+<div id="toast-container"></div>
+
+<!-- Mobile overlay — OUTSIDE shell (same pattern as customer dashboard) -->
+<div id="agent-nav-overlay" onclick="closeAgentSidebar()"></div>
+
+<div class="agent-shell">
+
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="agent-sidebar" id="agent-sidebar">
+    <a href="agent.html" class="a-brand" style="text-decoration:none">
+      <div class="df-logo-icon" style="width:34px;height:34px;border-radius:9px"><i class="ti ti-headset" style="font-size:15px"></i></div>
+      <span class="df-logo-text" style="font-size:15px">DeskFlow<em>AI</em></span>
+    </a>
+    <a href="#" class="a-nav-link active"><i class="ti ti-ticket"></i> Active Queue</a>
+
+    <!-- ═══ AI ASSISTANT ORB ═══ -->
+    <div class="ai-orb-wrap" id="ai-orb-wrap">
+      <div class="ai-rm-list" id="ai-rm-above">
+        <a href="ai.html?panel=sentiment" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(231,76,60,.12);color:#e74c3c"><i class="ti ti-mood-happy"></i></div>Sentiment Analysis</a>
+        <a href="ai.html?panel=faq" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(52,152,219,.12);color:#3498db"><i class="ti ti-help-circle"></i></div>FAQ Search</a>
+        <a href="ai.html?panel=voice" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(155,89,182,.12);color:#9b59b6"><i class="ti ti-microphone"></i></div>Voice Assistant</a>
+        <a href="ai.html?panel=chatbot" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(212,175,55,.12);color:#D4AF37"><i class="ti ti-message-chatbot"></i></div>AI Chatbot</a>
+      </div>
+      <div class="ai-orb-btn" id="ai-orb-btn">
+        <div class="ai-orb-icon-wrap">
+          <canvas class="ai-orb-cv" id="ai-orb-cv"></canvas>
+          <div class="ai-orb-ring ai-orb-ring-a"></div>
+          <div class="ai-orb-ring ai-orb-ring-b"></div>
+          <i class="ti ti-brain ai-orb-icon-glyph"></i>
+        </div>
+        <span style="flex:1">AI Assistant</span>
+        <span class="ai-orb-pulse"></span>
+        <div class="ai-orb-shimmer"></div>
+      </div>
+      <div class="ai-rm-list" id="ai-rm-below">
+        <a href="ai.html?panel=categorize" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(230,126,34,.12);color:#e67e22"><i class="ti ti-tag"></i></div>Ticket Categorization</a>
+        <a href="ai.html?panel=suggest" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(46,204,113,.12);color:#2ecc71"><i class="ti ti-bulb"></i></div>AI Suggestions</a>
+        <a href="ai.html?panel=history" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(52,73,94,.35);color:#95a5a6"><i class="ti ti-history"></i></div>Conversation History</a>
+        <a href="ai.html?panel=analytics" class="ai-rm-item"><div class="ai-rm-icon" style="background:rgba(22,160,133,.12);color:#1abc9c"><i class="ti ti-chart-bar"></i></div>AI Analytics</a>
+      </div>
+    </div>
+
+    <a href="profile.html" class="a-nav-link"><i class="ti ti-settings"></i> Profile Settings</a>
+    <div class="a-nav-spacer"></div>
+    <a href="#" class="a-nav-link" onclick="logout()" style="color:var(--danger)"><i class="ti ti-logout"></i> Logout</a>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <div class="agent-main">
+    <!-- Header -->
+    <header class="agent-header">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="df-hamburger" id="agent-hamburger" onclick="toggleAgentSidebar()" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="agent-user">
+          <div class="agent-avatar" id="agent-avatar">A</div>
+          <div class="agent-header-info">
+            <h4 id="agent-name">Loading…</h4>
+            <p>Support Agent · DeskFlow AI</p>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="df-badge df-badge-gold"><span class="dot" style="width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success);display:inline-block"></span>Online</div>
+        <!-- Notification Bell — shows unread count from agent_notifications -->
+        <button class="agent-notif-btn" id="agent-notif-bell" onclick="toggleNotifPanel()" title="Notifications">
+          <i class="ti ti-bell"></i>
+          <span class="agent-notif-badge" id="agent-notif-badge" style="display:none">0</span>
+        </button>
+        <button class="df-theme-btn" onclick="DFTheme.toggle()" title="Toggle light/dark mode"><i class="ti ti-sun df-theme-icon"></i></button>
+      </div>
+    </header>
+
+    <!-- Metrics bar -->
+    <div class="metrics-bar">
+      <div class="metric-card">
+        <div class="metric-icon" style="background:rgba(52,152,219,.12);color:var(--info)"><i class="ti ti-ticket"></i></div>
+        <div><div class="metric-num" id="metric-assigned">0</div><div class="metric-lbl">Assigned tickets</div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon" style="background:rgba(46,204,113,.12);color:var(--success)"><i class="ti ti-circle-check"></i></div>
+        <div><div class="metric-num" id="metric-resolved">0</div><div class="metric-lbl">Resolved by me</div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon" style="background:rgba(212,175,55,.12);color:var(--gold)"><i class="ti ti-star"></i></div>
+        <div><div class="metric-num" id="metric-csat">—</div><div class="metric-lbl">CSAT score <span id="metric-avg-response" style="font-size:10px;color:var(--text-muted)"></span></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon" style="background:rgba(243,156,18,.12);color:var(--warning)"><i class="ti ti-trophy"></i></div>
+        <div><div class="metric-num" id="metric-rank">—</div><div class="metric-lbl">Performance rank</div></div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="agent-content">
+
+      <!-- Queue -->
+      <div class="ticket-queue">
+        <div class="queue-header">
+          <h3>Support Queue</h3>
+          <div class="tab-btns">
+            <button class="tab-btn active" id="tab-all" onclick="filterQueue('all')">All</button>
+            <button class="tab-btn" id="tab-my" onclick="filterQueue('my')">Mine</button>
+            <button class="tab-btn" id="tab-unassigned" onclick="filterQueue('unassigned')">New</button>
+          </div>
+        </div>
+        <div class="queue-list" id="queue-list"></div>
+      </div>
+
+      <!-- Workspace -->
+      <div class="workspace">
+        <div class="empty-workspace" id="empty-workspace">
+          <i class="ti ti-ticket"></i>
+          <span style="font-size:14px;font-weight:600">Select a ticket from the queue to begin</span>
+          <span style="font-size:13px">AI suggestions and conversation history will appear here</span>
+        </div>
+        <div class="active-workspace" id="active-workspace">
+          <div class="workspace-header">
+            <div class="workspace-title">
+              <h4 id="work-subject">Issue subject line</h4>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">
+                <span id="work-priority-badge"></span>
+                <p id="work-meta" style="margin:0;font-size:11.5px;color:var(--text-muted)">Created by email</p>
+              </div>
+            </div>
+            <div class="workspace-actions">
+              <button class="btn-action" id="btn-assign-me" onclick="assignToMe()">Claim Ticket</button>
+              <select id="status-select" class="status-select">
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
+              <button class="btn-primary-action" onclick="changeStatus()"><i class="ti ti-check"></i> Update</button>
+            </div>
+          </div>
+          <div class="chat-body" id="work-messages"></div>
+          <div class="chat-input-row">
+            <input class="chat-input" type="text" id="agent-reply-input" placeholder="Type reply or select an AI suggestion…" onkeydown="if(event.key==='Enter')sendAgentReply()"/>
+            <button class="ai-send-btn" id="agent-send-btn" aria-label="Send reply" title="Send">
+              <span class="ai-send-icon"><i class="ti ti-send"></i></span>
+              <span class="ai-send-ripple"></span>
+              <span class="ai-send-ring"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Panel -->
+      <div class="ai-panel">
+        <div>
+          <div class="ai-section-title"><i class="ti ti-mood-smile"></i> Sentiment & Category</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge" id="ai-sentiment-badge">Neutral</span>
+            <span class="badge" id="ai-category-badge" style="background:rgba(212,175,55,.1);color:var(--gold);border:1px solid rgba(212,175,55,.2)">Billing</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="ai-section-title"><i class="ti ti-bulb"></i> AI Suggested Replies</div>
+          <p style="font-size:10.5px;color:var(--text-muted);margin-bottom:8px">Click a response to use it in the text field.</p>
+          <div id="ai-suggestions-list"></div>
+        </div>
+
+        <div>
+          <div class="ai-section-title"><i class="ti ti-alert-triangle"></i> Customer Insight</div>
+          <div class="insight-box" id="ai-insight-box">Calculating SLA priority timeline indicators…</div>
+        </div>
+
+        <div>
+          <div class="ai-section-title"><i class="ti ti-notes"></i> Internal Notes</div>
+          <p style="font-size:10.5px;color:var(--text-muted);margin-bottom:6px">Visible only to agents — not sent to customer.</p>
+          <textarea class="note-input" id="internal-note-input" placeholder="Add an internal note…"></textarea>
+          <button class="btn-action" onclick="addInternalNote()" style="width:100%;justify-content:center;"><i class="ti ti-pin"></i> Add Note</button>
+          <div id="internal-notes-list" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Response Quality Score — Feature 10 -->
+        <div>
+          <div class="ai-section-title"><i class="ti ti-chart-bar"></i> Response Quality</div>
+          <p style="font-size:10.5px;color:var(--text-muted);margin-bottom:6px">Evaluate your draft reply before sending.</p>
+          <div id="df-quality-score-display"></div>
+          <button class="btn-action" style="width:100%;justify-content:center;margin-top:6px" onclick="evaluateMyReply()"><i class="ti ti-scan"></i> Evaluate Reply</button>
+        </div>
+
+        <!-- Satisfaction Prediction — Feature 11 -->
+        <div>
+          <div class="ai-section-title"><i class="ti ti-stars"></i> Satisfaction Prediction</div>
+          <div id="df-satisfaction-predict"></div>
+          <button class="btn-action" style="width:100%;justify-content:center;margin-top:6px" onclick="runSatisfactionPredict()"><i class="ti ti-sparkles"></i> Predict Rating</button>
+        </div>
+
+        <!-- Ticket Timeline — Feature 7 -->
+        <div>
+          <div class="ai-section-title"><i class="ti ti-timeline"></i> Ticket Timeline</div>
+          <div id="df-agent-timeline" style="max-height:220px;overflow-y:auto;padding-right:4px"></div>
+        </div>
+
+        <!-- KB Generator — Feature 14 -->
+        <div>
+          <div class="ai-section-title"><i class="ti ti-book"></i> Generate KB Article</div>
+          <p style="font-size:10.5px;color:var(--text-muted);margin-bottom:6px">Turn this resolved ticket into a knowledge base article.</p>
+          <textarea class="note-input" id="df-kb-resolution-input" placeholder="Describe the resolution…" style="min-height:60px"></textarea>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn-action" style="flex:1;justify-content:center" onclick="previewKBArticle()"><i class="ti ti-eye"></i> Preview</button>
+            <button class="btn-action" style="flex:1;justify-content:center;background:rgba(46,204,113,.1);color:var(--success)" onclick="publishKBArticle()"><i class="ti ti-book-upload"></i> Publish</button>
+          </div>
+          <div id="df-kb-preview" style="margin-top:8px;font-size:11.5px;display:none;padding:8px;background:var(--glass);border-radius:8px;border:1px solid var(--border-dim)"></div>
+        </div>
+
+        <!-- Agent Status Selector — Feature 3 -->
+        <div>
+          <div class="ai-section-title"><i class="ti ti-wifi"></i> My Availability</div>
+          <select id="df-agent-status-select" class="status-select" onchange="updateMyStatus(this.value)" style="width:100%">
+            <option value="online">🟢 Online</option>
+            <option value="busy">🟡 Busy</option>
+            <option value="in_meeting">🔵 In Meeting</option>
+            <option value="offline">⚫ Offline</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="ai-section-title"><i class="ti ti-star"></i> Customer Feedback</div>
+          <p style="font-size:10.5px;color:var(--text-muted);margin-bottom:8px">Recent CSAT ratings from your resolved tickets.</p>
+          <div id="agent-feedback-list"><div style="font-size:11px;color:var(--text-muted)">Loading feedback…</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification overlay backdrop -->
+<div class="agent-notif-overlay" id="agent-notif-overlay" onclick="closeNotifPanel()"></div>
+
+<!-- Notification Panel -->
+<div class="agent-notif-panel" id="agent-notif-panel">
+  <div class="agent-notif-panel-header">
+    <div>
+      <div class="agent-notif-panel-title"><i class="ti ti-bell" style="margin-right:7px;color:var(--gold)"></i>Notifications</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px" id="notif-unread-label">All caught up</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-secondary" style="padding:4px 10px;font-size:11px" onclick="markAllNotifsRead()"><i class="ti ti-checks"></i> All Read</button>
+      <button class="agent-notif-panel-close" onclick="closeNotifPanel()"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+  <div class="agent-notif-list" id="agent-notif-list">
+    <div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px">
+      <i class="ti ti-bell-off" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+      No notifications yet
+    </div>
+  </div>
+  <div class="agent-notif-panel-footer">
+    <div style="font-size:11px;color:var(--text-muted);text-align:center" id="notif-last-checked">Checking for updates…</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="df-core.js"></script>
+<script src="df-features.js"></script>
+<script>
+/* ── Auth ── */
+let currentUser = null;
+try { currentUser = JSON.parse(localStorage.getItem("deskflow_user")); } catch(e) {}
+
+function _dfRoleRedirect(role) {
+  if (role === "admin")    { window.location.href = "admin.html";     return; }
+  if (role === "agent")    { window.location.href = "agent.html";     return; }
+  if (role === "customer") { window.location.href = "dashboard.html"; return; }
+  window.location.href = "signin.html";
+}
+
+if (!currentUser) {
+  window.location.href = "signin.html";
+} else if (currentUser.role !== "agent") {
+  _dfRoleRedirect(currentUser.role);
+} else {
+  document.getElementById("agent-name").innerText = currentUser.name;
+  document.getElementById("agent-avatar").innerText = currentUser.name.charAt(0).toUpperCase();
+}
+
+/* Server-side verification — catches tampered localStorage and role changes */
+(async function _verifySession() {
+  const _tok = localStorage.getItem("deskflow_token");
+  if (!_tok) { window.location.href = "signin.html"; return; }
+  try {
+    const r = await fetch("/api/auth/me", { headers: { Authorization: "Bearer " + _tok } });
+    if (!r.ok) {
+      localStorage.removeItem("deskflow_token");
+      localStorage.removeItem("deskflow_user");
+      window.location.href = "signin.html";
+      return;
+    }
+    const d = await r.json();
+    currentUser = { ...(currentUser || {}), ...d.user, role: d.role };
+    localStorage.setItem("deskflow_user", JSON.stringify(currentUser));
+    if (d.role !== "agent") _dfRoleRedirect(d.role);
+  } catch (_) { /* network failure — keep page loaded with localStorage fallback */ }
+})();
+
+/* ── Fetch patch ── */
+(function patchFetch() {
+  const _orig = window.fetch;
+  window.fetch = function(url, opts = {}) {
+    const token = localStorage.getItem("deskflow_token");
+    if (token && typeof url === "string" && url.includes("/api")) {
+      opts.headers = { ...opts.headers, "Authorization": `Bearer ${token}` };
+    }
+    return _orig.call(this, url, opts);
+  };
+}());
+
+function showToast(message, type = 'info', duration = 3200) {
+  if (window.dfToast) { window.dfToast(message, type, duration); return; }
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`; t.textContent = message;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),400); }, duration);
+}
+
+let allTickets = [];
+let selectedTicketId = null;
+let currentFilter = "all";
+let workspaceRefreshInterval = null;
+
+async function loadQueue() {
+  try {
+    const response = await fetch("/api/tickets");
+    allTickets = await response.json();
+    renderQueue();
+    try {
+      const aRes = await fetch(`/api/analytics?role=agent&email=${encodeURIComponent(currentUser.email)}`);
+      const aData = await aRes.json();
+      document.getElementById("metric-assigned").innerText = aData.assigned || 0;
+      document.getElementById("metric-resolved").innerText = aData.resolved || 0;
+      document.getElementById("metric-csat").innerText = aData.csat !== "N/A" ? aData.csat + "★" : "—";
+      document.getElementById("metric-rank").innerText = aData.rank || "—";
+      const avgEl = document.getElementById("metric-avg-response");
+      avgEl.textContent = aData.avgResponseHours !== "N/A" ? `Avg: ${aData.avgResponseHours}h` : "";
+      const fbList = document.getElementById("agent-feedback-list");
+      const feedback = aData.recentFeedback || [];
+      if (!feedback.length) {
+        fbList.innerHTML = '<div style="font-size:11px;color:var(--text-muted)">No customer feedback yet.</div>';
+      } else {
+        fbList.innerHTML = feedback.reverse().map(f => `
+          <div class="feedback-item">
+            <div class="feedback-stars">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)} <span style="font-size:10px;color:var(--text-muted)">${f.rating}/5</span></div>
+            <div class="feedback-text">${f.feedback || '<em style="color:var(--text-muted)">No comment</em>'}</div>
+            <div class="feedback-meta">Ticket: ${f.subject}</div>
+          </div>`).join('');
+      }
+    } catch(ae) { /* non-critical */ }
+  } catch(e) { console.error(e); }
+}
+
+function renderQueue() {
+  const listContainer = document.getElementById("queue-list");
+  listContainer.innerHTML = "";
+  let filtered = allTickets;
+  if (currentFilter === "my") {
+    const myEmail = (currentUser.email||"").toLowerCase();
+    filtered = allTickets.filter(t => (t.assignedTo||"").toLowerCase() === myEmail);
+  } else if (currentFilter === "unassigned") {
+    filtered = allTickets.filter(t => !t.assignedTo);
+  }
+  if (!filtered.length) {
+    listContainer.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:30px;font-size:12.5px">No tickets matching this view.</div>`;
+    return;
+  }
+  const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+  filtered.forEach(ticket => {
+    let statusColor = "var(--info)";
+    if (ticket.status==="In Progress") statusColor="var(--warning)";
+    if (ticket.status==="Resolved") statusColor="var(--success)";
+    const p = (ticket.priority || "Low").toLowerCase();
+    let priorityBadge = p === "critical" ? "badge-priority-critical"
+                       : p === "high"    ? "badge-priority-high"
+                       : p === "medium"  ? "badge-priority-med"
+                       :                   "badge-priority-low";
+    const isSelected = ticket.id === selectedTicketId ? "selected" : "";
+    const msgs = ticket.messages || [];
+    const recentMsg = msgs.find(m => m.sender==="customer" && new Date(m.timestamp).getTime() > fiveMinAgo);
+    const liveBadge   = recentMsg ? `<span class="live-badge"><span class="live-dot"></span>Live</span>` : "";
+    const aiTag       = ticket.aiAnalyzed ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(52,152,219,.15);color:var(--info)">AI</span>` : "";
+    const assignedTag = ticket.assignmentMethod === "AI Auto Assignment"
+      ? `<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(212,175,55,.1);color:var(--gold)"><i class="ti ti-robot" style="font-size:8px"></i></span>`
+      : "";
+    listContainer.innerHTML += `
+      <div class="q-card ${isSelected}" onclick="selectTicket('${ticket.id}')">
+        <div class="q-header">
+          <span class="q-id">#${ticket.id.substring(0,6).toUpperCase()}</span>
+          <div style="display:flex;align-items:center;gap:4px">${liveBadge}${aiTag}${assignedTag}<span class="q-status" style="color:${statusColor}">${ticket.status}</span></div>
+        </div>
+        <div class="q-subject">${ticket.subject}</div>
+        <div class="q-desc">${ticket.description}</div>
+        <div class="q-footer">
+          <span class="badge ${priorityBadge}">${ticket.priority || "Low"}</span>
+          <span style="font-size:10.5px;color:var(--text-muted);font-weight:600">${ticket.category}</span>
+        </div>
+      </div>`;
+  });
+}
+
+function filterQueue(view) {
+  currentFilter = view;
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.getElementById("tab-"+view).classList.add("active");
+  renderQueue();
+}
+
+async function selectTicket(ticketId) {
+  if (workspaceRefreshInterval) { clearInterval(workspaceRefreshInterval); workspaceRefreshInterval = null; }
+  selectedTicketId = ticketId; renderQueue();
+  document.getElementById("empty-workspace").style.display = "none";
+  const aw = document.getElementById("active-workspace"); aw.style.display = "flex";
+  await refreshWorkspace();
+  workspaceRefreshInterval = setInterval(() => { if (selectedTicketId) refreshWorkspace(); }, 4000);
+}
+
+async function refreshWorkspace() {
+  if (!selectedTicketId) return;
+  try {
+    const response = await fetch(`/api/tickets/${selectedTicketId}`);
+    const ticket = await response.json();
+    document.getElementById("work-subject").innerText = ticket.subject;
+    // Priority badge (Feature 2)
+    const priorityEl = document.getElementById("work-priority-badge");
+    if (priorityEl && window.dfPriorityBadge) {
+      priorityEl.innerHTML = window.dfPriorityBadge(ticket.priority || "Low");
+    } else if (priorityEl) {
+      priorityEl.innerText = ticket.priority || "Low";
+    }
+    // Assignment details row
+    const metaEl = document.getElementById("work-meta");
+    const assignedLabel = ticket.assignedAgentName
+      ? `Agent: ${ticket.assignedAgentName}`
+      : ticket.assignedTo ? `Agent: ${ticket.assignedTo.split("@")[0]}` : "Unassigned";
+    const assignMethod  = ticket.assignmentMethod ? ` · ${ticket.assignmentMethod}` : "";
+    const deptLabel     = ticket.assignedDepartment || ticket.department || ticket.category;
+    metaEl.innerText    = `Customer: ${ticket.createdBy} · Dept: ${deptLabel} · ${assignedLabel}${assignMethod} · ${new Date(ticket.createdAt).toLocaleString()}`;
+
+    // Priority reason tooltip
+    if (ticket.priorityReason) {
+      let prReasonEl = document.getElementById("work-priority-reason");
+      if (!prReasonEl) {
+        prReasonEl = document.createElement("div");
+        prReasonEl.id = "work-priority-reason";
+        prReasonEl.style.cssText = "font-size:10.5px;color:var(--gold);margin-top:3px;display:flex;align-items:center;gap:4px";
+        document.getElementById("work-priority-badge").parentNode.appendChild(prReasonEl);
+      }
+      prReasonEl.innerHTML = `<i class="ti ti-info-circle" style="font-size:11px"></i> ${ticket.priorityReason}`;
+    }
+    const btnClaim = document.getElementById("btn-assign-me");
+    const myEmailLow = (currentUser.email||"").toLowerCase();
+    const assignedLow = (ticket.assignedTo||"").toLowerCase();
+    if (ticket.assignedTo && assignedLow === myEmailLow) {
+      btnClaim.innerText = "Assigned to You"; btnClaim.disabled = true; btnClaim.style.opacity="0.5";
+    } else {
+      btnClaim.innerText = ticket.assignedTo ? `Reassign from ${ticket.assignedTo.split('@')[0]}` : "Claim Ticket";
+      btnClaim.disabled = false; btnClaim.style.opacity="1";
+    }
+    document.getElementById("status-select").value = ticket.status;
+    const msgContainer = document.getElementById("work-messages");
+    msgContainer.innerHTML = "";
+    (ticket.messages||[]).filter(m=>m.sender!=="internal").forEach(m => {
+      const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      msgContainer.innerHTML += `
+        <div class="chat-msg ${m.sender==='customer'?'customer':'agent'}">
+          <div class="chat-bubble">${m.text}</div>
+          <div class="chat-time">${m.senderName||m.sender} at ${time}</div>
+        </div>`;
+    });
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+    // Internal Notes via dedicated endpoint (Feature 8)
+    if (window.dfLoadInternalNotes) {
+      window.dfLoadInternalNotes(selectedTicketId, "internal-notes-list");
+    } else {
+      const notesContainer = document.getElementById("internal-notes-list");
+      const notes = (ticket.messages||[]).filter(m=>m.sender==="internal");
+      if (notes.length) {
+        notesContainer.innerHTML = notes.map(n => `<div class="note-card"><p>${n.text}</p><span>${n.senderName} · ${new Date(n.timestamp).toLocaleString()}</span></div>`).join('');
+      } else {
+        notesContainer.innerHTML = '<span style="font-size:11px;color:var(--text-muted)">No internal notes yet.</span>';
+      }
+    }
+    // Rich Timeline (Feature 7)
+    const tlEl = document.getElementById("df-agent-timeline");
+    if (tlEl && window.dfRenderTimeline) {
+      window.dfRenderTimeline("df-agent-timeline", ticket.timeline || []);
+    }
+    const aiResponse = await fetch(`/api/tickets/${selectedTicketId}/ai-suggestions`);
+    const aiData = await aiResponse.json();
+    const sentBadge = document.getElementById("ai-sentiment-badge");
+    sentBadge.innerText = aiData.sentiment;
+    if (aiData.sentiment==="Negative") { sentBadge.style.background="rgba(231,76,60,.15)"; sentBadge.style.color="var(--danger)"; sentBadge.style.border="1px solid rgba(231,76,60,.25)"; }
+    else if (aiData.sentiment==="Positive") { sentBadge.style.background="rgba(46,204,113,.15)"; sentBadge.style.color="var(--success)"; sentBadge.style.border="1px solid rgba(46,204,113,.25)"; }
+    else { sentBadge.style.background="rgba(255,255,255,.06)"; sentBadge.style.color="var(--text-secondary)"; sentBadge.style.border="1px solid var(--border-dim)"; }
+    document.getElementById("ai-category-badge").innerText = aiData.category;
+    document.getElementById("ai-insight-box").innerText = aiData.insight;
+    const sc = document.getElementById("ai-suggestions-list"); sc.innerHTML = "";
+    aiData.suggestions.forEach(s => {
+      sc.innerHTML += `<div class="suggested-reply" onclick="selectSuggestion(this)">${s}</div>`;
+    });
+  } catch(e) { console.error(e); }
+}
+
+function selectSuggestion(el) { document.getElementById("agent-reply-input").value = el.innerText; }
+
+async function assignToMe() {
+  if (!selectedTicketId) return;
+  try {
+    const response = await fetch(`/api/tickets/${selectedTicketId}/assign`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ assignedTo:currentUser.email, updatedBy:currentUser.email })
+    });
+    if (response.status===200) { showToast('Ticket claimed successfully','success'); loadQueue(); setTimeout(refreshWorkspace,200); }
+  } catch(e) { showToast('Error claiming ticket','error'); }
+}
+
+async function changeStatus() {
+  if (!selectedTicketId) return;
+  const newStatus = document.getElementById("status-select").value;
+  try {
+    const response = await fetch(`/api/tickets/${selectedTicketId}/status`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ status:newStatus, updatedBy:currentUser.email })
+    });
+    if (response.ok) { showToast(`Status updated to ${newStatus}`,'success'); loadQueue(); setTimeout(refreshWorkspace,200); }
+    else { showToast('Failed to update status','error'); }
+  } catch(e) { showToast('Error updating status','error'); }
+}
+
+async function addInternalNote() {
+  const text = document.getElementById("internal-note-input").value.trim();
+  if (!text || !selectedTicketId) return;
+  try {
+    if (window.dfAddInternalNote) {
+      await window.dfAddInternalNote(selectedTicketId, text, "internal-notes-list");
+      document.getElementById("internal-note-input").value = "";
+      showToast("Internal note added", "info");
+    } else {
+      const response = await fetch(`/api/tickets/${selectedTicketId}/messages`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ sender:"internal", text, senderName:currentUser.email })
+      });
+      if (response.ok) { document.getElementById("internal-note-input").value=""; showToast("Internal note added",'info'); refreshWorkspace(); }
+      else { showToast("Failed to add note",'error'); }
+    }
+  } catch(e) { showToast("Error adding note",'error'); }
+}
+
+function evaluateMyReply() {
+  const reply = document.getElementById("agent-reply-input").value.trim();
+  if (!reply) { showToast("Type a reply first to evaluate its quality", "warning"); return; }
+  if (window.dfEvaluateQuality) {
+    window.dfEvaluateQuality(reply, { ticketId: selectedTicketId }, "df-quality-score-display");
+  }
+}
+
+function runSatisfactionPredict() {
+  if (!selectedTicketId) { showToast("Select a ticket first", "warning"); return; }
+  if (window.dfPredictSatisfaction) {
+    window.dfPredictSatisfaction(selectedTicketId, "df-satisfaction-predict");
+  }
+}
+
+async function previewKBArticle() {
+  const res = document.getElementById("df-kb-resolution-input").value.trim();
+  if (!res || !selectedTicketId) { showToast("Enter a resolution description first", "warning"); return; }
+  if (window.dfGenerateKB) {
+    const d = await window.dfGenerateKB(selectedTicketId, res, false, null);
+    if (d.article) {
+      const preview = document.getElementById("df-kb-preview");
+      preview.style.display = "block";
+      preview.innerHTML = `<strong>${d.article.question}</strong><p style="margin-top:5px;color:var(--text-secondary)">${d.article.answer}</p>`;
+    }
+  }
+}
+
+async function publishKBArticle() {
+  const res = document.getElementById("df-kb-resolution-input").value.trim();
+  if (!res || !selectedTicketId) { showToast("Enter a resolution description first", "warning"); return; }
+  if (window.dfGenerateKB) {
+    const d = await window.dfGenerateKB(selectedTicketId, res, true, null);
+    if (d.kbArticleId) {
+      showToast("KB article published successfully!", "success");
+      document.getElementById("df-kb-resolution-input").value = "";
+      document.getElementById("df-kb-preview").style.display = "none";
+    }
+  }
+}
+
+async function updateMyStatus(status) {
+  if (window.dfSetAgentStatus) await window.dfSetAgentStatus(status);
+  showToast(`Status updated to ${status}`, "success");
+}
+
+// Start heartbeat, queue polling, and notification polling on page load
+document.addEventListener("DOMContentLoaded", function() {
+  if (window.dfStartAgentHeartbeat) window.dfStartAgentHeartbeat();
+  loadQueue();
+  setInterval(loadQueue, 15000);
+  startNotifPolling(); // ← starts 10-second notification polling
+});
+
+/* ── Mobile sidebar (agent) — mirrors customer dashboard pattern exactly ── */
+function toggleAgentSidebar() {
+  var sidebar = document.getElementById('agent-sidebar');
+  var overlay = document.getElementById('agent-nav-overlay');
+  var btn     = document.getElementById('agent-hamburger');
+  if (!sidebar) return;
+  var isOpen = sidebar.classList.toggle('sidebar-open');
+  if (overlay) overlay.style.display = isOpen ? 'block' : 'none';
+  if (btn)     btn.classList.toggle('is-open', isOpen);
+}
+function closeAgentSidebar() {
+  var sidebar = document.getElementById('agent-sidebar');
+  var overlay = document.getElementById('agent-nav-overlay');
+  var btn     = document.getElementById('agent-hamburger');
+  if (sidebar) sidebar.classList.remove('sidebar-open');
+  if (overlay) overlay.style.display = 'none';
+  if (btn)     btn.classList.remove('is-open');
+}
+/* Close sidebar when a nav item is tapped on mobile */
+document.querySelectorAll('.a-nav-link, .ai-rm-item').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 1200) closeAgentSidebar();
+  });
+});
+
+async function sendAgentReply() {
+  const input = document.getElementById("agent-reply-input");
+  const text = input.value.trim(); if (!text || !selectedTicketId) return;
+  try {
+    const response = await fetch(`/api/tickets/${selectedTicketId}/messages`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ sender:"agent", text, senderName:currentUser.email })
+    });
+    if (response.status===200) { input.value=""; showToast('Reply sent','success'); refreshWorkspace(); }
+    else { showToast('Failed to send reply','error'); }
+  } catch(e) { showToast('Error sending reply','error'); }
+}
+
+function logout() {
+  localStorage.removeItem("deskflow_token");
+  localStorage.removeItem("deskflow_user");
+  window.location.href = "signin.html";
+}
+
+/* ── Animated Send Button IIFE ── */
+(function(){
+  if(typeof gsap==='undefined') return;
+  var btn = document.getElementById('agent-send-btn');
+  var inp = document.getElementById('agent-reply-input');
+  if(!btn||!inp) return;
+
+  function burst(cx,cy){
+    var cols=['#D4AF37','#2DD4BF','#F0C84E','rgba(212,175,55,.6)'];
+    for(var i=0;i<8;i++){
+      (function(i){
+        var p=document.createElement('span');
+        p.className='ai-send-prt';
+        p.style.background=cols[i%cols.length];
+        p.style.left=cx+'px'; p.style.top=cy+'px';
+        document.body.appendChild(p);
+        var ang=(i/8)*Math.PI*2, dist=28+Math.random()*22;
+        gsap.fromTo(p,{x:0,y:0,opacity:1,scale:1},{
+          x:Math.cos(ang)*dist,y:Math.sin(ang)*dist,
+          opacity:0,scale:0,duration:.55+Math.random()*.2,ease:'power2.out',
+          onComplete:function(){p.remove();}
+        });
+      })(i);
+    }
+  }
+
+  function setThinking(){ btn.classList.add('thinking'); btn.disabled=true; }
+  function clearThinking(){
+    btn.classList.remove('thinking'); btn.disabled=false;
+    gsap.fromTo(btn,
+      {borderColor:'rgba(46,204,113,.7)'},
+      {borderColor:'rgba(212,175,55,.38)',duration:.8,ease:'power2.out'}
+    );
+  }
+
+  function doSend(){
+    if(btn.disabled) return;
+    if(!inp.value.trim()) return;
+    var rect=btn.getBoundingClientRect();
+    var cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+
+    /* Compress → snap-back */
+    gsap.to(btn,{scale:.86,duration:.08,ease:'power2.in',onComplete:function(){
+      gsap.to(btn,{scale:1.06,duration:.14,ease:'back.out(2)',onComplete:function(){
+        gsap.to(btn,{scale:1,duration:.2,ease:'power2.out'});
+      }});
+    }});
+
+    /* Icon shoot */
+    var icon=btn.querySelector('.ai-send-icon');
+    gsap.to(icon,{x:20,opacity:0,duration:.18,ease:'power2.in',onComplete:function(){
+      gsap.fromTo(icon,{x:-16,opacity:0},{x:0,opacity:1,duration:.22,ease:'power2.out'});
+    }});
+
+    burst(cx,cy);
+    setThinking();
+    Promise.resolve(sendAgentReply()).then(clearThinking).catch(clearThinking);
+  }
+
+  btn.addEventListener('click',function(e){ e.stopImmediatePropagation(); doSend(); },true);
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey){ e.stopImmediatePropagation(); e.preventDefault(); doSend(); }
+  },true);
+})();
+
+/* ════ AI ORB — Agent Sidebar ════ */
+(function(){
+  var sidebar = document.getElementById('agent-sidebar');
+  var orbWrap = document.getElementById('ai-orb-wrap');
+  var orbBtn  = document.getElementById('ai-orb-btn');
+  var above   = document.getElementById('ai-rm-above');
+  var below   = document.getElementById('ai-rm-below');
+  if(!orbBtn||!sidebar) return;
+
+  /* canvas pulse */
+  var cv = document.getElementById('ai-orb-cv');
+  if(cv){
+    var ctx=cv.getContext('2d'); cv.width=48; cv.height=48;
+    var t=0;
+    (function pulse(){
+      ctx.clearRect(0,0,48,48);
+      var r=10+Math.sin(t)*3, g=ctx.createRadialGradient(24,24,0,24,24,r);
+      g.addColorStop(0,'rgba(212,175,55,.55)'); g.addColorStop(1,'rgba(15,90,94,0)');
+      ctx.beginPath(); ctx.arc(24,24,r,0,Math.PI*2);
+      ctx.fillStyle=g; ctx.fill(); t+=.05; requestAnimationFrame(pulse);
+    })();
+  }
+
+  var isOpen=false;
+
+  function openOrb(){
+    isOpen=true;
+    sidebar.classList.add('ai-open');
+    var aboveVisible=Array.from(above.querySelectorAll('.ai-rm-item')).filter(function(el){return el.style.display!=='none';});
+    var belowVisible=Array.from(below.querySelectorAll('.ai-rm-item')).filter(function(el){return el.style.display!=='none';});
+    gsap.to(above,{height:'auto',opacity:1,duration:.35,ease:'power2.out'});
+    gsap.to(below,{height:'auto',opacity:1,duration:.35,ease:'power2.out'});
+    aboveVisible.forEach(function(el,i){
+      gsap.fromTo(el,{opacity:0,x:-14},{opacity:1,x:0,duration:.28,delay:.06*(aboveVisible.length-1-i),ease:'power2.out'});
+    });
+    belowVisible.forEach(function(el,i){
+      gsap.fromTo(el,{opacity:0,x:-14},{opacity:1,x:0,duration:.28,delay:.06*i,ease:'power2.out'});
+    });
+  }
+
+  function closeOrb(){
+    isOpen=false;
+    sidebar.classList.remove('ai-open');
+    gsap.to(above,{height:0,opacity:0,duration:.25,ease:'power2.in'});
+    gsap.to(below,{height:0,opacity:0,duration:.25,ease:'power2.in'});
+  }
+
+  orbWrap.addEventListener('mouseenter',openOrb);
+  orbWrap.addEventListener('mouseleave',closeOrb);
+})();
+
+/* ════ MEET NOTIFICATION SYSTEM ════ */
+(function(){
+  var activeMeetId  = null;
+  var shownMeetId   = null;   /* track which request is currently showing */
+  var declinedIds   = [];     /* ids this agent explicitly declined */
+  var meetCh = null;
+
+  try { meetCh = new BroadcastChannel('df-meet'); } catch(e){ return; }
+
+  meetCh.onmessage = function(e){
+    var d = e.data;
+    if(!d || !d.type) return;
+
+    if(d.type === 'meet-request'){
+      /* Ignore if already in a meet, already showing this request, or agent declined it */
+      if(activeMeetId) return;
+      if(shownMeetId === d.meetId) return;
+      if(declinedIds.indexOf(d.meetId) !== -1) return;
+      showNotif(d);
+    }
+    if(d.type === 'meet-taken' && d.meetId === (activeMeetId || d.meetId)){
+      /* Another agent accepted — hide our notification */
+      hideNotif();
+    }
+    if(d.type === 'meet-cancel'){
+      hideNotif();
+    }
+  };
+
+  function showNotif(req){
+    var genderLabel = req.preferredGender === 'lady' ? '👩 Lady' : '👨 Gentleman';
+    var el = document.getElementById('meet-notif-card');
+    if(!el) return;
+    shownMeetId = req.meetId;
+    document.getElementById('mn-customer').textContent = req.customerName || 'Customer';
+    document.getElementById('mn-gender').textContent   = genderLabel;
+    document.getElementById('mn-time').textContent     = new Date(req.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    el.dataset.meetId  = req.meetId;
+    el.dataset.custName= req.customerName||'Customer';
+    el.dataset.gender  = req.preferredGender||'lady';
+    el.classList.add('show');
+  }
+
+  function hideNotif(){
+    var el = document.getElementById('meet-notif-card');
+    if(el) el.classList.remove('show');
+  }
+
+  window.acceptMeetRequest = function(){
+    var el = document.getElementById('meet-notif-card');
+    if(!el) return;
+    var mId    = el.dataset.meetId;
+    var cName  = el.dataset.custName;
+    var gender = el.dataset.gender;
+    var agent  = (currentUser||{});
+
+    activeMeetId = mId;
+    /* Notify customer and block other agents */
+    meetCh.postMessage({ type:'meet-accept',  meetId:mId, agentName:agent.name||'Agent', agentGender:agent.gender||gender });
+    meetCh.postMessage({ type:'meet-taken',   meetId:mId });
+    hideNotif();
+
+    var url = 'meet.html?type=agent&gender='+encodeURIComponent(gender)
+            +'&name='+encodeURIComponent(cName)
+            +'&id='+encodeURIComponent(mId)
+            +'&side=agent';
+    window.location.href = url;
+  };
+
+  window.declineMeetRequest = function(){
+    if(shownMeetId) declinedIds.push(shownMeetId);
+    shownMeetId = null;
+    hideNotif();
+  };
+})();
+</script>
+
+<!-- ═══ AGENT NOTIFICATION SYSTEM ═══ -->
+<script>
+/* ── Notification state ─────────────────────────────────────────── */
+let _agentNotifs      = [];
+let _agentUnread      = 0;
+let _notifPanelOpen   = false;
+let _notifPollTimer   = null;
+
+const PRIORITY_COLORS = { Critical:"#e74c3c", High:"#e67e22", Medium:"#f1c40f", Low:"#2ecc71" };
+
+/* ── Fetch notifications from API (polling) ─────────────────────── */
+async function fetchAgentNotifications(silent = false) {
+  try {
+    const r = await fetch("/api/agents/my-notifications", {
+      headers: { Authorization: "Bearer " + (localStorage.getItem("deskflow_token") || "") }
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+
+    const prevUnread  = _agentUnread;
+    _agentNotifs      = d.notifications || [];
+    _agentUnread      = d.unread || 0;
+
+    updateNotifBadge();
+
+    if (_notifPanelOpen) renderNotifList();
+
+    /* Toast for new notification (only when panel is closed) */
+    if (!_notifPanelOpen && _agentUnread > prevUnread) {
+      const newest = _agentNotifs.find(n => !n.read);
+      if (newest) {
+        showToast(newest.title + " — " + newest.ticketTitle, "info", 5000);
+        console.log("[AgentNotification] ✓ New notification received:", newest.id);
+      }
+    }
+
+    const ts = new Date().toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    const lbl = document.getElementById("notif-last-checked");
+    if (lbl) lbl.textContent = `Last checked ${ts}`;
+
+  } catch (err) {
+    console.error("[AgentNotification] Fetch error:", err.message);
+  }
+}
+
+/* ── Update the bell badge ───────────────────────────────────────── */
+function updateNotifBadge() {
+  const badge = document.getElementById("agent-notif-badge");
+  if (!badge) return;
+  if (_agentUnread > 0) {
+    badge.textContent  = _agentUnread > 99 ? "99+" : _agentUnread;
+    badge.style.display = "flex";
+  } else {
+    badge.style.display = "none";
+  }
+  const lbl = document.getElementById("notif-unread-label");
+  if (lbl) lbl.textContent = _agentUnread > 0 ? `${_agentUnread} unread` : "All caught up";
+}
+
+/* ── Render the notification list inside the panel ──────────────── */
+function renderNotifList() {
+  const el = document.getElementById("agent-notif-list");
+  if (!el) return;
+
+  if (!_agentNotifs.length) {
+    el.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px">
+      <i class="ti ti-bell-off" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+      No notifications yet
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = _agentNotifs.map(n => {
+    const pc    = PRIORITY_COLORS[n.priority] || "var(--info)";
+    const isNew = !n.read;
+    const time  = n.createdAt ? new Date(n.createdAt).toLocaleString() : "";
+    const tId   = (n.ticketId || "").substring(0, 6).toUpperCase();
+
+    return `<div class="agent-notif-item ${isNew ? "unread" : ""}"
+               onclick="openNotifTicket('${n.ticketId || ""}','${n.id}')">
+      <div class="agent-notif-icon" style="background:${pc}18;color:${pc}">
+        <i class="ti ti-ticket"></i>
+      </div>
+      <div class="agent-notif-body">
+        <div class="agent-notif-title">${n.title || "New Notification"}${isNew ? '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);margin-left:6px;vertical-align:middle"></span>' : ""}</div>
+        <div class="agent-notif-msg">${n.message || ""}</div>
+        <div class="agent-notif-meta">
+          ${n.ticketId  ? `<span><i class="ti ti-hash" style="font-size:9px"></i>#${tId}</span>` : ""}
+          ${n.priority  ? `<span style="color:${pc};font-weight:700"><i class="ti ti-flag" style="font-size:9px"></i>${n.priority}</span>` : ""}
+          ${n.category  ? `<span><i class="ti ti-tag" style="font-size:9px"></i>${n.category}</span>` : ""}
+          ${n.customerEmail ? `<span><i class="ti ti-user" style="font-size:9px"></i>${n.customerEmail.split("@")[0]}</span>` : ""}
+          <span>${time}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ── Click a notification → mark read + open ticket ─────────────── */
+async function openNotifTicket(ticketId, notifId) {
+  /* Mark as read */
+  if (notifId) {
+    fetch(`/api/agents/my-notifications/${notifId}/read`, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + (localStorage.getItem("deskflow_token") || "") }
+    }).then(() => {
+      const n = _agentNotifs.find(x => x.id === notifId);
+      if (n) n.read = true;
+      _agentUnread = Math.max(0, _agentUnread - 1);
+      updateNotifBadge();
+      renderNotifList();
+      console.log("[AgentNotification] Marked read:", notifId);
+    }).catch(() => {});
+  }
+
+  /* Navigate to the assigned ticket */
+  if (ticketId) {
+    closeNotifPanel();
+    selectTicket(ticketId);
+    console.log("[AgentNotification] Opening ticket:", ticketId);
+  }
+}
+
+/* ── Mark all read ───────────────────────────────────────────────── */
+async function markAllNotifsRead() {
+  try {
+    await fetch("/api/agents/my-notifications/mark-all-read", {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + (localStorage.getItem("deskflow_token") || "") }
+    });
+    _agentNotifs.forEach(n => { n.read = true; });
+    _agentUnread = 0;
+    updateNotifBadge();
+    renderNotifList();
+    showToast("All notifications marked as read", "success");
+  } catch (err) {
+    showToast("Could not mark notifications as read", "error");
+  }
+}
+
+/* ── Panel open / close ──────────────────────────────────────────── */
+function toggleNotifPanel() {
+  _notifPanelOpen ? closeNotifPanel() : openNotifPanel();
+}
+
+function openNotifPanel() {
+  _notifPanelOpen = true;
+  document.getElementById("agent-notif-panel").classList.add("open");
+  document.getElementById("agent-notif-overlay").classList.add("open");
+  renderNotifList();
+  fetchAgentNotifications(true); // immediate refresh on open
+}
+
+function closeNotifPanel() {
+  _notifPanelOpen = false;
+  document.getElementById("agent-notif-panel").classList.remove("open");
+  document.getElementById("agent-notif-overlay").classList.remove("open");
+}
+
+/* ── Start polling (every 10 s) ──────────────────────────────────── */
+function startNotifPolling() {
+  fetchAgentNotifications(); // immediate first fetch
+  _notifPollTimer = setInterval(() => fetchAgentNotifications(true), 10000);
+  console.log("[AgentNotification] Polling started (10s interval)");
+}
+</script>
+
+<!-- ═══ MEET NOTIFICATION CARD ═══ -->
+<div class="meet-notif" id="meet-notif-card">
+  <div class="meet-notif-pulse"></div>
+  <div class="meet-notif-body">
+    <div class="meet-notif-row1">
+      <div class="meet-notif-icon"><i class="ti ti-phone-incoming"></i></div>
+      <div>
+        <div class="meet-notif-title">Incoming Meet Request</div>
+        <div class="meet-notif-sub">A customer wants to connect with you</div>
+      </div>
+    </div>
+    <div class="meet-notif-info">
+      <div class="meet-notif-info-row"><i class="ti ti-user"></i> <span id="mn-customer">Customer</span></div>
+      <div class="meet-notif-info-row"><i class="ti ti-gender-bigender"></i> Prefers: <strong id="mn-gender" style="color:var(--gold)">Lady</strong></div>
+      <div class="meet-notif-info-row"><i class="ti ti-clock"></i> Requested at <span id="mn-time">—</span></div>
+    </div>
+    <div class="meet-notif-btns">
+      <button class="meet-notif-accept" onclick="acceptMeetRequest()"><i class="ti ti-check"></i> Accept</button>
+      <button class="meet-notif-decline" onclick="declineMeetRequest()"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

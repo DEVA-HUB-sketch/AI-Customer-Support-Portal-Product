@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Virtual Meet — DeskFlow AI</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="df-system.css"/>
+<link rel="stylesheet" href="df-responsive.css"/>
+<script src="df-theme.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ctrl-bg:rgba(32,36,46,.92);
+  --ctrl-hover:rgba(50,56,70,.95);
+  --gold:#D4AF37;
+  --danger:#e74c3c;
+  --success:#2ecc71;
+}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;background:#0d1117;color:#fff}
+
+/* ══════════════════════════════════
+   VIDEO-CALL SHELL (GMeet style)
+══════════════════════════════════ */
+.vc-shell{
+  display:flex;flex-direction:column;height:100vh;position:relative;overflow:hidden;
+}
+
+/* ─── TOP BAR ─── */
+.vc-topbar{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.65) 0%,transparent 100%);
+}
+.vc-brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.85)}
+.vc-brand-icon{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#0F5A5E,#D4AF37);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.vc-badge{
+  font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);
+  padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.12);
+}
+.vc-topbar-right{display:flex;align-items:center;gap:8px}
+.vc-top-btn{
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);
+  border:none;color:rgba(255,255,255,.8);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  transition:background .2s;
+}
+.vc-top-btn:hover{background:rgba(255,255,255,.18)}
+.vc-timer{font-family:monospace;font-size:13px;color:var(--gold);font-weight:700;padding:4px 10px;background:rgba(0,0,0,.35);border-radius:20px}
+
+/* ─── MAIN CALL AREA ─── */
+.vc-call-area{
+  flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 80% 80% at 50% 60%,#1a2535 0%,#0d1117 100%);
+}
+
+/* ─── AVATAR STAGE (full-screen video tile feel) ─── */
+.av-stage{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  /* subtle room-like gradient */
+  background:radial-gradient(ellipse 65% 65% at 50% 42%,#1E2D3D 0%,#0d1420 70%,#080d16 100%);
+}
+/* Talking border glow on the stage */
+.av-stage.state-talking::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 80px 10px rgba(212,175,55,.12);
+  animation:stageTalkGlow .25s ease-in-out infinite alternate;
+}
+@keyframes stageTalkGlow{from{opacity:.5}to{opacity:1}}
+.av-stage.state-listening::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 60px 6px rgba(46,204,113,.08);
+}
+
+/* Avatar container — large, centered */
+.av-tile{
+  position:relative;
+  width:min(55vw,480px);height:min(55vw,480px);
+  border-radius:50%;
+  overflow:visible;
+  display:flex;align-items:center;justify-content:center;
+}
+/* Outer glow ring */
+.av-glow-ring{
+  position:absolute;inset:-18px;border-radius:50%;
+  border:2px solid rgba(212,175,55,.2);
+  box-shadow:0 0 40px rgba(212,175,55,.06);
+  animation:avIdleRing 3s ease-in-out infinite;
+}
+.av-stage.state-talking .av-glow-ring{
+  border-color:rgba(212,175,55,.55);
+  box-shadow:0 0 60px rgba(212,175,55,.18);
+  animation:avTalkRing .22s ease-in-out infinite alternate;
+}
+.av-stage.state-listening .av-glow-ring{
+  border-color:rgba(46,204,113,.55);
+  box-shadow:0 0 50px rgba(46,204,113,.15);
+  animation:avListenRing .8s ease-in-out infinite;
+}
+@keyframes avIdleRing{0%,100%{transform:scale(1)}50%{transform:scale(1.015)}}
+@keyframes avTalkRing{from{transform:scale(1)}to{transform:scale(1.025)}}
+@keyframes avListenRing{
+  0%{box-shadow:0 0 0 0 rgba(46,204,113,.4)}
+  70%{box-shadow:0 0 0 22px rgba(46,204,113,0)}
+  100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}
+}
+/* Second pulse ring */
+.av-glow-ring2{
+  position:absolute;inset:-34px;border-radius:50%;
+  border:1px solid rgba(212,175,55,.08);
+}
+
+/* The actual face circle */
+.av-face{
+  width:100%;height:100%;border-radius:50%;overflow:hidden;
+  background:#141e28;
+  box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 2px rgba(212,175,55,.15);
+}
+.av-face svg{width:100%;height:100%;display:block}
+
+/* Name / status overlay at bottom of tile */
+.av-name-overlay{
+  position:absolute;bottom:-58px;left:50%;transform:translateX(-50%);
+  text-align:center;white-space:nowrap;
+}
+.av-name-main{font-size:18px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.av-status-chip{
+  display:inline-flex;align-items:center;gap:6px;margin-top:6px;
+  font-size:12px;color:rgba(255,255,255,.65);
+  background:rgba(0,0,0,.4);padding:4px 12px;border-radius:20px;
+  backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);
+}
+.av-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success)}
+.av-dot.gold{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+.av-dot.blue{background:#3498db;box-shadow:0 0 6px #3498db}
+
+/* Interrupt hint bubble */
+.interrupt-hint{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(0,0,0,.75);color:#fff;font-size:13px;font-weight:600;
+  padding:10px 20px;border-radius:30px;border:1px solid rgba(212,175,55,.4);
+  pointer-events:none;opacity:0;transition:opacity .25s;backdrop-filter:blur(6px);
+  white-space:nowrap;
+}
+.av-stage.state-talking:hover .interrupt-hint{opacity:1}
+
+/* ─── SELF VIEW (bottom-left corner) ─── */
+.self-view{
+  position:absolute;bottom:96px;left:16px;z-index:15;
+  width:150px;height:108px;border-radius:14px;overflow:hidden;
+  background:linear-gradient(135deg,#1a2535,#0d1520);
+  border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+}
+.self-view-avatar{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#0F5A5E);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;color:#fff;
+}
+.self-view-name{font-size:11px;color:rgba(255,255,255,.55)}
+.self-view-mic-indicator{
+  width:22px;height:22px;border-radius:50%;background:rgba(46,204,113,.15);
+  border:1px solid rgba(46,204,113,.4);display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--success);position:absolute;bottom:8px;right:8px;
+}
+.self-view-mic-indicator.muted{background:rgba(231,76,60,.15);border-color:rgba(231,76,60,.4);color:var(--danger)}
+
+/* ─── CHAT DRAWER ─── */
+.chat-drawer{
+  position:absolute;top:0;right:0;bottom:0;z-index:25;
+  width:360px;max-width:92vw;
+  background:rgba(18,22,32,.97);
+  border-left:1px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+  backdrop-filter:blur(12px);
+}
+.chat-drawer.open{transform:translateX(0)}
+.chat-drawer-head{
+  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.chat-drawer-head span{font-size:13px;font-weight:700;color:rgba(255,255,255,.8)}
+.chat-drawer-close{
+  width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);
+  border:none;color:rgba(255,255,255,.5);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .2s;
+}
+.chat-drawer-close:hover{background:rgba(255,255,255,.14)}
+/* Transcript — flex:1 + overflow-y:auto is the key fix */
+.transcript{
+  flex:1;overflow-y:auto;padding:14px 14px;display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
+  min-height:0; /* CRITICAL: makes flex child shrink below content */
+}
+.transcript::-webkit-scrollbar{width:4px}
+.transcript::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
+.t-msg{display:flex;flex-direction:column;gap:3px;max-width:88%}
+.t-msg-user{align-self:flex-end}
+.t-msg-ai,.t-msg-other{align-self:flex-start}
+.t-msg-sys{align-self:center;width:100%;text-align:center}
+.t-from{font-size:10px;color:rgba(255,255,255,.38);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:0 4px}
+.t-text{padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.55}
+.t-msg-user .t-text{background:var(--gold);color:#12141E;border-radius:14px 14px 4px 14px}
+.t-msg-ai .t-text,.t-msg-other .t-text{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.9);border-radius:14px 14px 14px 4px;
+}
+.t-msg-sys .t-text{
+  font-size:11px;color:rgba(255,255,255,.35);background:transparent;
+  font-style:italic;border:none;padding:4px 0;
+}
+.chat-input-bar{
+  padding:12px 14px;border-top:1px solid rgba(255,255,255,.07);
+  display:flex;gap:8px;flex-shrink:0;
+}
+.chat-input-bar input{
+  flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:10px 16px;color:#fff;font-size:13px;outline:none;
+  transition:border-color .2s;
+}
+.chat-input-bar input::placeholder{color:rgba(255,255,255,.3)}
+.chat-input-bar input:focus{border-color:rgba(212,175,55,.5)}
+.chat-input-bar button{
+  width:40px;height:40px;border-radius:50%;background:var(--gold);
+  color:#12141E;border:none;cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;transition:opacity .2s,transform .15s;
+}
+.chat-input-bar button:hover{opacity:.88;transform:scale(1.06)}
+
+/* ─── CONTROLS BAR (GMeet bottom) ─── */
+.vc-controls{
+  position:absolute;bottom:0;left:0;right:0;z-index:20;
+  height:80px;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);
+  padding:0 24px;
+}
+.ctrl-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:9px 16px;border-radius:14px;border:none;cursor:pointer;
+  background:var(--ctrl-bg);color:rgba(255,255,255,.85);
+  font-size:10px;font-weight:600;letter-spacing:.03em;
+  backdrop-filter:blur(8px);transition:background .18s,transform .15s;
+  min-width:60px;
+}
+.ctrl-btn i{font-size:21px}
+.ctrl-btn:hover{background:var(--ctrl-hover);transform:translateY(-2px)}
+.ctrl-btn.active{background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.35);color:var(--gold)}
+.ctrl-btn.muted{background:rgba(231,76,60,.18);border:1px solid rgba(231,76,60,.35);color:var(--danger)}
+.ctrl-end{
+  background:rgba(231,76,60,.22);border:1px solid rgba(231,76,60,.4);color:var(--danger);
+}
+.ctrl-end:hover{background:rgba(231,76,60,.38)}
+/* Mic wave indicator when listening */
+.ctrl-btn .mic-live{
+  display:none;width:14px;height:8px;
+}
+.ctrl-btn.listening .mic-live{display:flex;gap:2px;align-items:center}
+.ctrl-btn.listening .mic-live span{
+  width:2px;border-radius:2px;background:var(--success);
+  animation:micWave 0.6s ease-in-out infinite alternate;
+}
+.ctrl-btn.listening .mic-live span:nth-child(1){height:4px;animation-delay:0s}
+.ctrl-btn.listening .mic-live span:nth-child(2){height:8px;animation-delay:.15s}
+.ctrl-btn.listening .mic-live span:nth-child(3){height:5px;animation-delay:.3s}
+@keyframes micWave{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
+
+/* ─── WAITING ROOM ─── */
+.meet-waiting{
+  position:absolute;inset:0;z-index:30;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  background:radial-gradient(ellipse at center,#1a2535 0%,#0d1117 100%);
+}
+.wait-rings{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center}
+.wait-ring{position:absolute;border-radius:50%;border:2px solid;animation:wPulse 2.4s ease-in-out infinite}
+.wait-ring:nth-child(1){width:78px;height:78px;border-color:rgba(212,175,55,.9)}
+.wait-ring:nth-child(2){width:128px;height:128px;border-color:rgba(212,175,55,.5);animation-delay:.4s}
+.wait-ring:nth-child(3){width:178px;height:178px;border-color:rgba(212,175,55,.2);animation-delay:.8s}
+@keyframes wPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.05);opacity:.35}}
+.wait-icon{
+  width:60px;height:60px;border-radius:50%;z-index:2;
+  background:linear-gradient(135deg,var(--gold),#0F5A5E);
+  display:flex;align-items:center;justify-content:center;font-size:24px;color:#0d1117;
+  box-shadow:0 0 30px rgba(212,175,55,.3);
+}
+.wait-title{font-size:22px;font-weight:700}
+.wait-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;max-width:300px;line-height:1.6}
+.wait-dots{font-size:24px;color:var(--gold);letter-spacing:6px}
+.wait-dots span{animation:wDot 1.4s ease-in-out infinite}
+.wait-dots span:nth-child(2){animation-delay:.2s}
+.wait-dots span:nth-child(3){animation-delay:.4s}
+@keyframes wDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.wait-cancel{
+  padding:10px 28px;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.35);
+  border-radius:10px;color:var(--danger);cursor:pointer;font-size:13px;font-weight:600;transition:background .2s;
+}
+.wait-cancel:hover{background:rgba(231,76,60,.2)}
+</style>
+</head>
+<body>
+
+<div class="vc-shell">
+
+  <!-- ─── WAITING ROOM ─── -->
+  <div class="meet-waiting" id="meet-waiting">
+    <div class="wait-rings">
+      <div class="wait-ring"></div><div class="wait-ring"></div><div class="wait-ring"></div>
+      <div class="wait-icon"><i class="ti ti-headset"></i></div>
+    </div>
+    <div class="wait-title">Looking for an agent…</div>
+    <div class="wait-sub">Connecting you with a <strong id="wait-gender-label">agent</strong>. Please wait.</div>
+    <div class="wait-dots"><span>•</span><span>•</span><span>•</span></div>
+    <button class="wait-cancel" onclick="cancelMeet()"><i class="ti ti-x"></i> Cancel</button>
+  </div>
+
+  <!-- ─── TOP BAR ─── -->
+  <div class="vc-topbar">
+    <div class="vc-brand">
+      <div class="vc-brand-icon"><i class="ti ti-headset" style="color:var(--gold)"></i></div>
+      DeskFlow AI — Virtual Meet
+    </div>
+    <div class="vc-topbar-right">
+      <span class="vc-timer" id="vc-timer">00:00</span>
+      <span class="vc-badge" id="room-id-badge">Room: —</span>
+      <button class="vc-top-btn" onclick="DFTheme.toggle()" title="Toggle theme"><i class="ti ti-sun df-theme-icon"></i></button>
+    </div>
+  </div>
+
+  <!-- ─── MAIN CALL AREA ─── -->
+  <div class="vc-call-area">
+
+    <!-- Avatar Stage -->
+    <div class="av-stage av-idle" id="av-stage" onclick="handleStageClick()">
+      <div class="av-tile">
+        <div class="av-glow-ring2"></div>
+        <div class="av-glow-ring" id="av-glow-ring"></div>
+        <div class="av-face" id="av-face"></div>
+        <div class="av-name-overlay">
+          <div class="av-name-main" id="av-name-text">Zane · AI Gentleman</div>
+          <div class="av-status-chip">
+            <div class="av-dot" id="av-dot"></div>
+            <span id="av-status-label">Ready</span>
+          </div>
+        </div>
+      </div>
+      <div class="interrupt-hint" id="interrupt-hint"><i class="ti ti-microphone"></i> Click to interrupt</div>
+    </div>
+
+    <!-- Self View -->
+    <div class="self-view">
+      <div class="self-view-avatar" id="self-initial">C</div>
+      <div class="self-view-name" id="self-name">You</div>
+      <div class="self-view-mic-indicator" id="self-mic-ind"><i class="ti ti-microphone"></i></div>
+    </div>
+
+    <!-- Chat Drawer (slide-in from right) -->
+    <div class="chat-drawer" id="chat-drawer">
+      <div class="chat-drawer-head">
+        <span>Session Transcript</span>
+        <button class="chat-drawer-close" onclick="toggleChat()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="transcript" id="transcript">
+        <div class="t-msg t-msg-sys"><div class="t-text">Session started</div></div>
+      </div>
+      <div class="chat-input-bar">
+        <input id="chat-inp" type="text" placeholder="Type a message…" autocomplete="off">
+        <button id="chat-send" title="Send"><i class="ti ti-send"></i></button>
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="vc-controls">
+      <button class="ctrl-btn" id="btn-mic" onclick="handleMicClick()">
+        <i class="ti ti-microphone" id="mic-icon"></i>
+        <div class="mic-live"><span></span><span></span><span></span></div>
+        <span id="mic-label">Mic</span>
+      </button>
+      <button class="ctrl-btn" id="btn-spk" onclick="toggleSpeaker()">
+        <i class="ti ti-volume" id="spk-icon"></i>
+        <span>Speaker</span>
+      </button>
+      <button class="ctrl-btn" id="btn-chat" onclick="toggleChat()">
+        <i class="ti ti-message-2"></i>
+        <span>Chat</span>
+      </button>
+      <button class="ctrl-btn ctrl-end" onclick="endMeet()">
+        <i class="ti ti-phone-off"></i>
+        <span>End Call</span>
+      </button>
+    </div>
+
+  </div><!-- /vc-call-area -->
+</div><!-- /vc-shell -->
+
+<script>
+/* ════════════════════════════════════════
+   VIRTUAL MEET — GMeet-style redesign
+════════════════════════════════════════ */
+const P       = new URLSearchParams(location.search);
+const mType   = P.get('type')   || 'ai';
+const gender  = P.get('gender') || 'gentleman';
+const cName   = P.get('name')   || 'Customer';
+const meetId  = P.get('id')     || Date.now().toString(36);
+const mSide   = P.get('side')   || 'customer';
+const USER    = (()=>{ try{ return JSON.parse(localStorage.getItem('deskflow_user'))||{}; }catch{ return {}; } })();
+const myName  = USER.name || (mSide==='agent' ? 'Agent' : cName);
+const AI_NAME = gender==='lady' ? 'Zara' : 'Zane';
+
+/* ══ LADY SVG ══ */
+const LADY_SVG = `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="skL" cx="45%" cy="35%" r="65%"><stop offset="0%" stop-color="#FCCFAE"/><stop offset="55%" stop-color="#F0B090"/><stop offset="100%" stop-color="#D8906A"/></radialGradient>
+  <radialGradient id="hrL" cx="50%" cy="15%" r="80%"><stop offset="0%" stop-color="#7B3F10"/><stop offset="100%" stop-color="#3E1800"/></radialGradient>
+  <radialGradient id="irisL" cx="32%" cy="28%" r="68%"><stop offset="0%" stop-color="#7B4A28"/><stop offset="100%" stop-color="#2A1200"/></radialGradient>
+  <linearGradient id="lipUL" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#D4507A"/><stop offset="100%" stop-color="#AA2858"/></linearGradient>
+  <linearGradient id="lipLL" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E87098"/><stop offset="100%" stop-color="#C45070"/></linearGradient>
+  <filter id="softL"><feGaussianBlur stdDeviation="1.2"/></filter>
+</defs>
+<!-- room BG glow -->
+<ellipse cx="100" cy="120" rx="95" ry="95" fill="rgba(30,60,80,.35)" filter="url(#softL)"/>
+<!-- hair back -->
+<ellipse cx="100" cy="88" rx="66" ry="75" fill="url(#hrL)"/>
+<!-- shoulders / top -->
+<path d="M0 230 Q5 205 35 192 Q65 178 100 175 Q135 178 165 192 Q195 205 200 230Z" fill="#1E3548"/>
+<!-- blouse -->
+<path d="M78 175 Q100 168 122 175 L118 202 Q100 209 82 202Z" fill="#F5F0E8" opacity=".92"/>
+<!-- pearl necklace -->
+<path d="M78 173 Q100 181 122 173" stroke="#F5F5F5" stroke-width="2" fill="none" stroke-linecap="round"/>
+<circle cx="100" cy="181" r="3" fill="#F5F5F5"/><circle cx="89" cy="177" r="2.5" fill="#F5F5F5"/><circle cx="111" cy="177" r="2.5" fill="#F5F5F5"/>
+<!-- neck -->
+<rect x="87" y="148" width="26" height="33" rx="10" fill="url(#skL)"/>
+<path d="M87 148 Q100 152 113 148" stroke="rgba(0,0,0,.08)" stroke-width="2" fill="none"/>
+<!-- head -->
+<path d="M44 96 Q43 46 100 40 Q157 46 156 96 Q157 140 143 157 Q126 170 100 170 Q74 170 57 157 Q43 140 44 96Z" fill="url(#skL)"/>
+<!-- left ear -->
+<ellipse cx="43" cy="108" rx="8" ry="13" fill="url(#skL)"/><ellipse cx="43" cy="108" rx="5" ry="9" fill="rgba(0,0,0,.07)"/>
+<!-- earring L -->
+<circle cx="43" cy="120" r="5" fill="#D4AF37"/><circle cx="43" cy="120" r="2.5" fill="#FFE080"/>
+<!-- right ear -->
+<ellipse cx="157" cy="108" rx="8" ry="13" fill="url(#skL)"/><ellipse cx="157" cy="108" rx="5" ry="9" fill="rgba(0,0,0,.07)"/>
+<!-- earring R -->
+<circle cx="157" cy="120" r="5" fill="#D4AF37"/><circle cx="157" cy="120" r="2.5" fill="#FFE080"/>
+<!-- hair top -->
+<path d="M44 90 Q44 42 100 36 Q156 42 156 90 Q148 56 100 52 Q52 56 44 90Z" fill="url(#hrL)"/>
+<!-- hair sides -->
+<ellipse cx="39" cy="120" rx="14" ry="48" fill="url(#hrL)"/>
+<ellipse cx="161" cy="120" rx="14" ry="48" fill="url(#hrL)"/>
+<!-- hair wisps front -->
+<path d="M60 80 Q64 58 82 63 Q72 70 74 82" fill="url(#hrL)"/>
+<path d="M140 80 Q136 58 118 63 Q128 70 126 82" fill="url(#hrL)"/>
+<!-- left brow (thin, arched) -->
+<path d="M62 84 Q76 78 88 83" stroke="#5A2A0A" stroke-width="2" fill="none" stroke-linecap="round"/>
+<!-- right brow -->
+<path d="M112 83 Q124 78 138 84" stroke="#5A2A0A" stroke-width="2" fill="none" stroke-linecap="round"/>
+<!-- left eye shadow -->
+<ellipse cx="75" cy="98" rx="15" ry="9" fill="rgba(160,90,60,.1)"/>
+<!-- left eye white -->
+<path d="M60 97 Q75 87 90 97 Q75 108 60 97Z" fill="#FAFAFA"/>
+<!-- left iris -->
+<circle cx="75" cy="97" r="8.5" fill="url(#irisL)"/>
+<circle cx="75" cy="97" r="5" fill="#1a0800"/>
+<circle cx="77" cy="94" r="2.8" fill="white" opacity=".9"/>
+<circle cx="72" cy="96.5" r="1" fill="white" opacity=".5"/>
+<!-- left upper lid -->
+<path d="M60 97 Q75 87 90 97" stroke="#1A0800" stroke-width="2.8" fill="none"/>
+<!-- left lashes -->
+<line x1="63" y1="94" x2="60" y2="87" stroke="#1A0800" stroke-width="1.6"/><line x1="68" y1="91" x2="66" y2="84" stroke="#1A0800" stroke-width="1.6"/><line x1="75" y1="88" x2="75" y2="81" stroke="#1A0800" stroke-width="1.6"/><line x1="82" y1="90" x2="84" y2="83" stroke="#1A0800" stroke-width="1.6"/><line x1="88" y1="93" x2="91" y2="87" stroke="#1A0800" stroke-width="1.6"/>
+<!-- left lower lid line -->
+<path d="M62 98 Q75 106 88 98" stroke="rgba(180,110,70,.3)" stroke-width="1" fill="none"/>
+<!-- left eyelid (blink) -->
+<path id="l-lid" d="M60 97 Q75 108 90 97 Q75 87 60 97Z" fill="url(#skL)" opacity="0"/>
+<!-- right eye shadow -->
+<ellipse cx="125" cy="98" rx="15" ry="9" fill="rgba(160,90,60,.1)"/>
+<!-- right eye white -->
+<path d="M110 97 Q125 87 140 97 Q125 108 110 97Z" fill="#FAFAFA"/>
+<!-- right iris -->
+<circle cx="125" cy="97" r="8.5" fill="url(#irisL)"/>
+<circle cx="125" cy="97" r="5" fill="#1a0800"/>
+<circle cx="127" cy="94" r="2.8" fill="white" opacity=".9"/>
+<circle cx="122" cy="96.5" r="1" fill="white" opacity=".5"/>
+<!-- right upper lid -->
+<path d="M110 97 Q125 87 140 97" stroke="#1A0800" stroke-width="2.8" fill="none"/>
+<!-- right lashes -->
+<line x1="113" y1="94" x2="110" y2="87" stroke="#1A0800" stroke-width="1.6"/><line x1="118" y1="91" x2="116" y2="84" stroke="#1A0800" stroke-width="1.6"/><line x1="125" y1="88" x2="125" y2="81" stroke="#1A0800" stroke-width="1.6"/><line x1="132" y1="90" x2="134" y2="83" stroke="#1A0800" stroke-width="1.6"/><line x1="138" y1="93" x2="141" y2="87" stroke="#1A0800" stroke-width="1.6"/>
+<path d="M112 98 Q125 106 138 98" stroke="rgba(180,110,70,.3)" stroke-width="1" fill="none"/>
+<!-- right eyelid (blink) -->
+<path id="r-lid" d="M110 97 Q125 108 140 97 Q125 87 110 97Z" fill="url(#skL)" opacity="0"/>
+<!-- nose -->
+<path d="M97 116 Q94 126 93 130 Q100 134 107 130 Q106 126 103 116" stroke="#C49070" stroke-width="1.3" fill="rgba(200,120,80,.04)" stroke-linecap="round"/>
+<ellipse cx="94.5" cy="130" rx="3.5" ry="2.5" fill="rgba(180,90,60,.18)"/>
+<ellipse cx="105.5" cy="130" rx="3.5" ry="2.5" fill="rgba(180,90,60,.18)"/>
+<!-- cheek blush -->
+<ellipse cx="60" cy="116" rx="17" ry="12" fill="rgba(220,90,100,.13)"/>
+<ellipse cx="140" cy="116" rx="17" ry="12" fill="rgba(220,90,100,.13)"/>
+<!-- MOUTH GROUP -->
+<g id="av-mouth-group">
+  <!-- upper lip -->
+  <path d="M80 141 Q89 135 100 138 Q111 135 120 141 Q110 144 100 142 Q90 144 80 141Z" fill="url(#lipUL)"/>
+  <!-- philtrum shadow -->
+  <path d="M95 132 Q100 137 105 132" stroke="rgba(0,0,0,.08)" stroke-width="1" fill="none"/>
+  <!-- lower lip CLOSED -->
+  <path id="av-mouth-lower" d="M80 141 Q100 152 120 141" fill="url(#lipLL)"/>
+  <!-- gap between lips (shows when open) -->
+  <path id="av-lip-gap" d="M82 141 Q100 142 118 141" stroke="rgba(60,15,25,.9)" stroke-width="2.2" fill="none" opacity="0"/>
+  <!-- teeth -->
+  <path id="av-teeth" d="M84 142 Q100 146 116 142 Q116 150 100 151 Q84 150 84 142Z" fill="#F8F8F6" opacity="0"/>
+  <!-- lower lip OPEN -->
+  <path id="av-mouth-lower-open" d="M80 141 Q100 158 120 141" fill="url(#lipLL)" opacity="0"/>
+</g>
+<!-- jaw shadow -->
+<path d="M58 156 Q100 175 142 156" stroke="rgba(0,0,0,.07)" stroke-width="3" fill="none"/>
+</svg>`;
+
+/* ══ GENTLEMAN SVG ══ */
+const GENT_SVG = `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="skG" cx="45%" cy="35%" r="65%"><stop offset="0%" stop-color="#E8C090"/><stop offset="55%" stop-color="#D4A070"/><stop offset="100%" stop-color="#BC8050"/></radialGradient>
+  <radialGradient id="hrG" cx="50%" cy="10%" r="80%"><stop offset="0%" stop-color="#2C1A0A"/><stop offset="100%" stop-color="#140A02"/></radialGradient>
+  <radialGradient id="irisG" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#5080AA"/><stop offset="100%" stop-color="#1A3050"/></radialGradient>
+  <linearGradient id="lipUG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#A86050"/><stop offset="100%" stop-color="#804030"/></linearGradient>
+  <linearGradient id="lipLG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#BE7060"/><stop offset="100%" stop-color="#9A5040"/></linearGradient>
+  <filter id="softG"><feGaussianBlur stdDeviation="1.2"/></filter>
+</defs>
+<!-- room glow -->
+<ellipse cx="100" cy="120" rx="95" ry="95" fill="rgba(20,40,60,.35)" filter="url(#softG)"/>
+<!-- hair back (short) -->
+<ellipse cx="100" cy="60" rx="57" ry="38" fill="url(#hrG)"/>
+<!-- suit -->
+<path d="M0 230 Q5 205 38 190 Q68 176 100 173 Q132 176 162 190 Q195 205 200 230Z" fill="#161E2E"/>
+<!-- lapels -->
+<path d="M100 173 L88 200 L78 202 L82 173Z" fill="#1E2A3E"/>
+<path d="M100 173 L112 200 L122 202 L118 173Z" fill="#1E2A3E"/>
+<!-- shirt -->
+<path d="M82 173 Q100 167 118 173 L116 198 Q100 205 84 198Z" fill="#E8ECF5" opacity=".94"/>
+<!-- tie -->
+<polygon points="100,173 94,185 100,212 106,185" fill="#D4AF37"/>
+<polygon points="94,177 106,177 104,170 96,170" fill="#B89020"/>
+<!-- neck -->
+<rect x="87" y="148" width="26" height="33" rx="9" fill="url(#skG)"/>
+<path d="M87 148 Q100 152 113 148" stroke="rgba(0,0,0,.08)" stroke-width="2" fill="none"/>
+<!-- head (slightly angular jaw) -->
+<path d="M45 92 Q44 44 100 38 Q156 44 155 92 Q157 136 146 155 Q130 168 100 168 Q70 168 54 155 Q43 136 45 92Z" fill="url(#skG)"/>
+<!-- left ear -->
+<ellipse cx="44" cy="108" rx="8" ry="12" fill="url(#skG)"/><ellipse cx="44" cy="108" rx="5" ry="8" fill="rgba(0,0,0,.07)"/>
+<!-- right ear -->
+<ellipse cx="156" cy="108" rx="8" ry="12" fill="url(#skG)"/><ellipse cx="156" cy="108" rx="5" ry="8" fill="rgba(0,0,0,.07)"/>
+<!-- hair top (neat short, side part) -->
+<path d="M44 78 Q44 40 100 36 Q156 40 156 78 Q148 50 100 48 Q52 50 44 78Z" fill="url(#hrG)"/>
+<!-- side hair short -->
+<rect x="44" y="60" width="13" height="48" rx="6" fill="url(#hrG)"/>
+<rect x="143" y="60" width="13" height="48" rx="6" fill="url(#hrG)"/>
+<!-- side part detail -->
+<path d="M62 50 Q72 48 82 55" stroke="rgba(255,255,255,.04)" stroke-width="2" fill="none"/>
+<!-- left brow (thick, horizontal) -->
+<path d="M60 86 Q76 80 92 85" stroke="#241400" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- right brow -->
+<path d="M108 85 Q124 80 140 86" stroke="#241400" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- left eye shadow -->
+<ellipse cx="76" cy="99" rx="15" ry="9" fill="rgba(130,80,40,.1)"/>
+<!-- left eye white -->
+<path d="M61 98 Q76 88 91 98 Q76 109 61 98Z" fill="#F8F8F8"/>
+<!-- left iris -->
+<circle cx="76" cy="98" r="8" fill="url(#irisG)"/>
+<circle cx="76" cy="98" r="4.5" fill="#0e1e2e"/>
+<circle cx="78" cy="95" r="2.5" fill="white" opacity=".85"/>
+<circle cx="73" cy="97" r="1" fill="white" opacity=".4"/>
+<!-- left upper lid -->
+<path d="M61 98 Q76 88 91 98" stroke="#241400" stroke-width="2.8" fill="none"/>
+<!-- left lid blink -->
+<path id="l-lid" d="M61 98 Q76 109 91 98 Q76 88 61 98Z" fill="url(#skG)" opacity="0"/>
+<!-- right eye shadow -->
+<ellipse cx="124" cy="99" rx="15" ry="9" fill="rgba(130,80,40,.1)"/>
+<!-- right eye white -->
+<path d="M109 98 Q124 88 139 98 Q124 109 109 98Z" fill="#F8F8F8"/>
+<!-- right iris -->
+<circle cx="124" cy="98" r="8" fill="url(#irisG)"/>
+<circle cx="124" cy="98" r="4.5" fill="#0e1e2e"/>
+<circle cx="126" cy="95" r="2.5" fill="white" opacity=".85"/>
+<circle cx="121" cy="97" r="1" fill="white" opacity=".4"/>
+<!-- right upper lid -->
+<path d="M109 98 Q124 88 139 98" stroke="#241400" stroke-width="2.8" fill="none"/>
+<!-- right lid blink -->
+<path id="r-lid" d="M109 98 Q124 109 139 98 Q124 88 109 98Z" fill="url(#skG)" opacity="0"/>
+<!-- nose (stronger) -->
+<path d="M97 118 Q93 129 92 133 Q100 137 108 133 Q107 129 103 118" stroke="#C08858" stroke-width="1.5" fill="rgba(190,110,60,.04)" stroke-linecap="round"/>
+<ellipse cx="93.5" cy="133" rx="3.5" ry="2.5" fill="rgba(170,90,50,.2)"/>
+<ellipse cx="106.5" cy="133" rx="3.5" ry="2.5" fill="rgba(170,90,50,.2)"/>
+<!-- cheek shadow (masculine) -->
+<ellipse cx="58" cy="122" rx="14" ry="9" fill="rgba(130,70,30,.1)"/>
+<ellipse cx="142" cy="122" rx="14" ry="9" fill="rgba(130,70,30,.1)"/>
+<!-- stubble dots -->
+<circle cx="82" cy="141" r="2" fill="rgba(40,20,8,.14)"/><circle cx="88" cy="147" r="2" fill="rgba(40,20,8,.14)"/><circle cx="94" cy="150" r="2" fill="rgba(40,20,8,.14)"/><circle cx="100" cy="151" r="2" fill="rgba(40,20,8,.14)"/><circle cx="106" cy="150" r="2" fill="rgba(40,20,8,.14)"/><circle cx="112" cy="147" r="2" fill="rgba(40,20,8,.14)"/><circle cx="118" cy="141" r="2" fill="rgba(40,20,8,.14)"/>
+<circle cx="78" cy="136" r="1.5" fill="rgba(40,20,8,.1)"/><circle cx="84" cy="134" r="1.5" fill="rgba(40,20,8,.1)"/><circle cx="116" cy="134" r="1.5" fill="rgba(40,20,8,.1)"/><circle cx="122" cy="136" r="1.5" fill="rgba(40,20,8,.1)"/>
+<!-- MOUTH GROUP -->
+<g id="av-mouth-group">
+  <!-- upper lip -->
+  <path d="M82 139 Q91 134 100 137 Q109 134 118 139 Q109 142 100 140 Q91 142 82 139Z" fill="url(#lipUG)"/>
+  <!-- lower lip CLOSED -->
+  <path id="av-mouth-lower" d="M82 139 Q100 150 118 139" fill="url(#lipLG)"/>
+  <!-- gap -->
+  <path id="av-lip-gap" d="M84 139 Q100 140 116 139" stroke="rgba(40,10,5,.9)" stroke-width="2" fill="none" opacity="0"/>
+  <!-- teeth -->
+  <path id="av-teeth" d="M85 140 Q100 144 115 140 Q115 149 100 150 Q85 149 85 140Z" fill="#F2F2F0" opacity="0"/>
+  <!-- lower lip OPEN -->
+  <path id="av-mouth-lower-open" d="M82 139 Q100 156 118 139" fill="url(#lipLG)" opacity="0"/>
+</g>
+<!-- jaw definition shadow -->
+<path d="M57 155 Q100 172 143 155" stroke="rgba(0,0,0,.07)" stroke-width="3" fill="none"/>
+</svg>`;
+
+/* ══ STATE ══ */
+let micMuted   = false;
+let spkMuted   = false;
+let isListening= false;
+let isSpeaking = false;
+let recognition= null;
+let timerSecs  = 0;
+let timerInt   = null;
+let talkInt    = null;
+let blinkInt   = null;
+let meetCh     = null;
+let chatOpen   = false;
+
+/* ══ BOOT ══ */
+document.getElementById('room-id-badge').textContent = 'Room: ' + meetId.slice(-8).toUpperCase();
+document.getElementById('self-initial').textContent  = (myName||'C')[0].toUpperCase();
+document.getElementById('self-name').textContent     = myName;
+document.getElementById('meet-waiting').style.display = 'none'; /* hide by default */
+
+function initMeet(){
+  if(mType==='ai'){
+    startAIMeet();
+  } else {
+    if(mSide==='agent') startAgentSideMeet();
+    else startCustomerWait();
+  }
+}
+
+/* ══ AI MEET ══ */
+function startAIMeet(){
+  const label = gender==='lady'
+    ? `${AI_NAME} · AI Lady Assistant`
+    : `${AI_NAME} · AI Gentleman Assistant`;
+  document.getElementById('av-name-text').textContent = label;
+  renderAvatar(gender);
+  startTimer();
+  startBlinking();
+  setTimeout(greetUser, 700);
+}
+
+/* ══ AVATAR RENDER ══ */
+function renderAvatar(g){ document.getElementById('av-face').innerHTML = g==='lady' ? LADY_SVG : GENT_SVG; }
+
+/* ══ WAITING ROOM ══ */
+function startCustomerWait(){
+  document.getElementById('meet-waiting').style.display='flex';
+  document.getElementById('wait-gender-label').textContent = gender==='lady' ? 'lady agent' : 'gentleman agent';
+  meetCh = new BroadcastChannel('df-meet');
+
+  /* Broadcast repeatedly every 4s — catches any agent tab already open
+     or refreshed after the initial message fires */
+  let broadcastInt = null;
+  function broadcastRequest(){
+    meetCh.postMessage({ type:'meet-request', meetId, customerName:myName, preferredGender:gender, timestamp:Date.now() });
+  }
+  broadcastRequest();
+  broadcastInt = setInterval(broadcastRequest, 4000);
+
+  meetCh.onmessage = e => {
+    const d = e.data;
+    if(d.meetId !== meetId) return;
+    if(d.type === 'meet-accept'){
+      clearInterval(broadcastInt); /* stop pinging once connected */
+      document.getElementById('meet-waiting').style.display = 'none';
+      document.getElementById('av-name-text').textContent = (d.agentName||'Agent') + ' · Support Agent';
+      renderAvatar(d.agentGender || gender);
+      startTimer(); startBlinking();
+      addMsg('system','Connected with ' + (d.agentName||'Agent'));
+      addMsg('ai', `Hi ${myName}! I'm ${d.agentName||'your agent'}. How can I help you today?`);
+    }
+    if(d.type==='meet-chat') addMsg('other', d.text, d.from);
+    if(d.type==='meet-end') handleFarEnd();
+  };
+
+  /* Also clean up the interval if customer cancels */
+  window._clearBroadcast = ()=> clearInterval(broadcastInt);
+}
+function startAgentSideMeet(){
+  document.getElementById('av-name-text').textContent = cName + ' · Customer';
+  renderAvatar(gender);
+  startTimer(); startBlinking();
+  addMsg('system','Connected with ' + cName);
+  meetCh = new BroadcastChannel('df-meet');
+  meetCh.onmessage = e => {
+    const d = e.data;
+    if(d.meetId !== meetId) return;
+    if(d.type==='meet-chat') addMsg('other', d.text, d.from);
+    if(d.type==='meet-end')  handleFarEnd();
+  };
+}
+
+/* ══ GREETING ══ */
+function greetUser(){
+  const greets = {
+    lady: `Hello! I'm ${AI_NAME}, your AI assistant. I'm here to help you 24/7. What can I do for you today?`,
+    gentleman: `Good day! I'm ${AI_NAME}, your AI assistant. I'm ready to help. How may I assist you today?`
+  };
+  addMsg('ai', greets[gender]);
+  speak(greets[gender], ()=>{ if(!micMuted) startListening(); });
+}
+
+/* ══ AI RESPONSE ══ */
+async function sendToAI(text){
+  setAvState('thinking','Thinking…','blue');
+  stopListening();
+  try{
+    const token = localStorage.getItem('deskflow_token');
+    const h = {'Content-Type':'application/json'};
+    if(token) h['Authorization']='Bearer '+token;
+    const r = await fetch('/api/ai/chat',{method:'POST',headers:h,body:JSON.stringify({message:text,history:[]})});
+    const d = await r.json();
+    const reply = d.reply || d.message || "I understand. Let me assist you with that.";
+    addMsg('ai', reply);
+    speak(reply, ()=>{ if(!micMuted) startListening(); });
+  }catch{
+    const fb="I'm here to help! Could you please rephrase that?";
+    addMsg('ai', fb);
+    speak(fb, ()=>{ if(!micMuted) startListening(); });
+  }
+}
+
+/* ══ SPEECH SYNTHESIS ══ */
+function speak(text, onDone){
+  if(spkMuted){ setAvState('listening','Listening…',''); if(onDone) onDone(); return; }
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  const female = voices.filter(v=>/female|samantha|victoria|karen|zira|amelie|google uk english female/i.test(v.name));
+  const male   = voices.filter(v=>/^(?!.*female).*\b(male|daniel|alex|aaron|david|james|mark|google uk english male)\b/i.test(v.name));
+  if(gender==='lady'       && female.length) utt.voice = female[0];
+  else if(gender==='gentleman' && male.length) utt.voice = male[0];
+  utt.rate  = 0.94;
+  utt.pitch = gender==='lady' ? 1.18 : 0.86;
+  utt.onstart = ()=>{ isSpeaking=true; setAvState('talking','Speaking…','gold'); startTalkAnim(); };
+  utt.onend   = ()=>{ isSpeaking=false; setAvState('idle','Ready',''); stopTalkAnim(); if(onDone) onDone(); };
+  speechSynthesis.speak(utt);
+}
+
+/* ══ TALKING ANIMATION — realistic open/close ══ */
+function startTalkAnim(){
+  stopTalkAnim();
+  let phase=0;
+  talkInt = setInterval(()=>{
+    phase++;
+    const isOpen = (phase%2===0);
+    const lower  = document.getElementById('av-mouth-lower');
+    const lowerO = document.getElementById('av-mouth-lower-open');
+    const gap    = document.getElementById('av-lip-gap');
+    const teeth  = document.getElementById('av-teeth');
+    if(!lower) return;
+    lower.style.opacity  = isOpen?'0':'1';
+    if(lowerO) lowerO.style.opacity = isOpen?'1':'0';
+    if(gap)    gap.style.opacity    = isOpen?'1':'0';
+    if(teeth)  teeth.style.opacity  = isOpen?'0.92':'0';
+    /* tiny head nod */
+    const face = document.getElementById('av-face');
+    if(face) face.style.transform = isOpen ? 'translateY(2px) scale(1.002)' : 'translateY(0) scale(1)';
+  }, 130);
+}
+function stopTalkAnim(){
+  clearInterval(talkInt);
+  const lower  = document.getElementById('av-mouth-lower');
+  const lowerO = document.getElementById('av-mouth-lower-open');
+  const gap    = document.getElementById('av-lip-gap');
+  const teeth  = document.getElementById('av-teeth');
+  const face   = document.getElementById('av-face');
+  if(lower)  lower.style.opacity  = '1';
+  if(lowerO) lowerO.style.opacity = '0';
+  if(gap)    gap.style.opacity    = '0';
+  if(teeth)  teeth.style.opacity  = '0';
+  if(face)   face.style.transform = '';
+}
+
+/* ══ BLINKING ANIMATION ══ */
+function startBlinking(){
+  function doBlink(){
+    const ll = document.getElementById('l-lid');
+    const rl = document.getElementById('r-lid');
+    if(!ll || !rl) return;
+    /* close */
+    ll.style.transition = rl.style.transition = 'opacity .06s';
+    ll.style.opacity    = rl.style.opacity    = '1';
+    setTimeout(()=>{
+      /* open */
+      ll.style.transition = rl.style.transition = 'opacity .09s';
+      ll.style.opacity    = rl.style.opacity    = '0';
+    }, 100);
+    /* schedule next blink */
+    blinkInt = setTimeout(doBlink, 2800 + Math.random()*2400);
+  }
+  blinkInt = setTimeout(doBlink, 1200 + Math.random()*1000);
+}
+function stopBlinking(){ clearTimeout(blinkInt); }
+
+/* ══ AVATAR STATE ══ */
+function setAvState(state, label, dotStyle){
+  const stage = document.getElementById('av-stage');
+  stage.className = 'av-stage state-'+state;
+  document.getElementById('av-status-label').textContent = label;
+  const dot = document.getElementById('av-dot');
+  dot.className = 'av-dot' + (dotStyle ? ' '+dotStyle : '');
+  /* mic button listening state */
+  const micBtn = document.getElementById('btn-mic');
+  micBtn.classList.toggle('listening', state==='listening' && !micMuted);
+}
+
+/* ══ VOICE RECOGNITION ══ */
+function startListening(){
+  if(micMuted || isListening || isSpeaking) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.onresult = e =>{
+    const txt = e.results[0][0].transcript.trim();
+    stopListening();
+    if(txt){ addMsg('user', txt); handleInput(txt); }
+  };
+  recognition.onerror = ()=>{ stopListening(); };
+  recognition.onend   = ()=>{ isListening=false; };
+  recognition.start();
+  isListening = true;
+  setAvState('listening','Listening…','');
+}
+function stopListening(){
+  if(recognition){ try{ recognition.stop(); }catch{} }
+  isListening = false;
+}
+
+/* ══ BARGE-IN: click stage or mic while AI speaks ══ */
+function handleStageClick(){
+  if(isSpeaking){ bargein(); }
+}
+function bargein(){
+  speechSynthesis.cancel();
+  stopTalkAnim();
+  isSpeaking = false;
+  setAvState('listening','Listening…','');
+  setTimeout(()=>{ if(!micMuted) startListening(); }, 150);
+}
+
+/* ══ MIC BUTTON: toggle or interrupt ══ */
+function handleMicClick(){
+  if(isSpeaking){ bargein(); return; }
+  micMuted = !micMuted;
+  const icon = document.getElementById('mic-icon');
+  icon.className = micMuted ? 'ti ti-microphone-off' : 'ti ti-microphone';
+  document.getElementById('btn-mic').classList.toggle('muted', micMuted);
+  document.getElementById('self-mic-ind').className = 'self-view-mic-indicator' + (micMuted?' muted':'');
+  document.getElementById('self-mic-ind').innerHTML = `<i class="ti ti-microphone${micMuted?'-off':''}"></i>`;
+  if(micMuted){ stopListening(); setAvState('idle','Mic off',''); }
+  else{ if(!isSpeaking) startListening(); }
+}
+
+/* ══ SPEAKER ══ */
+function toggleSpeaker(){
+  spkMuted = !spkMuted;
+  document.getElementById('spk-icon').className = spkMuted ? 'ti ti-volume-off' : 'ti ti-volume';
+  document.getElementById('btn-spk').classList.toggle('muted', spkMuted);
+  if(spkMuted) speechSynthesis.cancel();
+}
+
+/* ══ CHAT DRAWER ══ */
+function toggleChat(){
+  chatOpen = !chatOpen;
+  document.getElementById('chat-drawer').classList.toggle('open', chatOpen);
+  document.getElementById('btn-chat').classList.toggle('active', chatOpen);
+}
+
+/* ══ INPUT HANDLING ══ */
+function handleInput(text){
+  if(mType==='ai'){
+    sendToAI(text);
+  } else {
+    if(meetCh) meetCh.postMessage({type:'meet-chat', meetId, text, from:myName});
+  }
+}
+
+/* ══ END CALL ══ */
+function endMeet(){
+  stopListening(); speechSynthesis.cancel(); stopTalkAnim(); stopBlinking(); clearInterval(timerInt);
+  if(meetCh){ meetCh.postMessage({type:'meet-end', meetId}); meetCh.close(); }
+  location.href = (USER.role==='agent') ? 'agent.html' : 'dashboard.html';
+}
+function cancelMeet(){
+  if(window._clearBroadcast) window._clearBroadcast();
+  if(meetCh){ meetCh.postMessage({type:'meet-cancel', meetId}); meetCh.close(); }
+  location.href = (USER.role==='agent') ? 'agent.html' : 'dashboard.html';
+}
+function handleFarEnd(){
+  addMsg('system','The other party has ended the session.');
+  stopListening(); speechSynthesis.cancel(); stopTalkAnim(); clearInterval(timerInt);
+  setTimeout(()=>{ location.href = (USER.role==='agent') ? 'agent.html' : 'dashboard.html'; }, 2500);
+}
+
+/* ══ TIMER ══ */
+function startTimer(){
+  timerInt = setInterval(()=>{
+    timerSecs++;
+    const el = document.getElementById('vc-timer');
+    if(el) el.textContent = String(Math.floor(timerSecs/60)).padStart(2,'0')+':'+String(timerSecs%60).padStart(2,'0');
+  }, 1000);
+}
+
+/* ══ TRANSCRIPT (properly scrollable) ══ */
+function addMsg(from, text, fromName){
+  const t = document.getElementById('transcript');
+  if(!t) return;
+  const d = document.createElement('div');
+  d.className = 't-msg t-msg-'+from;
+  const lbl = from==='user' ? (USER.name||'You') : from==='system' ? '' : (fromName||AI_NAME);
+  d.innerHTML = (from!=='system' ? `<div class="t-from">${esc(lbl)}</div>` : '')
+               + `<div class="t-text">${esc(text)}</div>`;
+  t.appendChild(d);
+  /* scroll to bottom */
+  requestAnimationFrame(()=>{ t.scrollTop = t.scrollHeight; });
+  /* auto-open chat drawer on first message after start */
+  if(!chatOpen && from !== 'system'){ toggleChat(); }
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ══ TEXT INPUT ══ */
+document.getElementById('chat-send').addEventListener('click',()=>{
+  const inp=document.getElementById('chat-inp');
+  const txt=inp.value.trim(); if(!txt) return;
+  inp.value=''; addMsg('user',txt); handleInput(txt);
+});
+document.getElementById('chat-inp').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){ document.getElementById('chat-send').click(); }
+});
+
+/* ══ INIT ══ */
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initMeet);
+else initMeet();
+</script>
+</body>
+</html>

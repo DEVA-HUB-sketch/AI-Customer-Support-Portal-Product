@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Gold rounded background -->
+  <rect width="32" height="32" rx="7" fill="#D4AF37"/>
+  <!-- Headband arc — goes over the top of the head -->
+  <path d="M6.5 19 A9.5 9.5 0 0 0 25.5 19"
+        stroke="#081C1E" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <!-- Left ear cup -->
+  <rect x="3.5" y="17" width="6" height="9" rx="3" fill="#081C1E"/>
+  <!-- Right ear cup -->
+  <rect x="22.5" y="17" width="6" height="9" rx="3" fill="#081C1E"/>
+</svg>

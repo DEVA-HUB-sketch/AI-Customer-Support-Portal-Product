@@ -1,0 +1,1122 @@
+{
+  "users": {
+    "twffev05mm": {
+      "uid": "twffev05mm",
+      "email": "deva@gmail.com",
+      "name": "dd",
+      "password": "$2a$10$RYeBMb/Uqwg5jmxXPpbLRO29cq2Z3JTKaTeJ/wZY.A8F/6GdHOhRG",
+      "role": "customer",
+      "createdAt": "2026-06-07T07:18:59.097Z"
+    },
+    "05ioWqlufLPigV15qu0wXJEyScw2": {
+      "uid": "05ioWqlufLPigV15qu0wXJEyScw2",
+      "name": "DevaDharshini K",
+      "email": "devadharshinik2510@gmail.com",
+      "role": "customer",
+      "provider": "google",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocLus-FmRgOKfvj6SFPsPDCvxPUzQHk3LQJZVWEpgkESaofwSGs=s96-c",
+      "createdAt": "2026-06-07T10:59:46.183Z"
+    },
+    "5zsfqd0ojgn": {
+      "uid": "5zsfqd0ojgn",
+      "email": "girija@gmail.com",
+      "name": "girija",
+      "password": "$2a$10$Kz.5crmEqSZmY/aQM8pcvuapMm6cNO4C4Sh6IXojJnN.hh.OYTso6",
+      "role": "admin",
+      "createdAt": "2026-06-07T11:50:59.212Z"
+    },
+    "ljorafhstdo": {
+      "uid": "ljorafhstdo",
+      "email": "mano@gmail.com",
+      "name": "mano",
+      "password": "$2a$10$7MAK980idVOSH3Rmqd6HpOhBdlOh58RuSIxsGP3pcUFsPMkekRrNi",
+      "role": "agent",
+      "createdAt": "2026-06-07T11:52:11.696Z"
+    }
+  },
+  "tickets": {
+    "jf1uk58icp": {
+      "subject": "login issue",
+      "description": "Even i login with correct password and email it is ahowinh error",
+      "priority": "High",
+      "category": "Account Access",
+      "sentiment": "Negative",
+      "status": "Open",
+      "createdAt": "2026-06-07T11:49:58.194Z",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "rating": null,
+      "feedback": null,
+      "history": [
+        {
+          "status": "Open",
+          "updatedBy": "deva@gmail.com",
+          "timestamp": "2026-06-07T11:49:58.194Z",
+          "note": "Ticket created and automatically categorized by Zia AI."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:36:44.898Z",
+          "note": "Status changed from Open to Open."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:36:48.771Z",
+          "note": "Status changed from Open to Open."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:36:50.111Z",
+          "note": "Ticket assigned to agent: mano@gmail.com"
+        }
+      ],
+      "messages": [
+        {
+          "sender": "customer",
+          "text": "Even i login with correct password and email it is ahowinh error",
+          "timestamp": "2026-06-07T11:49:58.194Z",
+          "senderName": "deva@gmail.com"
+        },
+        {
+          "sender": "agent",
+          "text": "try to reset your password",
+          "timestamp": "2026-06-07T11:52:49.539Z",
+          "senderName": "mano@gmail.com"
+        }
+      ],
+      "escalated": true,
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "escalationReasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "updatedAt": "2026-06-19T11:03:54.851Z",
+      "timeline": [
+        {
+          "type": "escalated",
+          "actor": "system",
+          "icon": "ti-alert-triangle",
+          "color": "var(--danger)",
+          "note": "Auto-escalated: Agent has not responded in 9999.0h; Ticket inactive for 9999h — customer may be waiting",
+          "timestamp": "2026-06-19T11:03:54.851Z"
+        }
+      ]
+    },
+    "6n8k0turd84": {
+      "subject": "Getting charged twice for the exact same item or service",
+      "description": "Getting charged twice for the exact same item or service, which often happens due to system glitches or overlapping manual and automated systems",
+      "priority": "High",
+      "category": "Billing",
+      "sentiment": "Neutral",
+      "status": "In Progress",
+      "createdAt": "2026-06-07T12:35:38.727Z",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "rating": null,
+      "feedback": null,
+      "history": [
+        {
+          "status": "Open",
+          "updatedBy": "deva@gmail.com",
+          "timestamp": "2026-06-07T12:35:38.728Z",
+          "note": "Ticket created and automatically categorized by Zia AI."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:36:42.349Z",
+          "note": "Status changed from Open to Open."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:36:52.891Z",
+          "note": "Ticket assigned to agent: mano@gmail.com"
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:40:31.685Z",
+          "note": "Status changed from Open to Open."
+        },
+        {
+          "status": "In Progress",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:49:04.533Z",
+          "note": "Status changed from Open to In Progress."
+        }
+      ],
+      "messages": [
+        {
+          "sender": "customer",
+          "text": "Getting charged twice for the exact same item or service, which often happens due to system glitches or overlapping manual and automated systems",
+          "timestamp": "2026-06-07T12:35:38.728Z",
+          "senderName": "deva@gmail.com"
+        },
+        {
+          "sender": "agent",
+          "text": "I will check your issue, please rovide pproduct details",
+          "timestamp": "2026-06-07T12:36:21.237Z",
+          "senderName": "mano@gmail.com"
+        }
+      ],
+      "escalated": true,
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "escalationReasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "updatedAt": "2026-06-19T11:03:54.851Z",
+      "timeline": [
+        {
+          "type": "escalated",
+          "actor": "system",
+          "icon": "ti-alert-triangle",
+          "color": "var(--danger)",
+          "note": "Auto-escalated: Agent has not responded in 9999.0h; Ticket inactive for 9999h — customer may be waiting",
+          "timestamp": "2026-06-19T11:03:54.851Z"
+        }
+      ]
+    },
+    "p2542bnovl": {
+      "subject": "Getting charged twice",
+      "description": "Charged twice for same item",
+      "priority": "High",
+      "category": "Billing",
+      "sentiment": "Neutral",
+      "status": "In Progress",
+      "createdAt": "2026-06-07T12:40:46.856Z",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "rating": null,
+      "feedback": null,
+      "history": [
+        {
+          "status": "Open",
+          "updatedBy": "deva@gmail.com",
+          "timestamp": "2026-06-07T12:40:46.856Z",
+          "note": "Ticket created and automatically categorized by Zia AI."
+        },
+        {
+          "status": "Open",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:48:55.690Z",
+          "note": "Status changed from Open to Open."
+        },
+        {
+          "status": "In Progress",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:48:59.100Z",
+          "note": "Status changed from Open to In Progress."
+        },
+        {
+          "status": "In Progress",
+          "updatedBy": "mano@gmail.com",
+          "timestamp": "2026-06-07T12:49:35.683Z",
+          "note": "Ticket assigned to agent: mano@gmail.com"
+        }
+      ],
+      "messages": [
+        {
+          "sender": "customer",
+          "text": "Charged twice for same item",
+          "timestamp": "2026-06-07T12:40:46.856Z",
+          "senderName": "deva@gmail.com"
+        },
+        {
+          "sender": "agent",
+          "text": "share your product and payemet details",
+          "timestamp": "2026-06-07T12:49:23.132Z",
+          "senderName": "mano@gmail.com"
+        }
+      ],
+      "escalated": true,
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "escalationReasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "updatedAt": "2026-06-19T11:03:54.851Z",
+      "timeline": [
+        {
+          "type": "escalated",
+          "actor": "system",
+          "icon": "ti-alert-triangle",
+          "color": "var(--danger)",
+          "note": "Auto-escalated: Agent has not responded in 9999.0h; Ticket inactive for 9999h — customer may be waiting",
+          "timestamp": "2026-06-19T11:03:54.851Z"
+        }
+      ]
+    }
+  },
+  "kb": {
+    "1": {
+      "id": "1",
+      "category": "Account Access",
+      "question": "How do I reset my password?",
+      "answer": "Click 'Forgot Password' on the login screen, enter your email address, and fill out your new password to update your login credentials."
+    },
+    "2": {
+      "id": "2",
+      "category": "Billing",
+      "question": "Do you offer refunds?",
+      "answer": "Yes, we offer a 14-day money-back guarantee for all our premium billing subscriptions. Please submit a billing support ticket to request a refund."
+    },
+    "3": {
+      "id": "3",
+      "category": "Technical Support",
+      "question": "What integrations are supported?",
+      "answer": "DeskFlow AI supports native integrations with Slack, HubSpot, Jira, Salesforce, WhatsApp, and Shopify out of the box."
+    },
+    "4": {
+      "id": "4",
+      "category": "General Inquiry",
+      "question": "How does the AI chatbot work?",
+      "answer": "Our Zia AI Chatbot automatically reads customer messages, queries the local Help Center / FAQ Knowledge Base, performs sentiment checks, and resolves up to 80% of issues. It will escalate the conversation to a human support agent if it receives terms like 'human' or 'agent'."
+    },
+    "5": {
+      "id": "5",
+      "category": "Account Access",
+      "question": "How do I enable two-factor authentication (2FA)?",
+      "answer": "Go to Profile Settings, click Security, then enable Two-Factor Authentication. You will receive a verification code via email each time you log in. We recommend enabling 2FA for all accounts to protect your data."
+    },
+    "6": {
+      "id": "6",
+      "category": "Account Access",
+      "question": "My account is locked. How do I unlock it?",
+      "answer": "Accounts get locked after 5 failed login attempts. To unlock your account, click 'Forgot Password' to reset credentials, or open a support ticket with your registered email and our team will manually unlock it within 1 hour."
+    },
+    "7": {
+      "id": "7",
+      "category": "Billing",
+      "question": "How do I download my invoice?",
+      "answer": "Log in to your account, navigate to Billing in the Settings panel, and click 'Download Invoice' next to any completed billing cycle. Invoices are available in PDF format and sent automatically to your registered email after each payment."
+    },
+    "8": {
+      "id": "8",
+      "category": "Billing",
+      "question": "How do I cancel my subscription?",
+      "answer": "To cancel your subscription, go to Settings > Billing > Subscription and click 'Cancel Plan'. Your access will remain active until the end of the current billing period. No further charges will be made after cancellation."
+    },
+    "9": {
+      "id": "9",
+      "category": "Technical Support",
+      "question": "What are the API rate limits?",
+      "answer": "DeskFlow AI enforces a rate limit of 1000 API requests per minute per API key. If you exceed this limit, you will receive a 429 Too Many Requests response. Contact support to request an increased rate limit for enterprise plans."
+    },
+    "10": {
+      "id": "10",
+      "category": "General Inquiry",
+      "question": "What are your support hours?",
+      "answer": "Our human support agents are available Monday–Friday, 9 AM to 6 PM IST. The Zia AI chatbot is available 24/7 and can resolve most common issues instantly. For urgent issues outside business hours, open a High-priority ticket and it will be addressed first thing the next business day."
+    },
+    "11": {
+      "id": "11",
+      "category": "Feature Request",
+      "question": "How do I request a new feature?",
+      "answer": "We love customer feedback! To request a new feature, open a support ticket with the category 'Feature Request' and describe the feature in detail. Our product team reviews all feature requests and posts updates to our public roadmap monthly."
+    },
+    "12": {
+      "id": "12",
+      "category": "Feature Request",
+      "question": "Where can I view the product roadmap?",
+      "answer": "Our public product roadmap is updated every month and reflects customer-voted features, bug fixes, and upcoming releases. You can view it at deskflow.ai/roadmap. Voting on existing items helps us prioritize what gets built first."
+    },
+    "4xanbcd0f7x": {
+      "question": "Getting charged twice for the exact same item or service",
+      "answer": "Always request an itemized receipt to verify charges, and contact customer support immediately to initiate a charge dispute or request a refund.",
+      "category": "Billing",
+      "createdAt": "2026-06-07T12:50:31.774Z"
+    }
+  },
+  "ai_conversations": {
+    "session_1780817241946": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780817241946",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:27:21.953Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:27:21.953Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:27:21.953Z",
+      "createdAt": "2026-06-07T07:27:21.953Z"
+    },
+    "session_1780817272571": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780817272571",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:27:52.573Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:27:52.573Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:27:52.573Z",
+      "createdAt": "2026-06-07T07:27:52.573Z"
+    },
+    "session_1780817301409": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780817301409",
+      "messages": [
+        {
+          "role": "user",
+          "text": "how to update my profile?",
+          "timestamp": "2026-06-07T07:28:21.411Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:28:21.411Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:28:21.411Z",
+      "createdAt": "2026-06-07T07:28:21.411Z"
+    },
+    "session_1780817319590": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780817319590",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:28:39.592Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:28:39.592Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:28:39.592Z",
+      "createdAt": "2026-06-07T07:28:39.592Z"
+    },
+    "session_1780818671016": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818671016",
+      "messages": [
+        {
+          "role": "user",
+          "text": "how to update my profile?",
+          "timestamp": "2026-06-07T07:51:11.019Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:51:11.019Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:51:11.019Z",
+      "createdAt": "2026-06-07T07:51:11.019Z"
+    },
+    "session_1780818691231": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818691231",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:51:31.233Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:51:31.233Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:51:31.233Z",
+      "createdAt": "2026-06-07T07:51:31.233Z"
+    },
+    "session_1780818704784": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818704784",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:51:44.785Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:51:44.785Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:51:44.785Z",
+      "createdAt": "2026-06-07T07:51:44.785Z"
+    },
+    "session_1780818741245": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818741245",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How to update my profile?",
+          "timestamp": "2026-06-07T07:52:21.247Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:52:21.247Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:52:21.247Z",
+      "createdAt": "2026-06-07T07:52:21.247Z"
+    },
+    "session_1780818756736": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818756736",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Answer Kudukkumattukku I have a login issue.",
+          "timestamp": "2026-06-07T07:52:36.738Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T07:52:36.738Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:52:36.739Z",
+      "createdAt": "2026-06-07T07:52:36.739Z"
+    },
+    "session_1780818827622": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780818827622",
+      "messages": [
+        {
+          "role": "user",
+          "text": "எனக்கு லாகின் இஷ்யூ இருக்கு.",
+          "timestamp": "2026-06-07T07:53:47.625Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T07:53:47.625Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T07:53:47.625Z",
+      "createdAt": "2026-06-07T07:53:47.625Z"
+    },
+    "session_1780821281598": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780821281598",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue in my account.",
+          "timestamp": "2026-06-07T08:34:41.601Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T08:34:41.601Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T08:34:41.601Z",
+      "createdAt": "2026-06-07T08:34:41.601Z"
+    },
+    "session_1780821329890": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780821329890",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue in my account.",
+          "timestamp": "2026-06-07T08:35:29.891Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T08:35:29.892Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T08:35:29.892Z",
+      "createdAt": "2026-06-07T08:35:29.892Z"
+    },
+    "session_1780821340240": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780821340240",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue in my account.",
+          "timestamp": "2026-06-07T08:35:40.241Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T08:35:40.241Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T08:35:40.241Z",
+      "createdAt": "2026-06-07T08:35:40.241Z"
+    },
+    "session_1780821344582": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780821344582",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How do I reset my password?",
+          "timestamp": "2026-06-07T08:35:44.584Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T08:35:44.584Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T08:35:44.584Z",
+      "createdAt": "2026-06-07T08:35:44.584Z"
+    },
+    "session_1780823263630": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780823263630",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I HAVE LOGIN ISSUE",
+          "timestamp": "2026-06-07T09:07:43.768Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T09:07:43.768Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:07:43.768Z",
+      "createdAt": "2026-06-07T09:07:43.768Z"
+    },
+    "session_1780823287941": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780823287941",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue in signing in my account.",
+          "timestamp": "2026-06-07T09:08:07.942Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T09:08:07.942Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:08:07.942Z",
+      "createdAt": "2026-06-07T09:08:07.942Z"
+    },
+    "session_1780823307816": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780823307816",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account so.",
+          "timestamp": "2026-06-07T09:08:27.819Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:08:27.819Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:08:27.819Z",
+      "createdAt": "2026-06-07T09:08:27.819Z"
+    },
+    "session_1780823331221": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780823331221",
+      "messages": [
+        {
+          "role": "user",
+          "text": "எனக்கு சைன்இன் பண்ணும்போது ப்ராப்ளம் வருது லாக்இன்.",
+          "timestamp": "2026-06-07T09:08:51.223Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for your message. I'm processing your request. For complex issues, you can type 'human' to connect with a support agent.",
+          "timestamp": "2026-06-07T09:08:51.224Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:08:51.224Z",
+      "createdAt": "2026-06-07T09:08:51.224Z"
+    },
+    "session_1780823351259": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780823351259",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How do I reset my password?",
+          "timestamp": "2026-06-07T09:09:11.260Z"
+        },
+        {
+          "role": "model",
+          "text": "To reset your password, click 'Forgot Password' on the login page and follow the instructions sent to your email.",
+          "timestamp": "2026-06-07T09:09:11.260Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:09:11.260Z",
+      "createdAt": "2026-06-07T09:09:11.260Z"
+    },
+    "session_1780824110793": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780824110793",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while I'm signing into the account.",
+          "timestamp": "2026-06-07T09:21:51.023Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:21:51.023Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:21:51.023Z",
+      "createdAt": "2026-06-07T09:21:51.023Z"
+    },
+    "session_1780824147097": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780824147097",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:22:27.469Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:22:27.469Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:22:27.469Z",
+      "createdAt": "2026-06-07T09:22:27.469Z"
+    },
+    "session_1780824215231": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780824215231",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:23:35.232Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:23:35.232Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:23:35.232Z",
+      "createdAt": "2026-06-07T09:23:35.232Z"
+    },
+    "session_1780824239961": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780824239961",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:23:59.980Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:23:59.980Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:23:59.980Z",
+      "createdAt": "2026-06-07T09:23:59.980Z"
+    },
+    "session_1780825258290": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825258290",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:40:58.299Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:40:58.299Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:40:58.299Z",
+      "createdAt": "2026-06-07T09:40:58.299Z"
+    },
+    "session_1780825320766": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825320766",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:42:00.884Z"
+        },
+        {
+          "role": "model",
+          "text": "Hello! I'm Zia, DeskFlow AI Assistant. How can I help you today?",
+          "timestamp": "2026-06-07T09:42:00.884Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:42:00.884Z",
+      "createdAt": "2026-06-07T09:42:00.885Z"
+    },
+    "session_1780825772680": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825772680",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:49:32.704Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T09:49:32.704Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:49:32.704Z",
+      "createdAt": "2026-06-07T09:49:32.704Z"
+    },
+    "session_1780825787865": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825787865",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:49:47.868Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T09:49:47.868Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:49:47.868Z",
+      "createdAt": "2026-06-07T09:49:47.868Z"
+    },
+    "session_1780825833634": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825833634",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account.",
+          "timestamp": "2026-06-07T09:50:33.637Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T09:50:33.637Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:50:33.637Z",
+      "createdAt": "2026-06-07T09:50:33.637Z"
+    },
+    "session_1780825849094": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780825849094",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Ah.",
+          "timestamp": "2026-06-07T09:50:49.101Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for reaching out! Could you describe the issue in a bit more detail so I can assist you better? For urgent concerns, open a support ticket from your dashboard and a human agent will respond within 2 hours.",
+          "timestamp": "2026-06-07T09:50:49.101Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:50:49.101Z",
+      "createdAt": "2026-06-07T09:50:49.101Z"
+    },
+    "session_1780826240612": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780826240612",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account",
+          "timestamp": "2026-06-07T09:57:20.615Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T09:57:20.615Z"
+        },
+        {
+          "role": "user",
+          "text": "I have a login issue while signing into my account",
+          "timestamp": "2026-06-07T09:57:38.942Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T09:57:38.942Z"
+        },
+        {
+          "role": "user",
+          "text": "எனக்கு லாகின் விஷு இருக்கு என்னோட",
+          "timestamp": "2026-06-07T09:58:10.169Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for reaching out! Could you describe the issue in a bit more detail so I can assist you better? For urgent concerns, open a support ticket from your dashboard and a human agent will respond within 2 hours.",
+          "timestamp": "2026-06-07T09:58:10.169Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T09:58:10.169Z",
+      "createdAt": "2026-06-07T09:57:20.615Z"
+    },
+    "session_1780829999846": {
+      "email": "devadharshinik2510@gmail.com",
+      "sessionId": "session_1780829999846",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I cannot find my address",
+          "timestamp": "2026-06-07T10:59:59.848Z"
+        },
+        {
+          "role": "model",
+          "text": "Thank you for reaching out! Could you describe the issue in a bit more detail so I can assist you better? For urgent concerns, open a support ticket from your dashboard and a human agent will respond within 2 hours.",
+          "timestamp": "2026-06-07T10:59:59.848Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T10:59:59.848Z",
+      "createdAt": "2026-06-07T10:59:59.848Z"
+    },
+    "session_1780832779094": {
+      "email": "deva@gmail.com",
+      "sessionId": "session_1780832779094",
+      "messages": [
+        {
+          "role": "user",
+          "text": "even though my password is correct it is showing error while I enter my password in sign in page",
+          "timestamp": "2026-06-07T11:46:19.098Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T11:46:19.098Z"
+        },
+        {
+          "role": "user",
+          "text": "if I login into my account there is no AI chatbot to message with",
+          "timestamp": "2026-06-07T11:46:46.378Z"
+        },
+        {
+          "role": "model",
+          "text": "For login issues, try resetting your password: click 'Forgot Password' on the sign-in page and follow the email instructions. If your account is locked, please open a support ticket and an agent will unlock it within 1 hour.",
+          "timestamp": "2026-06-07T11:46:46.378Z"
+        }
+      ],
+      "updatedAt": "2026-06-07T11:46:46.378Z",
+      "createdAt": "2026-06-07T11:46:19.099Z"
+    }
+  },
+  "ai_categorizations": {
+    "m8syiahtl6": {
+      "email": "deva@gmail.com",
+      "subject": "LOGIN ISSUE",
+      "description": "I PROVIDED THE CORRECT PASS AND EMAIL, EVENTHOUGH IT'S SIGING IN",
+      "category": "Account Issue",
+      "confidence": 80,
+      "reason": "Account keywords detected.",
+      "source": "fallback",
+      "categorizedAt": "2026-06-07T08:36:24.756Z"
+    },
+    "5hgvagrz5ty": {
+      "email": "deva@gmail.com",
+      "subject": "login issue",
+      "description": "if i login in with the correct password, also it is showing error",
+      "category": "Account Issue",
+      "confidence": 80,
+      "reason": "Account keywords detected.",
+      "source": "fallback",
+      "categorizedAt": "2026-06-07T11:48:32.859Z"
+    }
+  },
+  "escalations": {
+    "rugk7h5n2th": {
+      "ticketId": "jf1uk58icp",
+      "subject": "login issue",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "reasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "priority": "High",
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "resolved": false
+    },
+    "jruxmz3s6y": {
+      "ticketId": "6n8k0turd84",
+      "subject": "Getting charged twice for the exact same item or service",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "reasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "priority": "Medium",
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "resolved": false
+    },
+    "gxjyxu9nvyr": {
+      "ticketId": "p2542bnovl",
+      "subject": "Getting charged twice",
+      "createdBy": "deva@gmail.com",
+      "assignedTo": "mano@gmail.com",
+      "reasons": [
+        "Agent has not responded in 9999.0h",
+        "Ticket inactive for 9999h — customer may be waiting"
+      ],
+      "priority": "High",
+      "escalatedAt": "2026-06-19T11:03:54.851Z",
+      "resolved": false
+    }
+  },
+  "admin_notifications": {
+    "op6rfmn4ohi": {
+      "type": "TICKET_ESCALATED",
+      "severity": "warn",
+      "title": "Ticket Escalated",
+      "message": "Ticket \"login issue\" (deva@gmail.com) has been auto-escalated: Agent has not responded in 9999.0h",
+      "data": {
+        "ticketId": "jf1uk58icp",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "read": false,
+      "createdAt": "2026-06-19T11:03:54.861Z"
+    },
+    "1jjdqv6gowp": {
+      "type": "TICKET_ESCALATED",
+      "severity": "warn",
+      "title": "Ticket Escalated",
+      "message": "Ticket \"Getting charged twice for the exact same item or service\" (deva@gmail.com) has been auto-escalated: Agent has not responded in 9999.0h",
+      "data": {
+        "ticketId": "6n8k0turd84",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "read": false,
+      "createdAt": "2026-06-19T11:03:54.881Z"
+    },
+    "77x51ut4i38": {
+      "type": "TICKET_ESCALATED",
+      "severity": "warn",
+      "title": "Ticket Escalated",
+      "message": "Ticket \"Getting charged twice\" (deva@gmail.com) has been auto-escalated: Agent has not responded in 9999.0h",
+      "data": {
+        "ticketId": "p2542bnovl",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "read": false,
+      "createdAt": "2026-06-19T11:03:54.897Z"
+    }
+  },
+  "activity_logs": {
+    "bv0ktvlha5n": {
+      "userId": "system",
+      "email": "system",
+      "role": "system",
+      "action": "TICKET_ESCALATED",
+      "details": {
+        "ticketId": "jf1uk58icp",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "ipAddress": "",
+      "timestamp": "2026-06-19T11:03:54.867Z"
+    },
+    "uzgbrdo90oa": {
+      "userId": "system",
+      "email": "system",
+      "role": "system",
+      "action": "TICKET_ESCALATED",
+      "details": {
+        "ticketId": "6n8k0turd84",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "ipAddress": "",
+      "timestamp": "2026-06-19T11:03:54.883Z"
+    },
+    "jlwbdpq3w5": {
+      "userId": "system",
+      "email": "system",
+      "role": "system",
+      "action": "TICKET_ESCALATED",
+      "details": {
+        "ticketId": "p2542bnovl",
+        "reasons": [
+          "Agent has not responded in 9999.0h",
+          "Ticket inactive for 9999h — customer may be waiting"
+        ]
+      },
+      "ipAddress": "",
+      "timestamp": "2026-06-19T11:03:54.901Z"
+    },
+    "jxvbrubvt6f": {
+      "userId": "twffev05mm",
+      "email": "deva@gmail.com",
+      "role": "customer",
+      "action": "USER_LOGIN",
+      "details": {
+        "success": true
+      },
+      "ipAddress": "::1",
+      "timestamp": "2026-06-19T11:04:03.514Z"
+    },
+    "5t8b9y0urw9": {
+      "userId": "5zsfqd0ojgn",
+      "email": "girija@gmail.com",
+      "role": "admin",
+      "action": "USER_LOGIN",
+      "details": {
+        "success": true
+      },
+      "ipAddress": "::1",
+      "timestamp": "2026-06-19T11:04:26.702Z"
+    }
+  }
+}

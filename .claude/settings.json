@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Filter 'serviceAccountKey.json' -ErrorAction SilentlyContinue | Select-Object FullName\")",
+      "Bash(Remove-Item \"c:\\\\Users\\\\deva\\\\OneDrive\\\\Desktop\\\\AI-Customer-Support-Portal\\\\frontend\\\\assets\\\\css\\\\df-magic-bento.css\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\deva\\\\OneDrive\\\\Desktop\\\\AI-Customer-Support-Portal\\\\frontend\\\\assets\\\\js\\\\df-magic-bento.js\" -Force)"
+    ]
+  }
+}
