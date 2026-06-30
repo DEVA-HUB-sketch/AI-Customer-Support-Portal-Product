@@ -149,12 +149,13 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
     min-height: 0 !important;
   }
 
-  /* Mains: let content dictate height, remove inner clip */
+  /* Mains: let content dictate height; clip horizontal only so nothing escapes sideways */
   .admin-main,
   .agent-main {
     flex: none !important;
     width: 100% !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     height: auto !important;
   }
 
@@ -170,7 +171,8 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
 
   /* Admin content area: no inner scroll needed, body handles it */
   .content-area {
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     height: auto !important;
     padding: 14px 12px 40px !important;
   }
@@ -235,30 +237,38 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
 @media (max-width: 1024px) {
   .agent-content {
     display: grid !important;
-    grid-template-columns: 1fr !important;   /* stack all panels vertically */
-    flex: none !important;                    /* override base flex:1 so parent height is auto */
-    overflow: visible !important;             /* body scroll handles page scrolling */
+    grid-template-columns: 1fr !important;
+    flex: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     height: auto !important;
+    width: 100% !important;
   }
   .ticket-queue {
     width: 100% !important;
-    max-height: none !important;              /* let content determine height */
+    max-width: 100% !important;
+    max-height: none !important;
     height: auto !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     border-right: none !important;
     border-bottom: 1px solid var(--border-dim) !important;
   }
   .workspace {
     width: 100% !important;
-    min-height: 240px !important;             /* reduced — body scrolls the rest */
+    max-width: 100% !important;
+    min-height: 240px !important;
     height: auto !important;
+    overflow-x: hidden !important;
   }
   .ai-panel {
-    display: block !important;               /* override agent.html display:none at ≤1100px */
+    display: block !important;
     width: 100% !important;
+    max-width: 100% !important;
     max-height: none !important;
     height: auto !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     border-left: none !important;
     border-top: 1px solid var(--border-dim) !important;
     padding-bottom: 24px !important;
@@ -816,7 +826,10 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
   .chat-input  { font-size: 14px !important; }  /* ≥16px prevents iOS zoom */
 }
 @media (max-width: 380px) {
-  .metrics-bar  { grid-template-columns: 1fr !important; }
+  /* Keep metrics 2×2 even on very small phones — 1 column is too tall */
+  .metrics-bar  { grid-template-columns: repeat(2,1fr) !important; }
+  .metric-num   { font-size: 16px !important; }
+  .metric-lbl   { font-size: 10px !important; }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -860,4 +873,100 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
   .df-table td:nth-child(n+4) { display: none !important; }
   .fb-bar-row { grid-template-columns: 1fr 50px !important; gap: 8px !important; }
   .fb-bar-row > :nth-child(3) { display: none !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   23. MOBILE ALIGNMENT — stat grids, text brightness, overflow
+════════════════════════════════════════════════════════════ */
+
+/* Force stat grids to 2 columns with !important so they override both the
+   base CSS (repeat(3,1fr)) and any inline media-query without !important.
+   Applies at all mobile widths where a 3-column layout would overflow.     */
+@media (max-width: 900px) {
+  .stat-grid-3,
+  .stat-grid-4,
+  .stat-grid-6 { grid-template-columns: repeat(2,1fr) !important; gap: 12px !important; }
+}
+@media (max-width: 400px) {
+  .stat-card   { padding: 12px !important; gap: 8px !important; }
+  .stat-icon   { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+  .stat-num    { font-size: 1.2rem !important; }
+}
+
+/* Smooth momentum scroll for the whole page on iOS */
+@media (max-width: 1200px) {
+  body { -webkit-overflow-scrolling: touch; }
+}
+
+/* ── TEXT BRIGHTNESS ── */
+/* Secondary / muted text is intentionally dim for desktop aesthetics but
+   hard to read on small screens in any lighting condition.  Boost on mobile. */
+@media (max-width: 1024px) {
+  /* Agent metric labels */
+  .metric-lbl {
+    font-size: 11.5px !important;
+    color: rgba(195,220,225,0.92) !important;
+    font-weight: 600 !important;
+  }
+  /* Admin stat labels */
+  .stat-label {
+    font-size: 12px !important;
+    color: rgba(195,220,225,0.9) !important;
+    font-weight: 600 !important;
+  }
+  /* Ticket queue descriptions */
+  .q-desc, .q-meta { color: rgba(185,215,220,0.88) !important; }
+  /* Page subtitles */
+  .page-sub { color: rgba(185,215,220,0.9) !important; }
+  /* AI panel body text */
+  .suggested-reply { color: rgba(195,220,225,0.9) !important; }
+  .insight-box     { color: rgba(190,215,220,0.88) !important; }
+  /* Note / feedback text */
+  .note-card p, .feedback-text { color: rgba(210,230,235,0.9) !important; }
+
+  /* Light-theme overrides (text goes dark instead of light) */
+  [data-theme="light"] .metric-lbl    { color: rgba(30,55,65,0.84) !important; }
+  [data-theme="light"] .stat-label    { color: rgba(30,55,65,0.82) !important; }
+  [data-theme="light"] .q-desc,
+  [data-theme="light"] .q-meta        { color: rgba(40,65,75,0.78) !important; }
+  [data-theme="light"] .page-sub      { color: rgba(40,65,75,0.82) !important; }
+  [data-theme="light"] .suggested-reply { color: rgba(30,55,65,0.84) !important; }
+  [data-theme="light"] .insight-box   { color: rgba(30,55,65,0.82) !important; }
+  [data-theme="light"] .note-card p,
+  [data-theme="light"] .feedback-text { color: rgba(20,45,55,0.88) !important; }
+}
+
+/* ── OVERFLOW PREVENTION ── */
+/* Prevent any inner flex/grid child from escaping its panel horizontally.
+   Targets the main content panels in agent + admin dashboards.             */
+@media (max-width: 1024px) {
+  /* Panel-level containment */
+  .agent-content > *,
+  .ai-panel > *,
+  .workspace > *,
+  .ticket-queue > * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Flex rows inside the AI panel that hold multiple buttons */
+  .ai-panel button,
+  .ai-panel input,
+  .ai-panel textarea,
+  .ai-panel select { max-width: 100% !important; width: 100% !important; box-sizing: border-box !important; }
+
+  /* Workspace action bar and header */
+  .workspace-header   { flex-wrap: wrap !important; gap: 8px !important; }
+  .workspace-actions  { flex-wrap: wrap !important; gap: 6px !important; }
+
+  /* Queue header tabs */
+  .tab-btns { flex-wrap: nowrap !important; overflow-x: auto !important; }
+
+  /* Charts: never wider than their card */
+  .chart-card canvas,
+  .chart-card { max-width: 100% !important; overflow: hidden !important; }
+
+  /* Table containers: scroll horizontally within card, not the whole page */
+  .df-table-card { overflow-x: auto !important; }
+  .df-table       { min-width: 0 !important; }
 }
