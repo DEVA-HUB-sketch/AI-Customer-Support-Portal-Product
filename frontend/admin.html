@@ -376,7 +376,7 @@ input:checked + .slider:before { transform:translateX(22px); }
   .logs-filters { grid-template-columns:1fr 1fr 1fr; }
 }
 @media(max-width:900px) {
-  .admin-sidebar { display:none; }
+  /* .admin-sidebar is handled by df-responsive.css via position:fixed + transform — DO NOT hide here */
   .stat-grid-3, .stat-grid-4 { grid-template-columns:1fr 1fr; }
   .charts-grid-3 { grid-template-columns:1fr; }
   .settings-grid { grid-template-columns:1fr; }

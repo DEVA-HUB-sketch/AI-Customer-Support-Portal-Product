@@ -116,21 +116,64 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
 /* ════════════════════════════════════════════════════════════
    4. ADMIN + AGENT — body overflow fix + sidebar reveal
 ════════════════════════════════════════════════════════════ */
+
+/* Hide the desktop custom cursor entirely on touch / mobile screens */
+@media (max-width: 1200px), (pointer: coarse) {
+  #df-cursor, #df-cursor-ring { display: none !important; }
+}
+
 @media (max-width: 1200px) {
   /*
-    CRITICAL: admin.html and agent.html have body{overflow:hidden} which
-    causes Chrome/mobile to use body as the containing block for position:fixed,
-    clipping the sidebar.  Override it so fixed children use the viewport.
-    The customer dashboard has body{overflow-x:hidden only} — that's why it works.
+    Switch admin & agent from a fixed-height "desktop app" layout to a
+    natural-scroll mobile layout:
+      • body grows with content (height:auto) and scrolls at the page level
+      • agent-main / admin-main lose their overflow:hidden clip
+      • agent-header / admin-header become sticky so they stay visible
+    Position:fixed sidebars and overlays are unaffected by body scroll.
   */
   body {
+    height: auto !important;
+    min-height: 100dvh !important;
     overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow-y: auto !important;
   }
 
-  /* Remove stacking contexts from shells */
+  /* Remove stacking contexts from shells so z-index:9999 sidebars show */
   .admin-shell,
   .agent-shell { z-index: auto !important; }
+
+  /* Shells: don't try to fill a fixed body height */
+  .admin-shell,
+  .agent-shell {
+    flex: none !important;
+    min-height: 0 !important;
+  }
+
+  /* Mains: let content dictate height, remove inner clip */
+  .admin-main,
+  .agent-main {
+    flex: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Sticky headers — stay at top while page scrolls */
+  .admin-header,
+  .agent-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+    background: rgba(8,20,22,.97) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+
+  /* Admin content area: no inner scroll needed, body handles it */
+  .content-area {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 14px 12px 40px !important;
+  }
 
   /* ADMIN sidebar */
   .admin-shell > aside {
@@ -151,8 +194,6 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
     transform: translateX(0) !important;
     box-shadow: 6px 0 48px rgba(11,17,32,0.4) !important;
   }
-  .admin-main   { width: 100% !important; margin-left: 0 !important; }
-  .content-area { padding: 14px 12px !important; overflow-y: auto; }
 
   /* AGENT sidebar */
   .agent-sidebar {
@@ -185,7 +226,7 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
   }
 }
 @media (max-width: 768px) {
-  .content-area { padding: 10px 8px !important; }
+  .content-area { padding: 10px 8px 40px !important; }
   .admin-header { padding: 10px 14px !important; flex-wrap: wrap; gap: 8px; }
   .admin-header .admin-user p { display: none; }
 }
@@ -193,32 +234,40 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
 /* Agent dashboard content layout */
 @media (max-width: 1024px) {
   .agent-content {
-    flex-direction: column !important;
-    overflow-y: auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;   /* stack all panels vertically */
+    flex: none !important;                    /* override base flex:1 so parent height is auto */
+    overflow: visible !important;             /* body scroll handles page scrolling */
+    height: auto !important;
   }
   .ticket-queue {
     width: 100% !important;
-    max-height: 280px;
-    overflow-y: auto;
+    max-height: none !important;              /* let content determine height */
+    height: auto !important;
+    overflow: visible !important;
     border-right: none !important;
-    border-bottom: 1px solid var(--border-dim);
+    border-bottom: 1px solid var(--border-dim) !important;
   }
   .workspace {
     width: 100% !important;
-    min-height: 380px;
+    min-height: 240px !important;             /* reduced — body scrolls the rest */
+    height: auto !important;
   }
   .ai-panel {
+    display: block !important;               /* override agent.html display:none at ≤1100px */
     width: 100% !important;
-    max-height: 50vh;
-    overflow-y: auto;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
     border-left: none !important;
-    border-top: 1px solid var(--border-dim);
+    border-top: 1px solid var(--border-dim) !important;
+    padding-bottom: 24px !important;
   }
   .active-workspace { flex-direction: column !important; }
-  .metrics-bar { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+  .metrics-bar { display: grid !important; grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
 }
 @media (max-width: 576px) {
-  .metrics-bar { grid-template-columns: repeat(2,1fr) !important; padding: 8px 10px !important; }
+  .metrics-bar { padding: 8px 10px !important; }
   .metric-num  { font-size: 18px !important; }
   .agent-header { flex-wrap: wrap; gap: 6px; padding: 8px 12px !important; }
   .agent-header .agent-header-info p { display: none; }
@@ -254,13 +303,13 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
     transform: translateX(0) !important;
     box-shadow: 6px 0 48px rgba(11,17,32,0.35) !important;
   }
-  .main-content  { padding: 18px 16px !important; margin-left: 0 !important; }
+  .main-content  { padding: 62px 16px 18px !important; margin-left: 0 !important; }
   .mobile-nav-toggle { display: flex !important; }
 }
 @media (max-width: 768px) {
   .stats-row   { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
   .cards-grid  { grid-template-columns: 1fr !important; }
-  .main-content { padding: 14px 10px !important; }
+  .main-content { padding: 56px 10px 14px !important; }
 }
 @media (max-width: 480px) {
   .stats-row   { grid-template-columns: repeat(2,1fr) !important; gap: 6px !important; }
@@ -659,4 +708,156 @@ h1,h2,h3,h4,h5,h6,p,span,a,li,td,th,label,button {
   #chatbot-btn, .hero-float-cards, .hero-scroll { display: none !important; }
   body  { background: #fff !important; color: #000 !important; }
   .df-main, .admin-main, .content-area, .main-content { margin: 0 !important; padding: 0 !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   20. CUSTOMER DASHBOARD — MOBILE TOP-BAR & LAYOUT FIXES
+════════════════════════════════════════════════════════════ */
+
+/* Top-bar: wrap title and actions at narrow widths */
+@media (max-width: 640px) {
+  .top-bar { flex-wrap: wrap !important; gap: 10px !important; }
+}
+@media (max-width: 480px) {
+  .page-title h1 { font-size: clamp(1.1rem, 5.5vw, 1.4rem) !important; letter-spacing: -.5px !important; }
+  .page-title p  { font-size: 12.5px !important; }
+  /* Profile link is accessible from the sidebar; save space on mobile */
+  .header-actions .button-secondary { display: none !important; }
+  .header-actions { gap: 8px !important; }
+}
+
+/* Smart-ticket inline grid (2-col → 1-col on small phones) */
+@media (max-width: 480px) {
+  .inline-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Stat cards — tighter on small phones */
+@media (max-width: 480px) {
+  .stat-card { padding: 14px 16px !important; }
+  .stat-card h3 { font-size: 1.65rem !important; }
+  .stat-card p  { font-size: 12px !important; }
+  .stat-chip    { font-size: 10px !important; padding: 3px 8px !important; }
+  .stat-label   { font-size: 11px !important; }
+}
+
+/* Scene hero on small phones */
+@media (max-width: 480px) {
+  .scene-hero   { padding: 18px 16px !important; }
+  .scene-text h2 { font-size: clamp(1.05rem, 4.5vw, 1.3rem) !important; }
+  .scene-text p  { font-size: 12.5px !important; }
+  .ghost-card    { display: none !important; }
+  .scene-actions { flex-direction: column !important; gap: 8px !important; }
+  .scene-actions button, .scene-actions a { width: 100% !important; justify-content: center !important; }
+}
+
+/* Filter pills compact on mobile */
+@media (max-width: 480px) {
+  .filter-pill, .kb-pill { padding: 5px 12px !important; font-size: 11px !important; }
+}
+
+/* Ticket table — tighter cells on small phones */
+@media (max-width: 480px) {
+  .ticket-table          { font-size: 11.5px !important; }
+  .ticket-table td,
+  .ticket-table th       { padding: 8px 7px !important; }
+  .ticket-table th:nth-child(6),
+  .ticket-table td:nth-child(6) { display: none !important; }  /* hide Updated col */
+}
+
+/* Dashboard panel headings */
+@media (max-width: 480px) {
+  .dash-panel h2 { font-size: 1rem !important; }
+}
+
+/* Chatbot float on small screens */
+@media (max-width: 480px) {
+  .chatbot-float  { right: 14px !important; bottom: 14px !important; }
+  .chatbot-panel  { width: calc(100vw - 28px) !important; }
+  .chatbot-button { width: 50px !important; height: 50px !important; font-size: 20px !important; }
+}
+
+/* Live chat overlay on mobile */
+@media (max-width: 480px) {
+  .live-chat-box { width: 96vw !important; max-height: 85dvh !important; }
+}
+
+/* Book-a-meet modal on mobile */
+@media (max-width: 480px) {
+  .bm-choices { grid-template-columns: 1fr !important; }
+  .bm-body    { padding: 18px 16px !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   21. AGENT DASHBOARD — MOBILE HEADER, METRICS & WORKSPACE
+════════════════════════════════════════════════════════════ */
+
+@media (max-width: 576px) {
+  .agent-header { padding: 10px 14px !important; }
+  .agent-header-info h4 { font-size: 13px !important; }
+  .agent-header-info p  { display: none !important; }
+
+  .metrics-bar  { padding: 8px 12px !important; gap: 8px !important; }
+  .metric-card  { padding: 10px 12px !important; }
+  .metric-num   { font-size: 1.2rem !important; }
+  .metric-lbl   { font-size: 10px !important; }
+  .metric-icon  { width: 30px !important; height: 30px !important; font-size: 16px !important; }
+
+  .queue-header h3  { font-size: 13px !important; }
+  .q-subject        { font-size: 12px !important; }
+  .q-desc           { font-size: 11px !important; }
+
+  .workspace-header { padding: 10px 12px !important; flex-wrap: wrap !important; }
+  .workspace-title h4 { font-size: 13px !important; }
+  .workspace-actions  { gap: 5px !important; flex-wrap: wrap !important; }
+  .btn-action { padding: 6px 10px !important; font-size: 11.5px !important; }
+  .btn-primary-action { padding: 7px 12px !important; font-size: 12px !important; }
+
+  .chat-bubble { font-size: 12.5px !important; padding: 8px 11px !important; }
+  .chat-input  { font-size: 14px !important; }  /* ≥16px prevents iOS zoom */
+}
+@media (max-width: 380px) {
+  .metrics-bar  { grid-template-columns: 1fr !important; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   22. ADMIN DASHBOARD — ADDITIONAL MOBILE FIXES
+════════════════════════════════════════════════════════════ */
+
+@media (max-width: 576px) {
+  .admin-header     { padding: 10px 14px !important; gap: 8px !important; }
+  .admin-header-info h4 { font-size: 13px !important; }
+  .admin-header-info p  { display: none !important; }
+  .content-area     { padding: 12px 10px 40px !important; }
+
+  .page-title  { font-size: clamp(1.1rem, 4.5vw, 1.4rem) !important; letter-spacing: -.4px !important; }
+  .page-sub    { font-size: 12px !important; }
+
+  .stat-card   { padding: 14px !important; gap: 10px !important; }
+  .stat-icon   { width: 38px !important; height: 38px !important; font-size: 18px !important; }
+  .stat-num    { font-size: 1.3rem !important; }
+  .stat-label  { font-size: 11px !important; }
+
+  .chart-title { font-size: 10px !important; }
+  .df-table th { font-size: 10px !important; padding: 9px 10px !important; }
+  .df-table td { font-size: 12px !important; padding: 10px 10px !important; }
+
+  .logs-filters { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .filter-input,
+  .filter-select,
+  .filter-date  { font-size: 14px !important; }  /* prevent iOS zoom */
+
+  .settings-card  { padding: 14px !important; }
+  .toggle-info h4 { font-size: 12.5px !important; }
+  .toggle-info p  { font-size: 11px !important; }
+  .toggle-row     { padding: 10px 0 !important; }
+
+  .kb-form-input,
+  .kb-form-textarea,
+  .kb-form-select { font-size: 14px !important; }
+}
+@media (max-width: 480px) {
+  .df-table th:nth-child(n+4),
+  .df-table td:nth-child(n+4) { display: none !important; }
+  .fb-bar-row { grid-template-columns: 1fr 50px !important; gap: 8px !important; }
+  .fb-bar-row > :nth-child(3) { display: none !important; }
 }

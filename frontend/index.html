@@ -416,7 +416,7 @@
 
 /* FOOTER */
 footer { background:var(--bg-secondary); border-top:1px solid var(--border-dim); padding:64px 2rem 32px; }
-.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; max-width:1240px; margin:0 auto; }
+.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1.5fr; gap:3rem; max-width:1340px; margin:0 auto; }
 .footer-brand p { font-size:14px; color:var(--text-secondary); line-height:1.7; max-width:260px; margin:1rem 0 1.5rem; }
 .footer-socials { display:flex; gap:8px; }
 .social-btn {
@@ -429,7 +429,12 @@ footer { background:var(--bg-secondary); border-top:1px solid var(--border-dim);
 .footer-col ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
 .footer-col ul li a { font-size:14px; color:var(--text-secondary); transition:color .2s; }
 .footer-col ul li a:hover { color:var(--gold-light); }
-.footer-bottom { max-width:1240px; margin:3rem auto 0; padding-top:2rem; border-top:1px solid var(--border-dim); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-muted); }
+.footer-team-list { list-style:none; display:flex; flex-direction:column; gap:11px; }
+.footer-team-list li { display:flex; flex-direction:column; gap:1px; }
+.footer-team-name { font-size:13px; font-weight:700; color:var(--text-primary); line-height:1.4; }
+.footer-team-email { font-size:11.5px; color:var(--text-secondary); text-decoration:none; transition:color .2s; word-break:break-all; }
+.footer-team-email:hover { color:var(--gold-light); }
+.footer-bottom { max-width:1340px; margin:3rem auto 0; padding-top:2rem; border-top:1px solid var(--border-dim); display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-muted); }
 
 /* CHATBOT */
 #chatbot-btn {
@@ -490,7 +495,7 @@ footer { background:var(--bg-secondary); border-top:1px solid var(--border-dim);
   .solution-visual{ display:none; }
   .testi-grid     { grid-template-columns:repeat(2,1fr); }
   .pricing-grid   { grid-template-columns:repeat(2,1fr); }
-  .footer-grid    { grid-template-columns:1fr 1fr; }
+  .footer-grid    { grid-template-columns:repeat(3,1fr); }
 }
 @media(max-width:900px){
   .pricing-grid   { grid-template-columns:1fr; max-width:420px; margin-inline:auto; }
@@ -1096,6 +1101,31 @@ footer { background:var(--bg-secondary); border-top:1px solid var(--border-dim);
         <li><a href="signup.html">Careers</a></li>
         <li><a href="#pricing">Privacy policy</a></li>
         <li><a href="#" onclick="event.preventDefault();document.getElementById('chatbot-btn').click()">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Our Team</h5>
+      <ul class="footer-team-list">
+        <li>
+          <span class="footer-team-name">K Deva Dharshini</span>
+          <a href="mailto:kdeva25@karunya.edu.in" class="footer-team-email">kdeva25@karunya.edu.in</a>
+        </li>
+        <li>
+          <span class="footer-team-name">Girija Udaiyakumar</span>
+          <a href="mailto:girijaudaiyakumar@karunya.edu.in" class="footer-team-email">girijaudaiyakumar@karunya.edu.in</a>
+        </li>
+        <li>
+          <span class="footer-team-name">Vedha Sheeba J</span>
+          <a href="mailto:vedhasheeba@karunya.edu.in" class="footer-team-email">vedhasheeba@karunya.edu.in</a>
+        </li>
+        <li>
+          <span class="footer-team-name">Manoshini R</span>
+          <a href="mailto:manoshinir@karunya.edu.in" class="footer-team-email">manoshinir@karunya.edu.in</a>
+        </li>
+        <li>
+          <span class="footer-team-name">Selva Prithikha S</span>
+          <a href="mailto:selvaprithikha@karunya.edu.in" class="footer-team-email">selvaprithikha@karunya.edu.in</a>
+        </li>
       </ul>
     </div>
   </div>

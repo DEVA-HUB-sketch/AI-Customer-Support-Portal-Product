@@ -255,12 +255,12 @@ body { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
 
 @media(max-width:1100px){
   .agent-content { grid-template-columns:260px 1fr; }
-  .ai-panel { display:none; }
+  /* .ai-panel shown on mobile by df-responsive.css (display:block !important at ≤1024px) */
 }
 @media(max-width:800px){
-  .agent-sidebar { display:none; }
+  /* .agent-sidebar handled by df-responsive.css — position:fixed + translateX(-110%) */
+  /* .ticket-queue shown in stacked layout by df-responsive.css at ≤1024px */
   .agent-content { grid-template-columns:1fr; }
-  .ticket-queue { display:none; }
   .metrics-bar { gap:8px; padding:10px 14px; }
   .metric-card { min-width:unset; }
 }
